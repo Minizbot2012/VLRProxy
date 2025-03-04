@@ -6,13 +6,14 @@ namespace vlrp::managers
     void RaceManager::Reset() {
         this->race_pairs.clear();
     }
+    
     void RaceManager::UpdateFormLists() {
         auto headparts = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::BGSHeadPart>();
         for(auto *hp : headparts) {
             if(hp->validRaces!=NULL) {
                 for(auto rp : this->race_pairs) {
                     if(hp->validRaces->HasForm(rp.vampireRace) && !hp->validRaces->HasForm(rp.vlRace)&& hp->validRaces->ContainsOnlyType(RE::FormType::Race)) {
-                        logger::info("Adding VL Race {} to formlist headpart formlist", rp.vlRace->GetFormEditorID());
+                        logger::info("Adding VL Race {} to headpart formlist", rp.vlRace->GetFormEditorID());
                         hp->validRaces->AddForm(const_cast<RE::TESRace*>(rp.vlRace));
                     }
                 }
