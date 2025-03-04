@@ -11,6 +11,7 @@ void OnInit(SKSE::MessagingInterface::Message *a_msg)
 	case SKSE::MessagingInterface::kDataLoaded:
 		vlrp::hook::TryInstall();
 		vlrp::config::LoadConfigs();
+		vlrp::managers::RaceManager::GetSingleton()->UpdateFormLists();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
 		vlrp::managers::DOMManager::Register();
@@ -20,6 +21,8 @@ void OnInit(SKSE::MessagingInterface::Message *a_msg)
 		{
 			vlrp::managers::RaceManager::GetSingleton()->SetDOMRace(RE::PlayerCharacter::GetSingleton()->GetRace());
 		}
+	case SKSE::MessagingInterface::kNewGame:
+		vlrp::managers::RaceManager::GetSingleton()->UpdateFormLists();
 		break;
 	default:
 		break;

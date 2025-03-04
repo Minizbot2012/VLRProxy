@@ -13,6 +13,7 @@ namespace vlrp::managers
 
     public:
         void Reset();
+        void UpdateFormLists();
         void PushRaceData(RaceData &);
         auto GetVLRace(const RE::TESRace *) -> const RE::TESRace *;
         auto GetHumanRace(const RE::TESRace *rc) -> const RE::TESRace *;

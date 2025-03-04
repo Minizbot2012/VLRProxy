@@ -43,7 +43,6 @@ namespace vlrp
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };
-
         struct IsValidRace
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(17392, 17792);
@@ -67,7 +66,6 @@ namespace vlrp
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };
-
         struct GetPcIsRace
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(21697, 22179);
