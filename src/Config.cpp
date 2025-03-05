@@ -13,12 +13,13 @@ namespace vlrp::config
             return;
         }
         auto mgr = managers::RaceManager::GetSingleton();
+        std::vector<RaceConfig> pairs;
         for (auto ent : std::filesystem::directory_iterator(ConfigFolder))
         {
             if (ent.path().filename().extension() == ".json")
             {
                 logger::info("Loading config file {}", ent.path().filename().string());
-                std::vector<RaceConfig> pairs;
+                pairs.clear();
                 auto gl = glz::read_file_json(pairs, ent.path().string(), std::string{});
                 for (auto itm : pairs)
                 {

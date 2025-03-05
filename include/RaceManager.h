@@ -1,6 +1,22 @@
 #pragma once
 namespace vlrp::managers
 {
+    enum HeadPartType : char
+	{
+		kNone,
+		kArgonian,
+		kElf,
+		kDarkElf,
+		kHighElf,
+		kWoodElf,
+		kHuman,
+		kBreton,
+		kImperial,
+		kNord,
+		kRedguard,
+		kKhajiit,
+		kOrc,
+	};
     struct RaceData
     {
         const RE::TESRace *vampireRace;
@@ -13,7 +29,6 @@ namespace vlrp::managers
 
     public:
         void Reset();
-        void UpdateFormLists();
         void PushRaceData(RaceData &);
         auto GetVLRace(const RE::TESRace *) -> const RE::TESRace *;
         auto GetHumanRace(const RE::TESRace *rc) -> const RE::TESRace *;

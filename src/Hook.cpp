@@ -1,6 +1,7 @@
 #include <Hook.h>
 #include <RaceManager.h>
 #include <Config.h>
+#include <ClibUtil/editorID.hpp>
 namespace vlrp
 {
     namespace hook
@@ -41,6 +42,38 @@ namespace vlrp
                     return func(obj, race_form, unused, result);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hooks for GetIsRace");
+            };
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+        struct IsValidHeadpart
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(23174, 23631);
+            static inline constexpr std::size_t offset = OFFSET(0x10, 0x10);
+            static long thunk(const RE::BGSListForm *frm, const RE::TESForm *rc)
+            {
+                if (rc->Is(RE::FormType::Race))
+                {
+                    auto race = rc->As<RE::TESRace>();
+                    auto rm = vlrp::managers::RaceManager::GetSingleton();
+                    if (rm->IsVampireLord(race) && rm->IsSupportedVL(race) && !frm->HasForm(race))
+                    {
+                        auto hr = rm->GetHumanRace(race);
+                        auto ret = func(frm, hr);
+                        logger::info("{} {} {} VL", editorID::get_editorID(frm), editorID::get_editorID(rc), std::to_string(ret));
+                        return ret;
+                    }
+                }
+                auto ret = func(frm, rc);
+                logger::info("{} {} {} HR", editorID::get_editorID(frm), editorID::get_editorID(rc), std::to_string(ret));
+                return ret;
+            };
+            static void post_hook()
+            {
+                logger::info("Installed hooks for BGSHeadPart::IsValid?");
+            };
             static inline REL::Relocation<decltype(thunk)> func;
         };
         struct IsValidRace
@@ -64,6 +97,10 @@ namespace vlrp
                     return func(armor_addon, race);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hooks for TESObjectARMA::IsValid");
+            };
             static inline REL::Relocation<decltype(thunk)> func;
         };
         struct GetPcIsRace
@@ -74,6 +111,10 @@ namespace vlrp
             {
                 return GetIsRace::thunk(RE::PlayerCharacter::GetSingleton(), race_form, unused, result);
             }
+            static void post_hook()
+            {
+                logger::info("Installed hooks for GetPcIsRace");
+            };
         };
 
         struct GetIsRaceAddr
@@ -83,18 +124,19 @@ namespace vlrp
             {
                 return GetIsRace::thunk(RE::PlayerCharacter::GetSingleton(), race_form, unused, result);
             }
+            static void post_hook()
+            {
+                logger::info("Installed hooks for GetIsRace (CallAddr)");
+            };
         };
 
         void TryInstall()
         {
             stl::install_hook<GetIsRace>();
-            logger::info("Installed hooks for GetIsRace");
             stl::install_hook<GetIsRaceAddr>();
-            logger::info("Installed hook for GetIsRace Condition Lookup");
             stl::install_hook<GetPcIsRace>();
-            logger::info("Installed hooks for GetPcIsRace");
             stl::install_hook<IsValidRace>();
-            logger::info("Installed hooks for TESObjectARMA::IsValidRace");
+            stl::install_hook<IsValidHeadpart>();
         }
     }
 
