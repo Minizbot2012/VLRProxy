@@ -2,6 +2,7 @@
 #include <RaceManager.h>
 #include <Config.h>
 #include <ClibUtil/editorID.hpp>
+
 namespace vlrp
 {
     namespace hook
@@ -45,6 +46,31 @@ namespace vlrp
                 logger::info("Installed hooks for GetIsRace");
             };
             static inline REL::Relocation<decltype(thunk)> func;
+        };
+        struct GetIsRaceAddr
+        {
+            static inline constexpr REL::ID addr = RELOCATION_ID(668606, 361561);
+            static bool thunk(RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
+            {
+                return GetIsRace::thunk(obj, race_form, unused, result);
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hooks for GetIsRace (CallAddr)");
+            };
+        };
+        struct GetPcIsRace
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(21697, 22179);
+            static inline constexpr std::size_t offset = OFFSET(0x66, 0x66);
+            static bool thunk([[maybe_unused]] RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
+            {
+                return GetIsRace::thunk(RE::PlayerCharacter::GetSingleton(), race_form, unused, result);
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hooks for GetPcIsRace");
+            };
         };
         struct IsValidHeadpart
         {
@@ -150,32 +176,6 @@ namespace vlrp
                 logger::info("Installed hook5 for TESObjectARMA::IsValid");
             };
             static inline REL::Relocation<decltype(thunk)> func;
-        };
-        struct GetPcIsRace
-        {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(21697, 22179);
-            static inline constexpr std::size_t offset = OFFSET(0x66, 0x66);
-            static bool thunk([[maybe_unused]] RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
-            {
-                return GetIsRace::thunk(RE::PlayerCharacter::GetSingleton(), race_form, unused, result);
-            }
-            static void post_hook()
-            {
-                logger::info("Installed hooks for GetPcIsRace");
-            };
-        };
-
-        struct GetIsRaceAddr
-        {
-            static inline constexpr REL::ID addr = RELOCATION_ID(668606, 361561);
-            static bool thunk(RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
-            {
-                return GetIsRace::thunk(obj, race_form, unused, result);
-            }
-            static void post_hook()
-            {
-                logger::info("Installed hooks for GetIsRace (CallAddr)");
-            };
         };
 
         void TryInstall()
