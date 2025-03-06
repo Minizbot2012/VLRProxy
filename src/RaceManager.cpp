@@ -5,6 +5,7 @@ namespace vlrp::managers
 {
     void RaceManager::Reset()
     {
+        this->OriginalVL = RE::TESForm::LookupByEditorID("DLC1VampireBeastRace")->As<RE::TESRace>();
         this->race_pairs.clear();
     }
 
@@ -23,20 +24,31 @@ namespace vlrp::managers
         }
         else
         {
-            return RE::TESForm::LookupByID(0x0200283A)->As<RE::TESRace>();
+            return this->OriginalVL;
         }
     }
     auto RaceManager::GetHumanRace(const RE::TESRace *rc) -> const RE::TESRace *
     {
-        auto rdat = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rn)
-                                 { return rn.vlRace == rc; });
-        return rdat->vampireRace;
+        auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rd)
+                               { return rd.vlRace == rc; });
+        if (it != this->race_pairs.end())
+        {
+            return it->vampireRace;
+        }
+        else
+        {
+            logger::info("DID NOT FIND HUMAN VAMPIRE RACE");
+            return NULL;
+        }
+    }
+    auto RaceManager::GetOriginalVL() -> const RE::TESRace * {
+        return this->OriginalVL;
     }
     bool RaceManager::IsVampireLord(const RE::TESRace *rc)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rn)
                             { return rn.vlRace == rc; }) != this->race_pairs.end() ||
-               rc->formID == 0x0200283A;
+               rc == this->OriginalVL;
     }
     void RaceManager::SetDOMRace(RE::TESRace *race)
     {

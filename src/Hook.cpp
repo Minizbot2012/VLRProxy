@@ -10,7 +10,7 @@ namespace vlrp
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(21691, 22173);
             static inline constexpr std::size_t offset = OFFSET(0x68, 0x68);
-            static bool thunk(const RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
+            static bool thunk(const RE::TESObjectREFR *obj, const RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
             {
                 if (obj && race_form)
                 {
@@ -18,11 +18,12 @@ namespace vlrp
                     const auto race = race_form->As<RE::TESRace>();
                     if (npc && race)
                     {
-                        if (race->formID == 0x200283A)
+                        auto rm = vlrp::managers::RaceManager::GetSingleton();
+                        if (race == rm->GetOriginalVL())
                         {
                             if (const auto npc_race = npc->race;
                                 npc_race &&
-                                vlrp::managers::RaceManager::GetSingleton()->IsVampireLord(npc_race))
+                                rm->IsVampireLord(npc_race))
                             {
                                 result = 1.0;
                             }
@@ -37,10 +38,7 @@ namespace vlrp
                     }
                     return true;
                 }
-                else
-                {
-                    return func(obj, race_form, unused, result);
-                }
+                return func(obj, race_form, unused, result);
             }
             static void post_hook()
             {
@@ -54,21 +52,14 @@ namespace vlrp
             static inline constexpr std::size_t offset = OFFSET(0x10, 0x10);
             static long thunk(const RE::BGSListForm *frm, const RE::TESForm *rc)
             {
-                if (rc->Is(RE::FormType::Race))
+                auto race = rc->As<RE::TESRace>();
+                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                if (rm->IsVampireLord(race) && rm->IsSupportedVL(race) && !frm->HasForm(race))
                 {
-                    auto race = rc->As<RE::TESRace>();
-                    auto rm = vlrp::managers::RaceManager::GetSingleton();
-                    if (rm->IsVampireLord(race) && rm->IsSupportedVL(race) && !frm->HasForm(race))
-                    {
-                        auto hr = rm->GetHumanRace(race);
-                        auto ret = func(frm, hr);
-                        logger::info("{} {} {} VL", editorID::get_editorID(frm), editorID::get_editorID(rc), std::to_string(ret));
-                        return ret;
-                    }
+                    auto hr = rm->GetHumanRace(race);
+                    return func(frm, hr);
                 }
-                auto ret = func(frm, rc);
-                logger::info("{} {} {} HR", editorID::get_editorID(frm), editorID::get_editorID(rc), std::to_string(ret));
-                return ret;
+                return func(frm, rc);
             };
             static void post_hook()
             {
@@ -76,7 +67,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
-        struct IsValidRace
+        struct IsValidRace_Hook1
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(17392, 17792);
             static inline constexpr std::size_t offset = OFFSET(0x4d, 0x4b);
@@ -90,6 +81,7 @@ namespace vlrp
                 if (rm->IsSupportedVL(race) && rm->IsVampireLord(race))
                 {
                     auto va_race = rm->GetHumanRace(race);
+                    logger::info("Called hook for VL {} and ARMA {}", editorID::get_editorID(race), editorID::get_editorID(armor_addon));
                     return func(armor_addon, va_race);
                 }
                 else
@@ -99,7 +91,63 @@ namespace vlrp
             }
             static void post_hook()
             {
-                logger::info("Installed hooks for TESObjectARMA::IsValid");
+                logger::info("Installed hook1 for TESObjectARMA::IsValid");
+            };
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+        struct IsValidRace_Hook2
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(17394, 17794);
+            static inline constexpr std::size_t offset = OFFSET(0x19, 0x17);
+            static bool thunk(const RE::TESObjectARMA *armor_addon, const RE::TESRace *race)
+            {
+                return IsValidRace_Hook1::thunk(armor_addon, race);
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook2 for TESObjectARMA::IsValid");
+            };
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+        struct IsValidRace_Hook3
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(24842, 25362);
+            static inline constexpr std::size_t offset = OFFSET(0x91, 0x91);
+            static bool thunk(const RE::TESObjectARMA *armor_addon, const RE::TESRace *race)
+            {
+                return IsValidRace_Hook1::thunk(armor_addon, race);
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook3 for TESObjectARMA::IsValid");
+            };
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+        struct IsValidRace_Hook4
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(24883, 25363);
+            static inline constexpr std::size_t offset = OFFSET(0x81, 0x81);
+            static bool thunk(const RE::TESObjectARMA *armor_addon, const RE::TESRace *race)
+            {
+                return IsValidRace_Hook1::thunk(armor_addon, race);
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook4 for TESObjectARMA::IsValid");
+            };
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+        struct IsValidRace_Hook5
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(39044, 40114);
+            static inline constexpr std::size_t offset = OFFSET(0x193, 0x1a3);
+            static bool thunk(const RE::TESObjectARMA *armor_addon, const RE::TESRace *race)
+            {
+                return IsValidRace_Hook1::thunk(armor_addon, race);
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook5 for TESObjectARMA::IsValid");
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
@@ -120,9 +168,9 @@ namespace vlrp
         struct GetIsRaceAddr
         {
             static inline constexpr REL::ID addr = RELOCATION_ID(668606, 361561);
-            static bool thunk([[maybe_unused]] RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
+            static bool thunk(RE::TESObjectREFR *obj, RE::TESForm *race_form, [[maybe_unused]] void *unused, double &result)
             {
-                return GetIsRace::thunk(RE::PlayerCharacter::GetSingleton(), race_form, unused, result);
+                return GetIsRace::thunk(obj, race_form, unused, result);
             }
             static void post_hook()
             {
@@ -135,7 +183,11 @@ namespace vlrp
             stl::install_hook<GetIsRace>();
             stl::install_hook<GetIsRaceAddr>();
             stl::install_hook<GetPcIsRace>();
-            stl::install_hook<IsValidRace>();
+            stl::install_hook<IsValidRace_Hook1>();
+            stl::install_hook<IsValidRace_Hook2>();
+            stl::install_hook<IsValidRace_Hook3>();
+            stl::install_hook<IsValidRace_Hook4>();
+            stl::install_hook<IsValidRace_Hook5>();
             stl::install_hook<IsValidHeadpart>();
         }
     }
