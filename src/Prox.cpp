@@ -31,8 +31,7 @@ extern "C" DLLEXPORT auto SKSEPlugin_Version = []()
 	v.PluginName("VLRProxy");
 	v.AuthorName("mini");
 	v.UsesAddressLibrary();
-	v.UsesUpdatedStructs();
-	v.CompatibleVersions({SKSE::RUNTIME_LATEST});
+	v.UsesNoStructs();
 
 	return v;
 }();

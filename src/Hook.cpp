@@ -99,16 +99,11 @@ namespace vlrp
             static inline constexpr std::size_t offset = OFFSET(0x4d, 0x4b);
             static bool thunk(const RE::TESObjectARMA *armor_addon, const RE::TESRace *race)
             {
-                if (!armor_addon || !race)
-                {
-                    return func(armor_addon, race);
-                }
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
-                if (rm->IsSupportedVL(race) && rm->IsVampireLord(race))
+                if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) && rm->IsSupportedVL(race))
                 {
                     auto va_race = rm->GetHumanRace(race);
-                    logger::info("Called hook for VL {} and ARMA {}", editorID::get_editorID(race), editorID::get_editorID(armor_addon));
-                    return func(armor_addon, va_race);
+                    return func(armor_addon, va_race) || (va_race->morphRace != NULL && func(armor_addon, va_race->morphRace));
                 }
                 else
                 {
