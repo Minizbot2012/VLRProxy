@@ -3,6 +3,7 @@
 #include <Config.h>
 #include <DOMManager.h>
 #include <RaceManager.h>
+#include <ModAPI.h>
 
 void OnInit(SKSE::MessagingInterface::Message *a_msg)
 {
@@ -10,8 +11,6 @@ void OnInit(SKSE::MessagingInterface::Message *a_msg)
 	{
 	case SKSE::MessagingInterface::kDataLoaded:
 		vlrp::config::LoadConfigs();
-		vlrp::hook::TryInstall();
-		vlrp::managers::DOMManager::Register();
 		break;
 	case SKSE::MessagingInterface::kPostLoadGame:
 		if (vlrp::managers::RaceManager::GetSingleton()->IsVampireLord(RE::PlayerCharacter::GetSingleton()->GetRace()))
@@ -40,7 +39,23 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface *a_s
 {
 	SKSE::Init(a_skse);
 	logger::info("Game version : {}", a_skse->RuntimeVersion().string());
-	SKSE::GetMessagingInterface()->RegisterListener(OnInit);
+	if (!SKSE::GetMessagingInterface()->RegisterListener(OnInit))
+	{
+		return false;
+	}
 	SKSE::GetPapyrusInterface()->Register(vlrp::papyrus::Bind);
+	vlrp::hook::TryInstall();
+	vlrp::managers::DOMManager::Register();
 	return true;
+}
+
+extern "C" DLLEXPORT void *SKSEAPI RequestPluginAPI(vlrp::API::APIVersion ver)
+{
+	switch (ver)
+	{
+	case vlrp::API::APIVersion::V1:
+		return vlrp::API::Interface::GetSingleton();
+		break;
+	}
+	return nullptr;
 }

@@ -1,6 +1,4 @@
 #include <Config.h>
-#include <RaceManager.h>
-#include <memory>
 namespace vlrp::config
 {
     void LoadConfigs()

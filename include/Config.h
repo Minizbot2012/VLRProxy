@@ -1,9 +1,12 @@
 #pragma once
-#include "glaze/glaze.hpp"
 #include <filesystem>
+#include <memory>
+#include <glaze/glaze.hpp>
+#include <RaceManager.h>
 namespace vlrp::config
 {
-    struct RaceConfig {
+    struct RaceConfig
+    {
         std::string VampireRace;
         std::string VLRace;
     };

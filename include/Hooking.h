@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SKSE/SKSE.h"
+#include <SKSE/SKSE.h>
 
 #define ByteAt(addr) *reinterpret_cast<std::uint8_t *>(addr)
 
@@ -130,10 +130,11 @@ namespace stl
 		details::set_func<Hook>(vtbl.write_vfunc(Hook::index, Hook::thunk));
 	}
 
-	template<addr_hook Hook>
-	void write_addr() {
-		REL::Relocation addr = REL::Relocation (Hook::addr, 0);
-		auto res = *reinterpret_cast<uintptr_t*>(addr.address());
+	template <addr_hook Hook>
+	void write_addr()
+	{
+		REL::Relocation addr = REL::Relocation(Hook::addr, 0);
+		auto res = *reinterpret_cast<uintptr_t *>(addr.address());
 		details::set_func<Hook>(res);
 		addr.write(reinterpret_cast<uintptr_t>(&Hook::thunk));
 	}
@@ -220,7 +221,8 @@ namespace stl
 		{
 			stl::write_vfunc<Hook>();
 		}
-		else if constexpr(addr_hook<Hook>) {
+		else if constexpr (addr_hook<Hook>)
+		{
 			stl::write_addr<Hook>();
 		}
 		else

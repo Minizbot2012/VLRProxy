@@ -1,4 +1,5 @@
 #pragma once
+#include <RaceManager.h>
 namespace vlrp::managers
 {
     class DOMManager : public ISingleton<DOMManager>,

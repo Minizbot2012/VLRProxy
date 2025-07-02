@@ -1,6 +1,5 @@
 #pragma once
 #include <RaceManager.h>
-#include <Config.h>
 namespace vlrp::papyrus
 {
 #define STATIC_ARGS RE::StaticFunctionTag *
@@ -8,6 +7,23 @@ namespace vlrp::papyrus
         -> const RE::TESRace *
     {
         return vlrp::managers::RaceManager::GetSingleton()->GetVLRace(rc);
+    }
+    [[nodiscard]] static auto GetVampireRace(STATIC_ARGS, const RE::TESRace *rc)
+        -> const RE::TESRace *
+    {
+        auto mgr = vlrp::managers::RaceManager::GetSingleton();
+        if (!mgr->IsVampireLord(rc))
+        {
+            return rc;
+        }
+        else if (mgr->IsSupportedVL(rc))
+        {
+            return mgr->GetVampireRace(rc);
+        }
+        else
+        {
+            return nullptr;
+        }
     }
     [[nodiscard]] static auto IsVL(STATIC_ARGS, const RE::TESRace *rc) -> bool
     {
@@ -25,6 +41,7 @@ namespace vlrp::papyrus
     bool Bind(RE::BSScript::IVirtualMachine *vm)
     {
         vm->RegisterFunction("GetVLRace", "VLRace", GetVLRace);
+        vm->RegisterFunction("GetVampireRace", "VLRace", GetVampireRace);
         vm->RegisterFunction("IsVL", "VLRace", IsVL);
         vm->RegisterFunction("IsSupportedVampireRace", "VLRace", IsSupportedVampireRace);
         vm->RegisterFunction("IsSupportedVampireLord", "VLRace", IsSupportedVampireLord);

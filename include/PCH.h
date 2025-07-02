@@ -1,9 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-
-#include "RE/Skyrim.h"
-#include "SKSE/SKSE.h"
-#include "REX/W32.h"
+#include <RE/Skyrim.h>
+#include <SKSE/SKSE.h>
+#include <REX/W32.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <windows.h>
@@ -25,4 +24,4 @@ using namespace singleton;
 namespace logger = SKSE::log;
 using namespace std::literals;
 
-#include "Hooking.h"
+#include <Hooking.h>

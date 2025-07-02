@@ -1,8 +1,4 @@
 #include <Hook.h>
-#include <RaceManager.h>
-#include <Config.h>
-#include <ClibUtil/editorID.hpp>
-
 namespace vlrp
 {
     namespace hook
@@ -82,7 +78,7 @@ namespace vlrp
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (rm->IsVampireLord(race) && rm->IsSupportedVL(race) && !frm->HasForm(race))
                 {
-                    auto hr = rm->GetHumanRace(race);
+                    auto hr = rm->GetVampireRace(race);
                     return func(frm, hr);
                 }
                 return func(frm, rc);
@@ -102,7 +98,7 @@ namespace vlrp
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) && rm->IsSupportedVL(race))
                 {
-                    auto va_race = rm->GetHumanRace(race);
+                    auto va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race) || (va_race->morphRace != NULL && func(armor_addon, va_race->morphRace));
                 }
                 else

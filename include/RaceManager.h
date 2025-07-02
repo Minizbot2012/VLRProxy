@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+#include <Config.h>
 namespace vlrp::managers
 {
     struct RaceData
@@ -14,9 +16,9 @@ namespace vlrp::managers
 
     public:
         void Reset();
-        void PushRaceData(RaceData &);
+        int PushRaceData(RaceData &);
         auto GetVLRace(const RE::TESRace *) -> const RE::TESRace *;
-        auto GetHumanRace(const RE::TESRace *) -> const RE::TESRace *;
+        auto GetVampireRace(const RE::TESRace *) -> const RE::TESRace *;
         auto GetOriginalVL() -> const RE::TESRace *;
         bool IsVampireLord(const RE::TESRace *);
         bool IsSupportedRace(const RE::TESRace *);

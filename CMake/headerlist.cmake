@@ -1,6 +1,8 @@
 set(headers ${headers}
-	include/Papyrus.h
 	include/PCH.h
+	include/Papyrus.h
+	include/API_VLRProxy.h
+	include/ModAPI.h
 	include/RaceManager.h
 	include/DOMManager.h
 	include/Config.h

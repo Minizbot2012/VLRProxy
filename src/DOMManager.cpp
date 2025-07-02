@@ -1,5 +1,4 @@
 #include <DOMManager.h>
-#include <RaceManager.h>
 namespace vlrp::managers
 {
     void DOMManager::Register()

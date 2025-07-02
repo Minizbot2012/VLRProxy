@@ -1,6 +1,4 @@
 #include <RaceManager.h>
-#include <Config.h>
-#include <algorithm>
 namespace vlrp::managers
 {
     void RaceManager::Reset()
@@ -9,10 +7,31 @@ namespace vlrp::managers
         this->race_pairs.clear();
     }
 
-    void RaceManager::PushRaceData(RaceData &rd)
+    int RaceManager::PushRaceData(RaceData &rd)
     {
-        logger::info("Adding Vampire Lord Race {} for vampire race {}", rd.vlRace->GetFormEditorID(), rd.vampireRace->GetFormEditorID());
-        this->race_pairs.push_back(rd);
+        auto vm = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rdi)
+                               { return rdi.vampireRace == rd.vampireRace; });
+        auto vlm = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rdi)
+                                { return rdi.vlRace == rd.vlRace; });
+        if (vm != this->race_pairs.end())
+        {
+            logger::info("Overriding vampire lord {} for vampire {}", rd.vlRace->GetFormEditorID(), rd.vampireRace->GetFormEditorID());
+            vm->vlRace = rd.vlRace;
+            return 1;
+        }
+        else if (vlm != this->race_pairs.end())
+        {
+            logger::info("Overriding vampire {} for vampire lord {}", rd.vampireRace->GetFormEditorID(), rd.vlRace->GetFormEditorID());
+            vm->vampireRace = rd.vampireRace;
+            return 1;
+        }
+        else
+        {
+            logger::info("Adding vampire lord {} for vampire {}", rd.vlRace->GetFormEditorID(), rd.vampireRace->GetFormEditorID());
+            this->race_pairs.push_back(rd);
+            return 0;
+        }
+        return -1;
     }
     auto RaceManager::GetVLRace(const RE::TESRace *rc) -> const RE::TESRace *
     {
@@ -27,7 +46,7 @@ namespace vlrp::managers
             return this->OriginalVL;
         }
     }
-    auto RaceManager::GetHumanRace(const RE::TESRace *rc) -> const RE::TESRace *
+    auto RaceManager::GetVampireRace(const RE::TESRace *rc) -> const RE::TESRace *
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rd)
                                { return rd.vlRace == rc; });
@@ -41,7 +60,8 @@ namespace vlrp::managers
             return NULL;
         }
     }
-    auto RaceManager::GetOriginalVL() -> const RE::TESRace * {
+    auto RaceManager::GetOriginalVL() -> const RE::TESRace *
+    {
         return this->OriginalVL;
     }
     bool RaceManager::IsVampireLord(const RE::TESRace *rc)
