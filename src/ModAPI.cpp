@@ -75,4 +75,12 @@ namespace vlrp::API
             return false;
         }
     }
+    bool Interface::Transform(RE::Actor *actor, RE::TESRace *optional_race = nullptr)
+    {
+        return vlrp::managers::RaceManager::GetSingleton()->TransformActor(actor, optional_race);
+    }
+    bool Interface::Revert(RE::Actor *actor)
+    {
+        return vlrp::managers::RaceManager::GetSingleton()->RevertActor(actor);
+    }
 }

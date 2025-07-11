@@ -9,4 +9,4 @@ namespace vlrp
 		void TryInstall();
 	}
 	void TryInstall();
-} // namespace hook
+}

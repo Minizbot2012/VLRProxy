@@ -21,11 +21,11 @@ namespace vlrp::config
                 auto gl = glz::read_file_json(pairs, ent.path().string(), std::string{});
                 for (auto itm : pairs)
                 {
-                    auto vamprace = RE::TESForm::LookupByEditorID(itm.VampireRace);
-                    auto vlrace = RE::TESForm::LookupByEditorID(itm.VLRace);
-                    if (vamprace && vlrace && vamprace->Is(RE::FormType::Race) && vlrace->Is(RE::FormType::Race))
+                    auto vamprace = RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VampireRace);
+                    auto vlrace = RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VLRace);
+                    if (vamprace && vlrace)
                     {
-                        auto rd = managers::RaceData{vamprace->As<RE::TESRace>(), vlrace->As<RE::TESRace>()};
+                        auto rd = managers::RaceData{vamprace, vlrace};
                         mgr->PushRaceData(rd);
                     }
                 }

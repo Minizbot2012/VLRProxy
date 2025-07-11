@@ -1,7 +1,6 @@
 #include <Papyrus.h>
 #include <Hook.h>
 #include <Config.h>
-#include <DOMManager.h>
 #include <RaceManager.h>
 #include <ModAPI.h>
 
@@ -26,7 +25,7 @@ void OnInit(SKSE::MessagingInterface::Message *a_msg)
 extern "C" DLLEXPORT auto SKSEPlugin_Version = []()
 {
 	SKSE::PluginVersionData v;
-	v.PluginVersion({1, 0, 0, 0});
+	v.PluginVersion({0, 7, 0, 0});
 	v.PluginName("VLRProxy");
 	v.AuthorName("mini");
 	v.UsesAddressLibrary();
@@ -34,6 +33,21 @@ extern "C" DLLEXPORT auto SKSEPlugin_Version = []()
 
 	return v;
 }();
+
+void SaveCallback(SKSE::SerializationInterface *a_intf)
+{
+	vlrp::managers::RaceManager::GetSingleton()->Save(a_intf);
+}
+
+void LoadCallback(SKSE::SerializationInterface *a_intf)
+{
+	vlrp::managers::RaceManager::GetSingleton()->Load(a_intf);
+}
+
+void RevertCallback(SKSE::SerializationInterface *a_intf)
+{
+	vlrp::managers::RaceManager::GetSingleton()->Revert(a_intf);
+}
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface *a_skse)
 {
@@ -44,8 +58,13 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface *a_s
 		return false;
 	}
 	SKSE::GetPapyrusInterface()->Register(vlrp::papyrus::Bind);
+	auto a_intf = SKSE::GetSerializationInterface();
+	a_intf->SetUniqueID('VLRP');
+	a_intf->SetLoadCallback(LoadCallback);
+	a_intf->SetSaveCallback(SaveCallback);
+	a_intf->SetRevertCallback(RevertCallback);
 	vlrp::hook::TryInstall();
-	vlrp::managers::DOMManager::Register();
+	vlrp::managers::RaceManager::Register();
 	return true;
 }
 

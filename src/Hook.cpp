@@ -174,12 +174,12 @@ namespace vlrp
             stl::install_hook<GetIsRace>();
             stl::install_hook<GetIsRaceAddr>();
             stl::install_hook<GetPcIsRace>();
+            stl::install_hook<IsValidHeadpart>();
             stl::install_hook<IsValidRace_Hook1>();
             stl::install_hook<IsValidRace_Hook2>();
             stl::install_hook<IsValidRace_Hook3>();
             stl::install_hook<IsValidRace_Hook4>();
             stl::install_hook<IsValidRace_Hook5>();
-            stl::install_hook<IsValidHeadpart>();
         }
     }
 

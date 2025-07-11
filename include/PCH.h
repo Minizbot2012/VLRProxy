@@ -1,15 +1,17 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#include <RE/Skyrim.h>
+#include <type_traits>
 #include <SKSE/SKSE.h>
-#include <REX/W32.h>
+#include <RE/Skyrim.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <windows.h>
-#include <ClibUtil/singleton.hpp>
 #include <ClibUtil/editorID.hpp>
+#include <REX/REX.h>
+namespace logger = SKSE::log;
 using namespace clib_util;
-using namespace singleton;
+using namespace REX;
+using namespace std::literals;
 #ifdef SKYRIM_AE
 #define OFFSET(se, ae) ae
 #define OFFSET_3(se, ae, vr) ae
@@ -21,7 +23,5 @@ using namespace singleton;
 #define OFFSET_3(se, ae, vr) se
 #endif
 #define DLLEXPORT __declspec(dllexport)
-namespace logger = SKSE::log;
-using namespace std::literals;
 
 #include <Hooking.h>
