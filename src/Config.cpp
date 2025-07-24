@@ -1,4 +1,5 @@
 #include <Config.h>
+#include <filesystem>
 namespace vlrp::config
 {
     void LoadConfigs()
@@ -19,17 +20,21 @@ namespace vlrp::config
                 logger::info("Loading config file {}", ent.path().filename().string());
                 pairs.clear();
                 auto gl = glz::read_file_json(pairs, ent.path().string(), std::string{});
-                for (auto itm : pairs)
+                if (!gl)
                 {
-                    auto vamprace = RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VampireRace);
-                    auto vlrace = RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VLRace);
-                    if (vamprace && vlrace)
+                    for (auto itm : pairs)
                     {
-                        auto rd = managers::RaceData{vamprace, vlrace};
-                        mgr->PushRaceData(rd);
+                        auto vamprace =
+                            RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VampireRace);
+                        auto vlrace = RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VLRace);
+                        if (vamprace && vlrace)
+                        {
+                            auto rd = managers::RaceData{ vamprace, vlrace };
+                            mgr->PushRaceData(rd);
+                        }
                     }
                 }
             }
         }
     }
-}
+}  // namespace vlrp::config

@@ -1,12 +1,12 @@
 #pragma once
-#include <RaceManager.h>
-#include <Config.h>
 #include <ClibUtil/editorID.hpp>
+#include <Config.h>
+#include <RaceManager.h>
 namespace vlrp
 {
-	namespace hook
-	{
-		void TryInstall();
-	}
-	void TryInstall();
-}
+    namespace hook
+    {
+        void TryInstall();
+    }
+    void TryInstall();
+}  // namespace vlrp

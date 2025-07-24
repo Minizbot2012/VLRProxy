@@ -1,7 +1,10 @@
 #include <RaceManager.h>
 namespace vlrp::managers
 {
-    RE::BSEventNotifyControl RaceManager::ProcessEvent([[maybe_unused]] const RE::TESSwitchRaceCompleteEvent *ev, [[maybe_unused]] RE::BSTEventSource<RE::TESSwitchRaceCompleteEvent> *)
+#ifndef SKYRIM_AE
+    RE::BSEventNotifyControl RaceManager::ProcessEvent(
+        [[maybe_unused]] const RE::TESSwitchRaceCompleteEvent* ev,
+        [[maybe_unused]] RE::BSTEventSource<RE::TESSwitchRaceCompleteEvent>*)
     {
         if (ev->subject->IsPlayerRef())
         {
@@ -14,47 +17,61 @@ namespace vlrp::managers
         }
         return RE::BSEventNotifyControl::kContinue;
     }
-    void RaceManager::Reset()
-    {
-        this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
-        this->race_pairs.clear();
-    }
     void RaceManager::Register()
     {
         if (const auto scripts = RE::ScriptEventSourceHolder::GetSingleton())
         {
-            scripts->AddEventSink<RE::TESSwitchRaceCompleteEvent>(GetSingleton());
+            scripts->AddEventSink<RE::TESSwitchRaceCompleteEvent>(this);
             logger::info("Registered Race Switch Event");
         }
     }
-    int RaceManager::PushRaceData(RaceData &rd)
+    void RaceManager::SetDOMRace([[maybe_unused]] RE::TESRace* race)
     {
-        auto lg = std::lock_guard(this->_lock);
-        auto vm = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rdi)
-                               { return rdi.vampireRace == rd.vampireRace; });
-        auto vlm = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rdi)
-                                { return rdi.vlRace == rd.vlRace; });
+        auto dom = RE::BGSDefaultObjectManager::GetSingleton();
+        dom->objects[RE::DEFAULT_OBJECT::kVampireRace] = race;
+    }
+#endif
+    void RaceManager::Reset()
+    {
+        this->OriginalVL =
+            RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
+        this->race_pairs.clear();
+    }
+    int RaceManager::PushRaceData(RaceData& rd)
+    {
+        std::lock_guard guard(this->_lock);
+        auto vm =
+            std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+                [&](auto rdi) { return rdi.vampireRace == rd.vampireRace; });
+        auto vlm = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+            [&](auto rdi) { return rdi.vlRace == rd.vlRace; });
         if (vm != this->race_pairs.end())
         {
-            logger::info("Overriding vampire lord {} for vampire {}", rd.vlRace->GetFormEditorID(), rd.vampireRace->GetFormEditorID());
+            logger::info("Overriding vampire lord {} for vampire {}",
+                rd.vlRace->GetFormEditorID(),
+                rd.vampireRace->GetFormEditorID());
             vm->vlRace = rd.vlRace;
             return 1;
         }
         else if (vlm != this->race_pairs.end())
         {
-            logger::info("Overriding vampire {} for vampire lord {}", rd.vampireRace->GetFormEditorID(), rd.vlRace->GetFormEditorID());
+            logger::info("Overriding vampire {} for vampire lord {}",
+                rd.vampireRace->GetFormEditorID(),
+                rd.vlRace->GetFormEditorID());
             vm->vampireRace = rd.vampireRace;
             return 1;
         }
         else
         {
-            logger::info("Adding vampire lord {} for vampire {}", rd.vlRace->GetFormEditorID(), rd.vampireRace->GetFormEditorID());
+            logger::info("Adding vampire lord {} for vampire {}",
+                rd.vlRace->GetFormEditorID(),
+                rd.vampireRace->GetFormEditorID());
             this->race_pairs.push_back(rd);
             return 0;
         }
         return -1;
     }
-    void RaceManager::Save(SKSE::SerializationInterface *a_intf)
+    void RaceManager::Save(SKSE::SerializationInterface* a_intf)
     {
         if (!a_intf->OpenRecord('TNS_', 1))
         {
@@ -69,16 +86,18 @@ namespace vlrp::managers
             }
             else
             {
-                for (auto &elem : this->transforms)
+                for (auto& elem : this->transforms)
                 {
                     a_intf->WriteRecordData(&elem.actor->formID, sizeof(RE::FormID));
-                    a_intf->WriteRecordData(&elem.original_race->formID, sizeof(RE::FormID));
-                    a_intf->WriteRecordData(&elem.transformed_race->formID, sizeof(RE::FormID));
+                    a_intf->WriteRecordData(&elem.original_race->formID,
+                        sizeof(RE::FormID));
+                    a_intf->WriteRecordData(&elem.transformed_race->formID,
+                        sizeof(RE::FormID));
                 }
             }
         }
     }
-    void RaceManager::Load(SKSE::SerializationInterface *a_intf)
+    void RaceManager::Load(SKSE::SerializationInterface* a_intf)
     {
         uint32_t len;
         uint32_t version;
@@ -99,7 +118,7 @@ namespace vlrp::managers
                 }
                 else
                 {
-                    for (auto i = 0; i < count; i++)
+                    for (size_t i = 0; i < count; i++)
                     {
                         RE::FormID actor;
                         RE::FormID original_race;
@@ -112,7 +131,8 @@ namespace vlrp::managers
                         a_intf->ResolveFormID(transformed_race, transformed_race);
                         auto transformed_actor = RE::TESForm::LookupByID<RE::Actor>(actor);
                         auto og_race = RE::TESForm::LookupByID<RE::TESRace>(original_race);
-                        auto transformation = RE::TESForm::LookupByID<RE::TESRace>(transformed_race);
+                        auto transformation =
+                            RE::TESForm::LookupByID<RE::TESRace>(transformed_race);
                         auto actor_crace = transformed_actor->GetRace();
                         if (!transformed_actor->IsDead() && actor_crace == transformation)
                         {
@@ -124,7 +144,10 @@ namespace vlrp::managers
                         }
                         else
                         {
-                            logger::warn("Actor race was changed outside of revert or actor is dead, dropping reversion {}", transformed_actor->GetFormEditorID());
+                            logger::warn(
+                                "Actor race was changed outside of revert or actor is "
+                                "dead, dropping reversion {}",
+                                transformed_actor->GetFormEditorID());
                         }
                     }
                 }
@@ -135,13 +158,12 @@ namespace vlrp::managers
             }
         }
     }
-    void RaceManager::Revert([[maybe_unused]] SKSE::SerializationInterface *a_intf)
+    void RaceManager::Revert(
+        [[maybe_unused]] SKSE::SerializationInterface* a_intf) {}
+    auto RaceManager::GetVLRace(const RE::TESRace* rc) -> const RE::TESRace*
     {
-    }
-    auto RaceManager::GetVLRace(const RE::TESRace *rc) -> const RE::TESRace *
-    {
-        auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rd)
-                               { return rd.vampireRace == rc; });
+        auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+            [&](auto rd) { return rd.vampireRace == rc; });
         if (it != this->race_pairs.end())
         {
             return it->vlRace;
@@ -151,10 +173,10 @@ namespace vlrp::managers
             return this->OriginalVL;
         }
     }
-    auto RaceManager::GetVampireRace(const RE::TESRace *rc) -> const RE::TESRace *
+    auto RaceManager::GetVampireRace(const RE::TESRace* rc) -> const RE::TESRace*
     {
-        auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rd)
-                               { return rd.vlRace == rc; });
+        auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+            [&](auto rd) { return rd.vlRace == rc; });
         if (it != this->race_pairs.end())
         {
             return it->vampireRace;
@@ -165,91 +187,77 @@ namespace vlrp::managers
             return NULL;
         }
     }
-    auto RaceManager::GetOriginalVL() -> const RE::TESRace *
+    auto RaceManager::GetOriginalVL() -> const RE::TESRace*
     {
         return this->OriginalVL;
     }
-    bool RaceManager::IsVampireLord(const RE::TESRace *rc)
+    bool RaceManager::IsVampireLord(const RE::TESRace* rc)
     {
-        return std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rn)
-                            { return rn.vlRace == rc; }) != this->race_pairs.end() ||
+        return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+                   [&](auto rn) { return rn.vlRace == rc; }) !=
+                   this->race_pairs.end() ||
                rc == this->OriginalVL;
     }
-    void RaceManager::SetDOMRace(RE::TESRace *race)
+    bool RaceManager::IsSupportedRace(const RE::TESRace* race)
     {
-        auto dom = RE::BGSDefaultObjectManager::GetSingleton();
-        dom->objects[RE::DEFAULT_OBJECT::kVampireRace] = race;
+        return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+                   [&](auto rd) { return race == rd.vampireRace; }) !=
+               this->race_pairs.end();
     }
-    bool RaceManager::IsSupportedRace(const RE::TESRace *race)
+    bool RaceManager::IsSupportedVL(const RE::TESRace* race)
     {
-        return std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rd)
-                            { return race == rd.vampireRace; }) != this->race_pairs.end();
-    }
-    bool RaceManager::IsSupportedVL(const RE::TESRace *race)
-    {
-        return std::find_if(this->race_pairs.begin(), this->race_pairs.end(), [&](auto rd)
-                            { return race == rd.vlRace; }) != this->race_pairs.end();
+        return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
+                   [&](auto rd) { return race == rd.vlRace; }) !=
+               this->race_pairs.end();
     }
 
-    bool RaceManager::TransformActor(RE::Actor *actor, RE::TESRace *to_race)
+    bool RaceManager::TransformActor(RE::Actor* actor, RE::TESRace* to_race)
     {
-        auto lg = std::lock_guard(this->_lock);
-        auto not_transformed = std::find_if(this->transforms.begin(), this->transforms.end(), [&](auto tdi)
-                                            { return tdi.actor == actor; }) == this->transforms.end();
+        std::lock_guard guard(this->_lock);
+        auto not_transformed = std::find_if(this->transforms.begin(),
+                                   this->transforms.end(), [&](auto tdi) {
+                                       return tdi.actor == actor;
+                                   }) == this->transforms.end();
         if (to_race != nullptr && not_transformed)
         {
-            this->transforms.push_back(TransformData{
-                actor,
-                actor->GetRace(),
-                to_race});
+            this->transforms.push_back(TransformData{ actor, actor->GetRace(), to_race });
             actor->SwitchRace(to_race, actor->IsPlayerRef());
-            if (this->IsSupportedVL(to_race) && actor->IsPlayerRef())
-            {
-                this->SetDOMRace(to_race);
-            }
             return true;
         }
         else if (this->IsSupportedRace(actor->GetRace()) && not_transformed)
         {
-            auto race = const_cast<RE::TESRace *>(this->GetVLRace(actor->GetRace()));
+            auto race = const_cast<RE::TESRace*>(this->GetVLRace(actor->GetRace()));
             actor->SwitchRace(race, actor->IsPlayerRef());
-            if (actor->IsPlayerRef())
-            {
-                this->SetDOMRace(race);
-            }
             return true;
         }
         else if (not_transformed)
         {
-            auto race = const_cast<RE::TESRace *>(this->OriginalVL);
-            this->transforms.push_back(TransformData{
-                actor,
-                actor->GetRace(),
-                this->OriginalVL});
+            auto race = const_cast<RE::TESRace*>(this->OriginalVL);
+            this->transforms.push_back(
+                TransformData{ actor, actor->GetRace(), this->OriginalVL });
             actor->SwitchRace(race, actor->IsPlayerRef());
-            if (actor->IsPlayerRef())
-            {
-                this->SetDOMRace(race);
-            }
             return true;
         }
         return false;
     }
-    bool RaceManager::RevertActor(RE::Actor *actor)
+    bool RaceManager::RevertActor(RE::Actor* actor)
     {
-        auto lg = std::lock_guard(this->_lock);
-        auto td = std::find_if(this->transforms.begin(), this->transforms.end(), [&](auto ti)
-                               { return ti.actor == actor; });
+        std::lock_guard guard(this->_lock);
+        auto td = std::find_if(this->transforms.begin(), this->transforms.end(),
+            [&](auto ti) { return ti.actor == actor; });
         if (this->IsSupportedVL(actor->GetRace()) && td == this->transforms.end())
         {
-            actor->SwitchRace(const_cast<RE::TESRace *>(this->GetVampireRace(actor->GetRace())), actor->IsPlayerRef());
+            actor->SwitchRace(
+                const_cast<RE::TESRace*>(this->GetVampireRace(actor->GetRace())),
+                actor->IsPlayerRef());
             return true;
         }
         else
         {
             if (td != this->transforms.end())
             {
-                actor->SwitchRace(const_cast<RE::TESRace *>(td->original_race), actor->IsPlayerRef());
+                actor->SwitchRace(const_cast<RE::TESRace*>(td->original_race),
+                    actor->IsPlayerRef());
                 this->transforms.erase(td);
                 return true;
             }
@@ -262,4 +270,4 @@ namespace vlrp::managers
         logger::error("Actor transform not found, actor cannot revert");
         return false;
     }
-}
+}  // namespace vlrp::managers
