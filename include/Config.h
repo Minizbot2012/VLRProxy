@@ -1,8 +1,6 @@
 #pragma once
-#include <filesystem>
-#include <memory>
-#include <glaze/glaze.hpp>
 #include <RaceManager.h>
+#include <glaze/glaze.hpp>
 namespace vlrp::config
 {
     struct RaceConfig
@@ -12,4 +10,4 @@ namespace vlrp::config
     };
     static std::string ConfigFolder = "./Data/SKSE/Plugins/VLRP/";
     void LoadConfigs();
-}
+}  // namespace vlrp::config

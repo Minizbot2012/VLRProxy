@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.31)
 set(NAME "VLRProxy" CACHE STRING "")
 set(VERSION 0.7.0 CACHE STRING "")
 set(VR_VERSION 1)
@@ -112,15 +112,18 @@ add_library(
 
 target_compile_features(
 	${PROJECT_NAME}
-	PRIVATE
+	PUBLIC
 		cxx_std_23
 )
 
-target_compile_definitions(
-	${PROJECT_NAME}
-	PRIVATE
-		_UNICODE
-)
+set_target_properties(
+		${PROJECT_NAME}
+		PROPERTIES
+			CXX_STANDARD 23
+			CXX_STANDARD_REQUIRED ON
+			INTERPROCEDURAL_OPTIMIZATION ON
+			INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF
+	)
 
 target_include_directories(
 	${PROJECT_NAME}
