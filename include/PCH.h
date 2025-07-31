@@ -9,11 +9,9 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <REX/REX.h>
-#include <ClibUtil/editorID.hpp>
 #include <type_traits>
 // clang-format on
 namespace logger = SKSE::log;
-using namespace clib_util;
 using namespace REX;
 using namespace std::literals;
 #ifdef SKYRIM_AE
