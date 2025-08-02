@@ -347,6 +347,25 @@ namespace vlrp
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };
+        struct IMenu_GetFromDOM
+        {
+            static inline constexpr REL::ID relocation = RELOCATION_ID(50638, 51532);
+            static inline constexpr std::size_t offset = OFFSET(0x0, 0x13E);
+            static RE::TESForm* thunk(uint32_t id)
+            {
+                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
+                if (RM->IsVampireLord(plr))
+                {
+                    return plr;
+                }
+                else
+                {
+                    return func(id);
+                }
+            }
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
 #endif
         void TryInstall()
         {
@@ -366,6 +385,7 @@ namespace vlrp
             stl::install_hook<SetRace_TESRace_IsTransformRace2>();
             stl::install_hook<CharacterMenu_GetFromDOM>();
             stl::install_hook<FavoritesMenu_GetFromDOM>();
+            stl::install_hook<IMenu_GetFromDOM>();
 #endif
         }
     }  // namespace hook
