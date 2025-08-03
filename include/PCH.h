@@ -10,6 +10,8 @@
 #include <spdlog/fmt/bin_to_hex.h>
 #include <REX/REX.h>
 #include <type_traits>
+#include <rfl.hpp>
+#include <rfl/json.hpp>
 // clang-format on
 namespace logger = SKSE::log;
 using namespace REX;

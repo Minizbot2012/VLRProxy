@@ -132,14 +132,14 @@ target_include_directories(
 		${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-find_package(glaze CONFIG REQUIRED)
+find_package(reflectcpp CONFIG REQUIRED)
 find_package(${CommonLibName} CONFIG REQUIRED)
 
 target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
 		${CommonLibName}::${CommonLibName}
-		glaze::glaze
+		reflectcpp::reflectcpp
 )
 
 target_precompile_headers(

@@ -1,6 +1,5 @@
 #pragma once
 #include <RaceManager.h>
-#include <glaze/glaze.hpp>
 namespace vlrp::config
 {
     struct RaceConfig

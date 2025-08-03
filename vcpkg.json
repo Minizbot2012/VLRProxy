@@ -2,6 +2,6 @@
   "version-string": "1",
   "dependencies": [
     "commonlibsse",
-    "glaze"
+    "reflectcpp"
   ]
 }

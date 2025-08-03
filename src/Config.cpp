@@ -12,17 +12,15 @@ namespace vlrp::config
             return;
         }
         auto mgr = managers::RaceManager::GetSingleton();
-        std::vector<RaceConfig> pairs;
         for (auto ent : std::filesystem::directory_iterator(ConfigFolder))
         {
             if (ent.path().filename().extension() == ".json")
             {
                 logger::info("Loading config file {}", ent.path().filename().string());
-                pairs.clear();
-                auto gl = glz::read_file_json(pairs, ent.path().string(), std::string{});
-                if (!gl)
+                auto gl = rfl::json::load<std::vector<RaceConfig>>(ent.path().string());
+                if (gl)
                 {
-                    for (auto itm : pairs)
+                    for (auto itm : *gl)
                     {
                         auto vamprace =
                             RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VampireRace);
@@ -33,6 +31,9 @@ namespace vlrp::config
                             mgr->PushRaceData(rd);
                         }
                     }
+                }
+                else {
+                    logger::warn("Config file {} has error {}", ent.path().filename().string(), gl.error().what());
                 }
             }
         }
