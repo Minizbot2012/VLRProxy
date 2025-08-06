@@ -14,6 +14,7 @@ namespace vlrp::managers
         const RE::TESRace* original_race;
         const RE::TESRace* transformed_race;
     };
+
 #ifdef SKYRIM_AE
     class RaceManager : public REX::Singleton<RaceManager>
 #else

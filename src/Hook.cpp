@@ -40,6 +40,7 @@ namespace vlrp
             static void post_hook() { logger::info("Installed hooks for GetIsRace"); };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct GetIsRaceAddr
         {
             static inline constexpr REL::ID addr = RELOCATION_ID(668606, 361561);
@@ -53,6 +54,7 @@ namespace vlrp
                 logger::info("Installed hooks for GetIsRace (CallAddr)");
             };
         };
+
         struct GetPcIsRace
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(21697, 22179);
@@ -66,6 +68,7 @@ namespace vlrp
             }
             static void post_hook() { logger::info("Installed hooks for GetPcIsRace"); };
         };
+
         struct IsValidHeadpart
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(23174, 23631);
@@ -88,6 +91,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct IsValidRace_Hook1
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(17392, 17792);
@@ -115,6 +119,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct IsValidRace_Hook2
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(17394, 17794);
@@ -142,6 +147,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct IsValidRace_Hook3
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(24842, 25362);
@@ -169,6 +175,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct IsValidRace_Hook4
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(24883, 25363);
@@ -196,6 +203,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct IsValidRace_Hook5
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(39044, 40114);
@@ -223,6 +231,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
 #ifdef SKYRIM_AE
         //Could be useful later, but SE won't support these, so these are conditionally compiled and direct default object manager is used in SE instead of these hooks.
         struct Load3D_TESRace_IsTransformRace
@@ -347,6 +356,7 @@ namespace vlrp
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         struct IMenu_GetFromDOM
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(50638, 51532);
@@ -367,6 +377,7 @@ namespace vlrp
             static inline REL::Relocation<decltype(thunk)> func;
         };
 #endif
+
         void TryInstall()
         {
             stl::install_hook<GetIsRace>();

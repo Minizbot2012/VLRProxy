@@ -17,6 +17,7 @@ namespace vlrp::managers
         }
         return RE::BSEventNotifyControl::kContinue;
     }
+
     void RaceManager::Register()
     {
         if (const auto scripts = RE::ScriptEventSourceHolder::GetSingleton())
@@ -25,6 +26,7 @@ namespace vlrp::managers
             logger::info("Registered Race Switch Event");
         }
     }
+
     void RaceManager::SetDOMRace([[maybe_unused]] RE::TESRace* race)
     {
         auto dom = RE::BGSDefaultObjectManager::GetSingleton();
@@ -37,6 +39,7 @@ namespace vlrp::managers
             RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
         this->race_pairs.clear();
     }
+
     int RaceManager::PushRaceData(RaceData& rd)
     {
         std::lock_guard guard(this->_lock);
@@ -71,6 +74,7 @@ namespace vlrp::managers
         }
         return -1;
     }
+
     void RaceManager::Save(SKSE::SerializationInterface* a_intf)
     {
         if (!a_intf->OpenRecord('TNS_', 1))
@@ -97,6 +101,7 @@ namespace vlrp::managers
             }
         }
     }
+
     void RaceManager::Load(SKSE::SerializationInterface* a_intf)
     {
         uint32_t len;
@@ -158,6 +163,7 @@ namespace vlrp::managers
             }
         }
     }
+
     void RaceManager::Revert(
         [[maybe_unused]] SKSE::SerializationInterface* a_intf) {}
     auto RaceManager::GetVLRace(const RE::TESRace* rc) -> const RE::TESRace*
@@ -173,6 +179,7 @@ namespace vlrp::managers
             return this->OriginalVL;
         }
     }
+
     auto RaceManager::GetVampireRace(const RE::TESRace* rc) -> const RE::TESRace*
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
@@ -187,10 +194,12 @@ namespace vlrp::managers
             return NULL;
         }
     }
+
     auto RaceManager::GetOriginalVL() -> const RE::TESRace*
     {
         return this->OriginalVL;
     }
+
     bool RaceManager::IsVampireLord(const RE::TESRace* rc)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
@@ -198,12 +207,14 @@ namespace vlrp::managers
                    this->race_pairs.end() ||
                rc == this->OriginalVL;
     }
+
     bool RaceManager::IsSupportedRace(const RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rd) { return race == rd.vampireRace; }) !=
                this->race_pairs.end();
     }
+
     bool RaceManager::IsSupportedVL(const RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
@@ -240,6 +251,7 @@ namespace vlrp::managers
         }
         return false;
     }
+
     bool RaceManager::RevertActor(RE::Actor* actor)
     {
         std::lock_guard guard(this->_lock);

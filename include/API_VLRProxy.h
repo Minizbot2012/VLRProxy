@@ -1,17 +1,19 @@
 #pragma once
 namespace vlrp::API
 {
-    enum APIRes : int8_t
+    enum struct APIRes : int8_t
     {
         Failed = -1,
         Ok,
         Overriden
     };
-    enum APIVersion : uint8_t
+
+    enum struct APIVersion : uint8_t
     {
         V1 = 1,
         Current = V1
     };
+
     class APIV1
     {
     public:
@@ -28,10 +30,11 @@ namespace vlrp::API
         [[nodiscard]] virtual bool Transform(RE::Actor*, RE::TESRace*) = 0;
         [[nodiscard]] virtual bool Revert(RE::Actor*) = 0;
     };
+
     using CurrentInterface = APIV1;
     typedef void* (*_RequestPluginAPI)(const APIVersion);
-    [[nodiscard]] inline void*
-    RequestPluginAPI(const APIVersion ver = APIVersion::Current)
+
+    [[nodiscard]] inline void* RequestPluginAPI(const APIVersion ver = APIVersion::Current)
     {
         auto pluginHandle = GetModuleHandle(L"VLRProxy.dll");
         _RequestPluginAPI reqAPI =

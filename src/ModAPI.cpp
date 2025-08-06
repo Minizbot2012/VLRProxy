@@ -12,14 +12,17 @@ namespace vlrp::API
             return nullptr;
         }
     }
+
     const RE::TESRace* Interface::GetVampireRace(const RE::TESRace* race)
     {
         return vlrp::managers::RaceManager::GetSingleton()->GetVampireRace(race);
     }
+
     const RE::TESRace* Interface::GetRegularVL()
     {
         return vlrp::managers::RaceManager::GetSingleton()->GetOriginalVL();
     }
+
     APIRes Interface::RegisterRace(const RE::TESRace* lord_race,
         const RE::TESRace* human_vampire)
     {
@@ -31,6 +34,7 @@ namespace vlrp::API
         }
         return APIRes::Failed;
     }
+
     bool Interface::IsVampireLord(const RE::TESRace* test_race)
     {
         if (test_race != nullptr)
@@ -43,6 +47,7 @@ namespace vlrp::API
             return false;
         }
     }
+
     bool Interface::IsVampireLord(const RE::Actor* actor)
     {
         if (actor != nullptr && actor->race != nullptr)
@@ -55,6 +60,7 @@ namespace vlrp::API
             return false;
         }
     }
+
     bool Interface::IsRegisteredVL(const RE::TESRace* lord_race)
     {
         if (lord_race != nullptr)
@@ -67,6 +73,7 @@ namespace vlrp::API
             return false;
         }
     }
+
     bool Interface::IsRegisteredHV(const RE::TESRace* human_vampire)
     {
         if (human_vampire != nullptr)
@@ -79,12 +86,14 @@ namespace vlrp::API
             return false;
         }
     }
+
     bool Interface::Transform(RE::Actor* actor,
         RE::TESRace* optional_race = nullptr)
     {
         return vlrp::managers::RaceManager::GetSingleton()->TransformActor(
             actor, optional_race);
     }
+    
     bool Interface::Revert(RE::Actor* actor)
     {
         return vlrp::managers::RaceManager::GetSingleton()->RevertActor(actor);
