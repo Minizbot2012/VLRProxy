@@ -26,6 +26,7 @@ namespace vlrp::managers
         std::vector<TransformData> transforms;
         const RE::TESRace* OriginalVL;
         std::mutex _lock;
+        bool conf_loaded;
 #ifndef SKYRIM_AE
     protected:
         RE::BSEventNotifyControl
@@ -34,6 +35,7 @@ namespace vlrp::managers
 #endif
     public:
         void Reset();
+        void load_config();
         int PushRaceData(RaceData&);
         void Save(SKSE::SerializationInterface* inf);
         void Load(SKSE::SerializationInterface* inf);

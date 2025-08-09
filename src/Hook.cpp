@@ -273,6 +273,10 @@ namespace vlrp
                     return func(me);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hook for TESRace::IsTransformationRace");
+            };
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
@@ -292,6 +296,10 @@ namespace vlrp
                     return func(me);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hook for TESRace::SetRace");
+            };
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
@@ -311,6 +319,10 @@ namespace vlrp
                     return func(me);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hook for TESRace::SetRace");
+            };
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
@@ -334,6 +346,10 @@ namespace vlrp
                     return func(id);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hook for CharacterMenu::IsVampire");
+            }
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
@@ -354,6 +370,10 @@ namespace vlrp
                     return func(id);
                 }
             }
+            static void post_hook()
+            {
+                logger::info("Installed hook for FavoritesMenu::IsVampire");
+            }
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
@@ -373,6 +393,10 @@ namespace vlrp
                 {
                     return func(id);
                 }
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook for IMenu::IsVampire");
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };

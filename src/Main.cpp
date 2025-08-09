@@ -3,15 +3,11 @@
 #include <ModAPI.h>
 #include <Papyrus.h>
 #include <RaceManager.h>
-
+#ifndef SKYRIM_AE
 void OnInit(SKSE::MessagingInterface::Message* a_msg)
 {
     switch (a_msg->type)
     {
-    case SKSE::MessagingInterface::kDataLoaded:
-        vlrp::config::LoadConfigs();
-        break;
-#ifndef SKYRIM_AE
     case SKSE::MessagingInterface::kPostLoadGame:
         if (vlrp::managers::RaceManager::GetSingleton()->IsVampireLord(
                 RE::PlayerCharacter::GetSingleton()->GetRace()))
@@ -20,11 +16,11 @@ void OnInit(SKSE::MessagingInterface::Message* a_msg)
                 RE::PlayerCharacter::GetSingleton()->GetRace());
         }
         break;
-#endif
     default:
         break;
     }
 }
+#endif
 
 extern "C" DLLEXPORT auto SKSEPlugin_Version = []() {
     SKSE::PluginVersionData v;
@@ -57,10 +53,12 @@ SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
+#ifndef SKYRIM_AE
     if (!SKSE::GetMessagingInterface()->RegisterListener(OnInit))
     {
         return false;
     }
+#endif
     SKSE::GetPapyrusInterface()->Register(vlrp::papyrus::Bind);
     auto a_intf = SKSE::GetSerializationInterface();
     a_intf->SetUniqueID('VLRP');

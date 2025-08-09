@@ -5,13 +5,11 @@ namespace vlrp::config
     void LoadConfigs()
     {
         auto rm = managers::RaceManager::GetSingleton();
-        rm->Reset();
         if (!std::filesystem::exists(ConfigFolder))
         {
             logger::error("Config directory is missing");
             return;
         }
-        auto mgr = managers::RaceManager::GetSingleton();
         for (auto ent : std::filesystem::directory_iterator(ConfigFolder))
         {
             if (ent.path().filename().extension() == ".json")
@@ -22,13 +20,12 @@ namespace vlrp::config
                 {
                     for (auto itm : *gl)
                     {
-                        auto vamprace =
-                            RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VampireRace);
-                        auto vlrace = RE::TESForm::LookupByEditorID<RE::TESRace>(itm.VLRace);
+                        auto vamprace = RE::TESForm::LookupByID<RE::TESRace>(itm.VampireRace);
+                        auto vlrace = RE::TESForm::LookupByID<RE::TESRace>(itm.VLRace);
                         if (vamprace && vlrace)
                         {
                             auto rd = managers::RaceData{ vamprace, vlrace };
-                            mgr->PushRaceData(rd);
+                            rm->PushRaceData(rd);
                         }
                     }
                 }
