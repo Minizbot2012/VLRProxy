@@ -232,8 +232,6 @@ namespace vlrp
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
-#ifdef SKYRIM_AE
-        //Could be useful later, but SE won't support these, so these are conditionally compiled and direct default object manager is used in SE instead of these hooks.
         struct Load3D_TESRace_IsTransformRace
         {
             static inline constexpr REL::ID relocation = RELOCATION_ID(36198, 37177);
@@ -325,7 +323,7 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
-
+#ifdef SKYRIM_AE
         // In SE these are not function calls, in AE they are so use that fact, SE will continue to work through direct default object manager modifications
         // If you are reading this and know how to use Xybak, and have a way to get this to work via Xybak, PR's are open, until then these will be conditonally disabled on SE
         // However I might have an idea for something neatish that can abuse these sectors of code. However AE is gonna work though some new hook work.
@@ -413,11 +411,11 @@ namespace vlrp
             stl::install_hook<IsValidRace_Hook3>();
             stl::install_hook<IsValidRace_Hook4>();
             stl::install_hook<IsValidRace_Hook5>();
-#ifdef SKYRIM_AE
             stl::install_hook<Load3D_TESRace_IsTransformRace>();
             stl::install_hook<FinishLoadGame_TESRace_IsTransformRace>();
             stl::install_hook<SetRace_TESRace_IsTransformRace1>();
             stl::install_hook<SetRace_TESRace_IsTransformRace2>();
+#ifdef SKYRIM_AE
             stl::install_hook<CharacterMenu_GetFromDOM>();
             stl::install_hook<FavoritesMenu_GetFromDOM>();
             stl::install_hook<IMenu_GetFromDOM>();
