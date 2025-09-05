@@ -5,7 +5,7 @@ namespace vlrp::API
     {
         if (race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->GetVLRace(race);
+            return vlrp::managers::RaceManager::GetSingleton()->GetLordRace(race);
         }
         else
         {
@@ -15,12 +15,18 @@ namespace vlrp::API
 
     const RE::TESRace* Interface::GetVampireRace(const RE::TESRace* race)
     {
-        return vlrp::managers::RaceManager::GetSingleton()->GetVampireRace(race);
+        if (race != nullptr)
+        {
+            return vlrp::managers::RaceManager::GetSingleton()->GetVampireRace(race);
+        }
+        else {
+            return nullptr;
+        }
     }
 
     const RE::TESRace* Interface::GetRegularVL()
     {
-        return vlrp::managers::RaceManager::GetSingleton()->GetOriginalVL();
+        return vlrp::managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
 
     APIRes Interface::RegisterRace(const RE::TESRace* lord_race,
@@ -65,7 +71,7 @@ namespace vlrp::API
     {
         if (lord_race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->IsSupportedVL(
+            return vlrp::managers::RaceManager::GetSingleton()->IsSupportedLord(
                 lord_race);
         }
         else
@@ -93,7 +99,7 @@ namespace vlrp::API
         return vlrp::managers::RaceManager::GetSingleton()->TransformActor(
             actor, optional_race);
     }
-    
+
     bool Interface::Revert(RE::Actor* actor)
     {
         return vlrp::managers::RaceManager::GetSingleton()->RevertActor(actor);

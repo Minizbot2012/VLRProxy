@@ -33,22 +33,50 @@ namespace vlrp::managers
         dom->objects[RE::DEFAULT_OBJECT::kVampireRace] = race;
     }
 #endif
-    void RaceManager::load_config()
+    void managers::RaceManager::LoadConfig()
     {
+        std::lock_guard _guard(this->_lock);
         if (!this->conf_loaded)
         {
             logger::info("Loading Configs");
             this->conf_loaded = true;
             this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
-            vlrp::config::LoadConfigs();
+            if (!std::filesystem::exists(vlrp::config::ConfigFolder))
+            {
+                logger::error("Config directory is missing");
+                return;
+            }
+            for (auto ent : std::filesystem::directory_iterator(vlrp::config::ConfigFolder))
+            {
+                if (ent.path().filename().extension() == ".json")
+                {
+                    logger::info("Loading config file {}", ent.path().filename().string());
+                    auto gl = rfl::json::load<std::vector<vlrp::config::RaceConfig>>(ent.path().string());
+                    if (gl)
+                    {
+                        for (auto itm : *gl)
+                        {
+                            auto vamprace = RE::TESForm::LookupByID<RE::TESRace>(itm.VampireRace);
+                            auto vlrace = RE::TESForm::LookupByID<RE::TESRace>(itm.VLRace);
+                            if (vamprace && vlrace)
+                            {
+                                auto rd = managers::RaceData{ vamprace, vlrace };
+                                this->PushRaceData(rd);
+                            }
+                        }
+                    }
+                    else {
+                        logger::warn("Config file {} has error {}", ent.path().filename().string(), gl.error().what());
+                    }
+                }
+            }
         }
     }
-
     void RaceManager::Reset()
     {
         this->race_pairs.clear();
         this->conf_loaded = false;
-        this->load_config();
+        this->LoadConfig();
     }
 
     int RaceManager::PushRaceData(RaceData& rd)
@@ -115,7 +143,7 @@ namespace vlrp::managers
 
     void RaceManager::Load(SKSE::SerializationInterface* a_intf)
     {
-        this->load_config();
+        this->LoadConfig();
         uint32_t len;
         uint32_t version;
         uint32_t typ;
@@ -178,9 +206,9 @@ namespace vlrp::managers
 
     void RaceManager::Revert(
         [[maybe_unused]] SKSE::SerializationInterface* a_intf) {}
-    auto RaceManager::GetVLRace(const RE::TESRace* rc) -> const RE::TESRace*
+    auto RaceManager::GetLordRace(const RE::TESRace* rc) -> const RE::TESRace*
     {
-        this->load_config();
+        this->LoadConfig();
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
             [&](auto rd) { return rd.vampireRace == rc; });
         if (it != this->race_pairs.end())
@@ -195,7 +223,7 @@ namespace vlrp::managers
 
     auto RaceManager::GetVampireRace(const RE::TESRace* rc) -> const RE::TESRace*
     {
-        this->load_config();
+        this->LoadConfig();
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
             [&](auto rd) { return rd.vlRace == rc; });
         if (it != this->race_pairs.end())
@@ -205,19 +233,19 @@ namespace vlrp::managers
         else
         {
             logger::info("DID NOT FIND HUMAN VAMPIRE RACE");
-            return NULL;
+            return nullptr;
         }
     }
 
-    auto RaceManager::GetOriginalVL() -> const RE::TESRace*
+    auto RaceManager::GetOriginalLord() -> const RE::TESRace*
     {
-        this->load_config();
+        this->LoadConfig();
         return this->OriginalVL;
     }
 
     bool RaceManager::IsVampireLord(const RE::TESRace* rc)
     {
-        this->load_config();
+        this->LoadConfig();
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rn) { return rn.vlRace == rc; }) !=
                    this->race_pairs.end() ||
@@ -226,15 +254,15 @@ namespace vlrp::managers
 
     bool RaceManager::IsSupportedRace(const RE::TESRace* race)
     {
-        this->load_config();
+        this->LoadConfig();
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rd) { return race == rd.vampireRace; }) !=
                this->race_pairs.end();
     }
 
-    bool RaceManager::IsSupportedVL(const RE::TESRace* race)
+    bool RaceManager::IsSupportedLord(const RE::TESRace* race)
     {
-        this->load_config();
+        this->LoadConfig();
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rd) { return race == rd.vlRace; }) !=
                this->race_pairs.end();
@@ -242,7 +270,7 @@ namespace vlrp::managers
 
     bool RaceManager::TransformActor(RE::Actor* actor, RE::TESRace* to_race)
     {
-        this->load_config();
+        this->LoadConfig();
         std::lock_guard guard(this->_lock);
         auto not_transformed = std::find_if(this->transforms.begin(),
                                    this->transforms.end(), [&](auto tdi) {
@@ -256,7 +284,7 @@ namespace vlrp::managers
         }
         else if (this->IsSupportedRace(actor->GetRace()) && not_transformed)
         {
-            auto race = const_cast<RE::TESRace*>(this->GetVLRace(actor->GetRace()));
+            auto race = const_cast<RE::TESRace*>(this->GetLordRace(actor->GetRace()));
             actor->SwitchRace(race, actor->IsPlayerRef());
             return true;
         }
@@ -273,11 +301,11 @@ namespace vlrp::managers
 
     bool RaceManager::RevertActor(RE::Actor* actor)
     {
-        this->load_config();
+        this->LoadConfig();
         std::lock_guard guard(this->_lock);
         auto td = std::find_if(this->transforms.begin(), this->transforms.end(),
             [&](auto ti) { return ti.actor == actor; });
-        if (this->IsSupportedVL(actor->GetRace()) && td == this->transforms.end())
+        if (this->IsSupportedLord(actor->GetRace()) && td == this->transforms.end())
         {
             actor->SwitchRace(
                 const_cast<RE::TESRace*>(this->GetVampireRace(actor->GetRace())),

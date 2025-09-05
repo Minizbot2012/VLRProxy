@@ -6,7 +6,7 @@ namespace vlrp::papyrus
     [[nodiscard]] static auto LordRace(STATIC_ARGS, const RE::TESRace* rc)
         -> const RE::TESRace*
     {
-        return vlrp::managers::RaceManager::GetSingleton()->GetVLRace(rc);
+        return vlrp::managers::RaceManager::GetSingleton()->GetLordRace(rc);
     }
 
     [[nodiscard]] static auto VampireRace(STATIC_ARGS, const RE::TESRace* rc)
@@ -17,7 +17,7 @@ namespace vlrp::papyrus
         {
             return rc;
         }
-        else if (mgr->IsSupportedVL(rc))
+        else if (mgr->IsSupportedLord(rc))
         {
             return mgr->GetVampireRace(rc);
         }
@@ -43,7 +43,7 @@ namespace vlrp::papyrus
         const RE::TESRace* rc)
         -> bool
     {
-        return vlrp::managers::RaceManager::GetSingleton()->IsSupportedVL(rc);
+        return vlrp::managers::RaceManager::GetSingleton()->IsSupportedLord(rc);
     }
 
     [[nodiscard]] static auto TransformActor(STATIC_ARGS, RE::Actor* actor,
@@ -62,7 +62,7 @@ namespace vlrp::papyrus
 
     [[nodiscard]] static auto OriginalVL(STATIC_ARGS) -> const RE::TESRace*
     {
-        return vlrp::managers::RaceManager::GetSingleton()->GetOriginalVL();
+        return vlrp::managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
 
 #undef STATIC_ARGS

@@ -1,5 +1,4 @@
 #pragma once
-#include <RaceManager.h>
 namespace vlrp::config
 {
     struct RaceConfig
@@ -8,7 +7,6 @@ namespace vlrp::config
         RE::FormID VLRace;
     };
     static std::string ConfigFolder = "./Data/SKSE/Plugins/VLRP/";
-    void LoadConfigs();
 }  // namespace vlrp::config
 
 namespace rfl
@@ -20,7 +18,7 @@ namespace rfl
         static ReflType from(const RE::FormID& v)
         {
             auto frm = RE::TESForm::LookupByID(v);
-            return std::format("{:X}:{}", frm->GetLocalFormID(), frm->sourceFiles.array->front()->GetFilename());
+            return std::format("{:06X}:{}", frm->GetLocalFormID(), frm->sourceFiles.array->front()->GetFilename());
         }
         static RE::FormID to(const ReflType& v)
         {

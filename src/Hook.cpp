@@ -17,7 +17,7 @@ namespace vlrp
                     if (npc && race)
                     {
                         auto rm = vlrp::managers::RaceManager::GetSingleton();
-                        if (race == rm->GetOriginalVL())
+                        if (race == rm->GetOriginalLord())
                         {
                             if (const auto npc_race = npc->race;
                                 npc_race && rm->IsVampireLord(npc_race))
@@ -77,7 +77,7 @@ namespace vlrp
             {
                 auto race = rc->As<RE::TESRace>();
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
-                if (rm->IsVampireLord(race) && rm->IsSupportedVL(race) &&
+                if (rm->IsVampireLord(race) && rm->IsSupportedLord(race) &&
                     !frm->HasForm(race))
                 {
                     auto hr = rm->GetVampireRace(race);
@@ -101,7 +101,7 @@ namespace vlrp
             {
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
-                    rm->IsSupportedVL(race))
+                    rm->IsSupportedLord(race))
                 {
                     auto va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race) ||
@@ -129,7 +129,7 @@ namespace vlrp
             {
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
-                    rm->IsSupportedVL(race))
+                    rm->IsSupportedLord(race))
                 {
                     auto va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race) ||
@@ -157,7 +157,7 @@ namespace vlrp
             {
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
-                    rm->IsSupportedVL(race))
+                    rm->IsSupportedLord(race))
                 {
                     auto va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race) ||
@@ -185,7 +185,7 @@ namespace vlrp
             {
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
-                    rm->IsSupportedVL(race))
+                    rm->IsSupportedLord(race))
                 {
                     auto va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race) ||
@@ -213,7 +213,7 @@ namespace vlrp
             {
                 auto rm = vlrp::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
-                    rm->IsSupportedVL(race))
+                    rm->IsSupportedLord(race))
                 {
                     auto va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race) ||

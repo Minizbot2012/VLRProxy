@@ -27,6 +27,8 @@ namespace vlrp::managers
         const RE::TESRace* OriginalVL;
         std::mutex _lock;
         bool conf_loaded;
+        void Reset();
+        void LoadConfig();
 #ifndef SKYRIM_AE
     protected:
         RE::BSEventNotifyControl
@@ -34,18 +36,16 @@ namespace vlrp::managers
             RE::BSTEventSource<RE::TESSwitchRaceCompleteEvent>*) override;
 #endif
     public:
-        void Reset();
-        void load_config();
         int PushRaceData(RaceData&);
         void Save(SKSE::SerializationInterface* inf);
         void Load(SKSE::SerializationInterface* inf);
         void Revert(SKSE::SerializationInterface* inf);
-        auto GetVLRace(const RE::TESRace*) -> const RE::TESRace*;
+        auto GetLordRace(const RE::TESRace*) -> const RE::TESRace*;
         auto GetVampireRace(const RE::TESRace*) -> const RE::TESRace*;
-        auto GetOriginalVL() -> const RE::TESRace*;
+        auto GetOriginalLord() -> const RE::TESRace*;
         bool IsVampireLord(const RE::TESRace*);
         bool IsSupportedRace(const RE::TESRace*);
-        bool IsSupportedVL(const RE::TESRace*);
+        bool IsSupportedLord(const RE::TESRace*);
         bool TransformActor(RE::Actor*, RE::TESRace*);
         bool RevertActor(RE::Actor*);
 #ifndef SKYRIM_AE
