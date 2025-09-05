@@ -56,12 +56,15 @@ namespace vlrp::managers
                     {
                         for (auto itm : *gl)
                         {
-                            auto vamprace = RE::TESForm::LookupByID<RE::TESRace>(itm.VampireRace);
-                            auto vlrace = RE::TESForm::LookupByID<RE::TESRace>(itm.VLRace);
-                            if (vamprace && vlrace)
+                            if (itm.VampireRace != 0x0 && itm.VLRace != 0x0)
                             {
-                                auto rd = managers::RaceData{ vamprace, vlrace };
-                                this->PushRaceData(rd);
+                                auto vamprace = RE::TESForm::LookupByID<RE::TESRace>(itm.VampireRace);
+                                auto vlrace = RE::TESForm::LookupByID<RE::TESRace>(itm.VLRace);
+                                if (vamprace && vlrace)
+                                {
+                                    auto rd = managers::RaceData{ vamprace, vlrace };
+                                    this->PushRaceData(rd);
+                                }
                             }
                         }
                     }

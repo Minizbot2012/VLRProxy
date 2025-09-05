@@ -31,8 +31,15 @@ namespace rfl
                 return dh->LookupFormID(lfid, file);
             }
             else {
-                return RE::TESForm::LookupByEditorID(v)->GetFormID();
+                auto frm = RE::TESForm::LookupByEditorID(v);
+                if (frm)
+                {
+                    return frm->GetFormID();
+                }
+                else {
+                    return RE::FormID(0);
+                }
             }
         }
     };
-}  // namespace rfl
+} 
