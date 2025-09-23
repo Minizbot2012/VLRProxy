@@ -84,7 +84,6 @@ namespace vlrp::managers
 
     int RaceManager::PushRaceData(RaceData& rd)
     {
-        std::lock_guard guard(this->_lock);
         auto vm =
             std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                 [&](auto rdi) { return rdi.vampireRace == rd.vampireRace; });
