@@ -5,8 +5,8 @@ namespace vlrp
     {
         struct GetIsRace
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(21691, 22173);
-            static inline constexpr std::size_t offset = OFFSET(0x68, 0x68);
+            static inline constexpr REL::ID relocation = REL::ID(22173);
+            static inline constexpr std::size_t offset = 0x68;
             static bool thunk(const RE::TESObjectREFR* obj, const RE::TESForm* race_form,
                 [[maybe_unused]] void* unused, double& result)
             {
@@ -43,7 +43,7 @@ namespace vlrp
 
         struct GetIsRaceAddr
         {
-            static inline constexpr REL::ID addr = RELOCATION_ID(668606, 361561);
+            static inline constexpr REL::ID addr = REL::ID(361561);
             static bool thunk(RE::TESObjectREFR* obj, RE::TESForm* race_form,
                 [[maybe_unused]] void* unused, double& result)
             {
@@ -57,8 +57,8 @@ namespace vlrp
 
         struct GetPcIsRace
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(21697, 22179);
-            static inline constexpr std::size_t offset = OFFSET(0x66, 0x66);
+            static inline constexpr REL::ID relocation = REL::ID(22179);
+            static inline constexpr std::size_t offset = 0x66;
             static bool thunk([[maybe_unused]] RE::TESObjectREFR* obj,
                 RE::TESForm* race_form, [[maybe_unused]] void* unused,
                 double& result)
@@ -71,8 +71,8 @@ namespace vlrp
 
         struct IsValidHeadpart
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(23174, 23631);
-            static inline constexpr std::size_t offset = OFFSET(0x10, 0x10);
+            static inline constexpr REL::ID relocation = REL::ID(23631);
+            static inline constexpr std::size_t offset = 0x10;
             static long thunk(const RE::BGSListForm* frm, const RE::TESForm* rc)
             {
                 auto race = rc->As<RE::TESRace>();
@@ -94,8 +94,8 @@ namespace vlrp
 
         struct IsValidRace_Hook1
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(17392, 17792);
-            static inline constexpr std::size_t offset = OFFSET(0x4d, 0x4b);
+            static inline constexpr REL::ID relocation = REL::ID(17792);
+            static inline constexpr std::size_t offset = 0x4b;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
@@ -122,8 +122,8 @@ namespace vlrp
 
         struct IsValidRace_Hook2
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(17394, 17794);
-            static inline constexpr std::size_t offset = OFFSET(0x19, 0x17);
+            static inline constexpr REL::ID relocation = REL::ID(17794);
+            static inline constexpr std::size_t offset = 0x17;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
@@ -150,8 +150,8 @@ namespace vlrp
 
         struct IsValidRace_Hook3
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(24842, 25362);
-            static inline constexpr std::size_t offset = OFFSET(0x91, 0x91);
+            static inline constexpr REL::ID relocation = REL::ID(25362);
+            static inline constexpr std::size_t offset = 0x91;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
@@ -178,8 +178,8 @@ namespace vlrp
 
         struct IsValidRace_Hook4
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(24883, 25363);
-            static inline constexpr std::size_t offset = OFFSET(0x81, 0x81);
+            static inline constexpr REL::ID relocation = REL::ID(25363);
+            static inline constexpr std::size_t offset = 0x81;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
@@ -206,8 +206,8 @@ namespace vlrp
 
         struct IsValidRace_Hook5
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(39044, 40114);
-            static inline constexpr std::size_t offset = OFFSET(0x193, 0x1a3);
+            static inline constexpr REL::ID relocation = REL::ID(40114);
+            static inline constexpr std::size_t offset = 0x1a3;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
@@ -234,8 +234,8 @@ namespace vlrp
 
         struct Load3D_TESRace_IsTransformRace
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(36198, 37177);
-            static inline constexpr std::size_t offset = OFFSET(0x17d, 0x183);
+            static inline constexpr REL::ID relocation = REL::ID(37177);
+            static inline constexpr std::size_t offset = 0x183;
             static bool thunk(const RE::TESRace* me)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -257,8 +257,8 @@ namespace vlrp
 
         struct FinishLoadGame_TESRace_IsTransformRace
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(36644, 37652);
-            static inline constexpr std::size_t offset = OFFSET(0xde9, 0xfd6);
+            static inline constexpr REL::ID relocation = REL::ID(37652);
+            static inline constexpr std::size_t offset = 0xfd6;
             static bool thunk(const RE::TESRace* me)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -280,8 +280,8 @@ namespace vlrp
 
         struct SetRace_TESRace_IsTransformRace1
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(36901, 37925);
-            static inline constexpr std::size_t offset = OFFSET(0xad, 0xa4);
+            static inline constexpr REL::ID relocation = REL::ID(37925);
+            static inline constexpr std::size_t offset = 0xa4;
             static bool thunk(const RE::TESRace* me)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -303,8 +303,8 @@ namespace vlrp
 
         struct SetRace_TESRace_IsTransformRace2
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(36901, 37925);
-            static inline constexpr std::size_t offset = OFFSET(0x10e, 0x105);
+            static inline constexpr REL::ID relocation = REL::ID(37925);
+            static inline constexpr std::size_t offset = 0x105;
             static bool thunk(const RE::TESRace* me)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -323,14 +323,10 @@ namespace vlrp
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
-#ifdef SKYRIM_AE
-        // In SE these are not function calls, in AE they are so use that fact, SE will continue to work through direct default object manager modifications
-        // If you are reading this and know how to use Xybak, and have a way to get this to work via Xybak, PR's are open, until then these will be conditonally disabled on SE
-        // However I might have an idea for something neatish that can abuse these sectors of code. However AE is gonna work though some new hook work.
         struct CharacterMenu_GetFromDOM
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(51400, 52249);
-            static inline constexpr std::size_t offset = OFFSET(0x0, 0x1C1);
+            static inline constexpr REL::ID relocation = REL::ID(52249);
+            static inline constexpr std::size_t offset = 0x1C1;
             static RE::TESForm* thunk(uint32_t id)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -353,8 +349,8 @@ namespace vlrp
 
         struct FavoritesMenu_GetFromDOM
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(51398, 52247);
-            static inline constexpr std::size_t offset = OFFSET(0x0, 0x13C);
+            static inline constexpr REL::ID relocation = REL::ID(52247);
+            static inline constexpr std::size_t offset = 0x13C;
             static RE::TESForm* thunk(uint32_t id)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -377,8 +373,8 @@ namespace vlrp
 
         struct IMenu_GetFromDOM
         {
-            static inline constexpr REL::ID relocation = RELOCATION_ID(50638, 51532);
-            static inline constexpr std::size_t offset = OFFSET(0x0, 0x13E);
+            static inline constexpr REL::ID relocation = REL::ID(51532);
+            static inline constexpr std::size_t offset = 0x13E;
             static RE::TESForm* thunk(uint32_t id)
             {
                 auto* RM = vlrp::managers::RaceManager::GetSingleton();
@@ -398,7 +394,6 @@ namespace vlrp
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };
-#endif
 
         void TryInstall()
         {
@@ -415,11 +410,9 @@ namespace vlrp
             stl::install_hook<FinishLoadGame_TESRace_IsTransformRace>();
             stl::install_hook<SetRace_TESRace_IsTransformRace1>();
             stl::install_hook<SetRace_TESRace_IsTransformRace2>();
-#ifdef SKYRIM_AE
             stl::install_hook<CharacterMenu_GetFromDOM>();
             stl::install_hook<FavoritesMenu_GetFromDOM>();
             stl::install_hook<IMenu_GetFromDOM>();
-#endif
         }
     }  // namespace hook
 

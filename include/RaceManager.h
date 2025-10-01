@@ -15,11 +15,7 @@ namespace vlrp::managers
         const RE::TESRace* transformed_race;
     };
 
-#ifdef SKYRIM_AE
     class RaceManager : public REX::Singleton<RaceManager>
-#else
-    class RaceManager : public REX::Singleton<RaceManager>, public RE::BSTEventSink<RE::TESSwitchRaceCompleteEvent>
-#endif
     {
     private:
         std::vector<RaceData> race_pairs;
@@ -29,12 +25,6 @@ namespace vlrp::managers
         bool conf_loaded;
         void Reset();
         void LoadConfig();
-#ifndef SKYRIM_AE
-    protected:
-        RE::BSEventNotifyControl
-        ProcessEvent(const RE::TESSwitchRaceCompleteEvent* a_event,
-            RE::BSTEventSource<RE::TESSwitchRaceCompleteEvent>*) override;
-#endif
     public:
         int PushRaceData(RaceData&);
         void Save(SKSE::SerializationInterface* inf);
@@ -48,9 +38,5 @@ namespace vlrp::managers
         bool IsSupportedLord(const RE::TESRace*);
         bool TransformActor(RE::Actor*, RE::TESRace*);
         bool RevertActor(RE::Actor*);
-#ifndef SKYRIM_AE
-        void Register();
-        void SetDOMRace(RE::TESRace*);
-#endif
     };
 }  // namespace vlrp::managers

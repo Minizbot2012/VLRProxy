@@ -1,38 +1,6 @@
 #include <RaceManager.h>
 namespace vlrp::managers
 {
-#ifndef SKYRIM_AE
-    RE::BSEventNotifyControl RaceManager::ProcessEvent(
-        [[maybe_unused]] const RE::TESSwitchRaceCompleteEvent* ev,
-        [[maybe_unused]] RE::BSTEventSource<RE::TESSwitchRaceCompleteEvent>*)
-    {
-        if (ev->subject->IsPlayerRef())
-        {
-            auto rc = ev->subject->As<RE::Actor>()->GetRace();
-            auto rm = vlrp::managers::RaceManager::GetSingleton();
-            if (rm->IsVampireLord(rc))
-            {
-                rm->SetDOMRace(rc);
-            }
-        }
-        return RE::BSEventNotifyControl::kContinue;
-    }
-
-    void RaceManager::Register()
-    {
-        if (const auto scripts = RE::ScriptEventSourceHolder::GetSingleton())
-        {
-            scripts->AddEventSink<RE::TESSwitchRaceCompleteEvent>(this);
-            logger::info("Registered Race Switch Event");
-        }
-    }
-
-    void RaceManager::SetDOMRace([[maybe_unused]] RE::TESRace* race)
-    {
-        auto dom = RE::BGSDefaultObjectManager::GetSingleton();
-        dom->objects[RE::DEFAULT_OBJECT::kVampireRace] = race;
-    }
-#endif
     void managers::RaceManager::LoadConfig()
     {
         std::lock_guard _guard(this->_lock);
