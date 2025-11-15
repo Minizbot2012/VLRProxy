@@ -26,6 +26,11 @@ concept hook = requires {
     { Hook::thunk };
 };
 
+template <typename Hook>
+concept CInstall = hook<Hook> && requires {
+    { Hook::Install };
+};
+
 /// Optionally Hook can define a static member named func that will contain the
 /// original function to chain the call. static inline
 /// REL::Relocation<decltype(thunk)> func;
@@ -189,6 +194,12 @@ namespace stl
         }
     }
 
+    template <CInstall Hook>
+    void custom_install()
+    {
+        Hook::Install();
+    }
+
     /// Installs given hook
     template <hook Hook>
     void install_hook()
@@ -207,7 +218,11 @@ namespace stl
         {
             Hook::pre_hook();
         }
-        if constexpr (call_hook<Hook>)
+        if constexpr (CInstall<Hook>)
+        {
+            custom_install<Hook>();
+        }
+        else if constexpr (call_hook<Hook>)
         {
             stl::write_thunk<Hook>();
         }

@@ -1,11 +1,11 @@
 #include <ModAPI.h>
-namespace vlrp::API
+namespace MPL::API
 {
     const RE::TESRace* Interface::GetVLRace(const RE::TESRace* race)
     {
         if (race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->GetLordRace(race);
+            return MPL::managers::RaceManager::GetSingleton()->GetLordRace(race);
         }
         else
         {
@@ -17,7 +17,7 @@ namespace vlrp::API
     {
         if (race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->GetVampireRace(race);
+            return MPL::managers::RaceManager::GetSingleton()->GetVampireRace(race);
         }
         else {
             return nullptr;
@@ -26,7 +26,7 @@ namespace vlrp::API
 
     const RE::TESRace* Interface::GetRegularVL()
     {
-        return vlrp::managers::RaceManager::GetSingleton()->GetOriginalLord();
+        return MPL::managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
 
     APIRes Interface::RegisterRace(const RE::TESRace* lord_race,
@@ -34,8 +34,8 @@ namespace vlrp::API
     {
         if (lord_race != nullptr && human_vampire != nullptr)
         {
-            auto insert = vlrp::managers::RaceData{ human_vampire, lord_race };
-            return (APIRes)vlrp::managers::RaceManager::GetSingleton()->PushRaceData(
+            auto insert = MPL::managers::RaceData{ human_vampire, lord_race };
+            return (APIRes)MPL::managers::RaceManager::GetSingleton()->PushRaceData(
                 insert);
         }
         return APIRes::Failed;
@@ -45,7 +45,7 @@ namespace vlrp::API
     {
         if (test_race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->IsVampireLord(
+            return MPL::managers::RaceManager::GetSingleton()->IsVampireLord(
                 test_race);
         }
         else
@@ -58,7 +58,7 @@ namespace vlrp::API
     {
         if (actor != nullptr && actor->race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->IsVampireLord(
+            return MPL::managers::RaceManager::GetSingleton()->IsVampireLord(
                 actor->race);
         }
         else
@@ -71,7 +71,7 @@ namespace vlrp::API
     {
         if (lord_race != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->IsSupportedLord(
+            return MPL::managers::RaceManager::GetSingleton()->IsSupportedLord(
                 lord_race);
         }
         else
@@ -84,7 +84,7 @@ namespace vlrp::API
     {
         if (human_vampire != nullptr)
         {
-            return vlrp::managers::RaceManager::GetSingleton()->IsSupportedRace(
+            return MPL::managers::RaceManager::GetSingleton()->IsSupportedRace(
                 human_vampire);
         }
         else
@@ -92,16 +92,17 @@ namespace vlrp::API
             return false;
         }
     }
-
+    /*
     bool Interface::Transform(RE::Actor* actor,
         RE::TESRace* optional_race = nullptr)
     {
-        return vlrp::managers::RaceManager::GetSingleton()->TransformActor(
+        return MPL::managers::RaceManager::GetSingleton()->TransformActor(
             actor, optional_race);
     }
 
     bool Interface::Revert(RE::Actor* actor)
     {
-        return vlrp::managers::RaceManager::GetSingleton()->RevertActor(actor);
+        return MPL::managers::RaceManager::GetSingleton()->RevertActor(actor);
     }
-}  // namespace vlrp::API
+    */
+}  // namespace MPL::API

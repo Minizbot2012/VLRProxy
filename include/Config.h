@@ -1,5 +1,5 @@
 #pragma once
-namespace vlrp::config
+namespace MPL::config
 {
     struct RaceConfig
     {
@@ -7,7 +7,7 @@ namespace vlrp::config
         RE::FormID VLRace;
     };
     static std::string ConfigFolder = "./Data/SKSE/Plugins/VLRP/";
-}  // namespace vlrp::config
+}  // namespace MPL::config
 
 namespace rfl
 {
@@ -42,4 +42,4 @@ namespace rfl
             }
         }
     };
-} 
+}  // namespace rfl

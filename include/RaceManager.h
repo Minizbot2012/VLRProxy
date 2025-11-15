@@ -1,6 +1,6 @@
 #pragma once
 #include <Config.h>
-namespace vlrp::managers
+namespace MPL::managers
 {
     struct RaceData
     {
@@ -25,6 +25,7 @@ namespace vlrp::managers
         bool conf_loaded;
         void Reset();
         void LoadConfig();
+
     public:
         int PushRaceData(RaceData&);
         void Save(SKSE::SerializationInterface* inf);
@@ -36,7 +37,9 @@ namespace vlrp::managers
         bool IsVampireLord(const RE::TESRace*);
         bool IsSupportedRace(const RE::TESRace*);
         bool IsSupportedLord(const RE::TESRace*);
+        /*
         bool TransformActor(RE::Actor*, RE::TESRace*);
         bool RevertActor(RE::Actor*);
+        */
     };
-}  // namespace vlrp::managers
+}  // namespace MPL::managers

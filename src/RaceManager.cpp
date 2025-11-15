@@ -1,5 +1,5 @@
 #include <RaceManager.h>
-namespace vlrp::managers
+namespace MPL::managers
 {
     void managers::RaceManager::LoadConfig()
     {
@@ -9,17 +9,17 @@ namespace vlrp::managers
             logger::info("Loading Configs");
             this->conf_loaded = true;
             this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
-            if (!std::filesystem::exists(vlrp::config::ConfigFolder))
+            if (!std::filesystem::exists(MPL::config::ConfigFolder))
             {
                 logger::error("Config directory is missing");
                 return;
             }
-            for (auto ent : std::filesystem::directory_iterator(vlrp::config::ConfigFolder))
+            for (auto ent : std::filesystem::directory_iterator(MPL::config::ConfigFolder))
             {
                 if (ent.path().filename().extension() == ".json")
                 {
                     logger::info("Loading config file {}", ent.path().filename().string());
-                    auto gl = rfl::json::load<std::vector<vlrp::config::RaceConfig>>(ent.path().string());
+                    auto gl = rfl::json::load<std::vector<MPL::config::RaceConfig>>(ent.path().string());
                     if (gl)
                     {
                         for (auto itm : *gl)
@@ -36,7 +36,8 @@ namespace vlrp::managers
                             }
                         }
                     }
-                    else {
+                    else
+                    {
                         logger::warn("Config file {} has error {}", ent.path().filename().string(), gl.error().what());
                     }
                 }
@@ -238,6 +239,7 @@ namespace vlrp::managers
                this->race_pairs.end();
     }
 
+    /*
     bool RaceManager::TransformActor(RE::Actor* actor, RE::TESRace* to_race)
     {
         this->LoadConfig();
@@ -300,4 +302,5 @@ namespace vlrp::managers
         logger::error("Actor transform not found, actor cannot revert");
         return false;
     }
-}  // namespace vlrp::managers
+        */
+}  // namespace MPL::managers

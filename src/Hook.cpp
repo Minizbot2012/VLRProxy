@@ -1,7 +1,7 @@
 #include <Hook.h>
-namespace vlrp
+namespace MPL
 {
-    namespace hook
+    namespace Hook
     {
         struct GetIsRace
         {
@@ -16,7 +16,7 @@ namespace vlrp
                     const auto race = race_form->As<RE::TESRace>();
                     if (npc && race)
                     {
-                        auto rm = vlrp::managers::RaceManager::GetSingleton();
+                        auto rm = MPL::managers::RaceManager::GetSingleton();
                         if (race == rm->GetOriginalLord())
                         {
                             if (const auto npc_race = npc->race;
@@ -76,7 +76,7 @@ namespace vlrp
             static long thunk(const RE::BGSListForm* frm, const RE::TESForm* rc)
             {
                 auto race = rc->As<RE::TESRace>();
-                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                auto rm = MPL::managers::RaceManager::GetSingleton();
                 if (rm->IsVampireLord(race) && rm->IsSupportedLord(race) &&
                     !frm->HasForm(race))
                 {
@@ -99,7 +99,7 @@ namespace vlrp
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
-                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                auto rm = MPL::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
                     rm->IsSupportedLord(race))
                 {
@@ -127,7 +127,7 @@ namespace vlrp
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
-                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                auto rm = MPL::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
                     rm->IsSupportedLord(race))
                 {
@@ -155,7 +155,7 @@ namespace vlrp
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
-                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                auto rm = MPL::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
                     rm->IsSupportedLord(race))
                 {
@@ -183,7 +183,7 @@ namespace vlrp
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
-                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                auto rm = MPL::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
                     rm->IsSupportedLord(race))
                 {
@@ -211,7 +211,7 @@ namespace vlrp
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 const RE::TESRace* race)
             {
-                auto rm = vlrp::managers::RaceManager::GetSingleton();
+                auto rm = MPL::managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsVampireLord(race) &&
                     rm->IsSupportedLord(race))
                 {
@@ -238,7 +238,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0x183;
             static bool thunk(const RE::TESRace* me)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
                 {
                     return true;
@@ -261,7 +261,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0xfd6;
             static bool thunk(const RE::TESRace* me)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
                 {
                     return true;
@@ -284,7 +284,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0xa4;
             static bool thunk(const RE::TESRace* me)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
                 {
                     return true;
@@ -307,7 +307,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0x105;
             static bool thunk(const RE::TESRace* me)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
                 {
                     return true;
@@ -329,7 +329,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0x1C1;
             static RE::TESForm* thunk(uint32_t id)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
                 if (RM->IsVampireLord(plr))
                 {
@@ -353,7 +353,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0x13C;
             static RE::TESForm* thunk(uint32_t id)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
                 if (RM->IsVampireLord(plr))
                 {
@@ -377,7 +377,7 @@ namespace vlrp
             static inline constexpr std::size_t offset = 0x13E;
             static RE::TESForm* thunk(uint32_t id)
             {
-                auto* RM = vlrp::managers::RaceManager::GetSingleton();
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
                 auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
                 if (RM->IsVampireLord(plr))
                 {
@@ -395,6 +395,100 @@ namespace vlrp
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
+        struct Papyrus_Actor_SetRace
+        {
+            static inline constexpr REL::ID relocation = REL::ID(54758);
+            static inline constexpr std::size_t offset = 0x23;
+            static void thunk(RE::Actor* act, RE::TESRace* rc, bool)
+            {
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
+                if (RM->GetOriginalLord() == rc && act->IsPlayerRef())
+                {
+                    return func(act, const_cast<RE::TESRace*>(RM->GetLordRace(const_cast<const RE::TESRace*>(act->race))), act->IsPlayerRef());
+                }
+                else
+                {
+                    return func(act, rc, act->IsPlayerRef());
+                }
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook for Papyrus_Actor::SetRace");
+            }
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+
+        struct Papyrus_Actor_UnequipAll
+        {
+            static inline constexpr REL::ID relocation = REL::ID(54773);
+            static inline constexpr std::size_t offset = 0xa;
+            static void thunk(RE::ActorEquipManager* eqm, RE::Actor* act)
+            {
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
+                if (act->IsPlayerRef() && RM->IsSupportedLord(act->GetRace()))
+                {
+                    return;
+                }
+                else
+                {
+                    return func(eqm, act);
+                }
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook for Papyrus_Actor::UnequipAll");
+            }
+            static inline REL::Relocation<decltype(thunk)> func;
+        };
+
+        struct Papyrus_Actor_GetRace
+        {
+            static RE::TESRace* thunk(int64_t, int64_t, RE::Actor* act)
+            {
+                auto* RM = MPL::managers::RaceManager::GetSingleton();
+                if (RM->IsVampireLord(act->GetRace()) && act->IsPlayerRef())
+                {
+                    return const_cast<RE::TESRace*>(RM->GetOriginalLord());
+                }
+                else
+                {
+                    return act->GetRace();
+                }
+            }
+            static void post_hook()
+            {
+                logger::info("Installed hook for Papyrus_Actor::GetRace");
+            }
+            static void Install()
+            {
+#pragma pack(push, 1)
+                // FF /4
+                // JMP r/m64
+                struct TrampolineAssembly
+                {
+                    // jmp [rip + 0]
+                    // target
+                    std::uint8_t jmp;    // 0 - 0xFF
+                    std::uint8_t modrm;  // 1 - 0x25
+                    std::int32_t disp;   // 2 - 0x00000000
+                    std::uint64_t addr;  // 6 - [rip + 0]/target
+                };
+                static_assert(offsetof(TrampolineAssembly, jmp) == 0x0);
+                static_assert(offsetof(TrampolineAssembly, modrm) == 0x1);
+                static_assert(offsetof(TrampolineAssembly, disp) == 0x2);
+                static_assert(offsetof(TrampolineAssembly, addr) == 0x6);
+                static_assert(sizeof(TrampolineAssembly) == 0xE);
+#pragma pack(pop)
+
+                const TrampolineAssembly assembly{
+                    .jmp = 0xFFu,
+                    .modrm = 0x25u,
+                    .disp = 0,
+                    .addr = reinterpret_cast<std::uint64_t>(Papyrus_Actor_GetRace::thunk)
+                };
+                REL::safe_write(REL::ID(54930).address(), &assembly, sizeof(assembly));
+            }
+        };
         void TryInstall()
         {
             stl::install_hook<GetIsRace>();
@@ -413,8 +507,10 @@ namespace vlrp
             stl::install_hook<CharacterMenu_GetFromDOM>();
             stl::install_hook<FavoritesMenu_GetFromDOM>();
             stl::install_hook<IMenu_GetFromDOM>();
+            stl::install_hook<Papyrus_Actor_GetRace>();
+            stl::install_hook<Papyrus_Actor_SetRace>();
         }
-    }  // namespace hook
+    }  // namespace Hook
 
-    void TryInstall() { hook::TryInstall(); }
-}  // namespace vlrp
+    void TryInstall() { Hook::TryInstall(); }
+}  // namespace MPL

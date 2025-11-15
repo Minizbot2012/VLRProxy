@@ -1,5 +1,5 @@
 #pragma once
-namespace vlrp::API
+namespace MPL::API
 {
     enum struct APIRes : int8_t
     {
@@ -27,8 +27,10 @@ namespace vlrp::API
         [[nodiscard]] virtual bool IsVampireLord(const RE::Actor*) = 0;
         [[nodiscard]] virtual bool IsRegisteredVL(const RE::TESRace*) = 0;
         [[nodiscard]] virtual bool IsRegisteredHV(const RE::TESRace*) = 0;
+        /*
         [[nodiscard]] virtual bool Transform(RE::Actor*, RE::TESRace*) = 0;
         [[nodiscard]] virtual bool Revert(RE::Actor*) = 0;
+        */
     };
 
     using CurrentInterface = APIV1;
@@ -45,4 +47,4 @@ namespace vlrp::API
         }
         return nullptr;
     }
-}  // namespace vlrp::API
+}  // namespace MPL::API

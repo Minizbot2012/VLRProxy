@@ -2,7 +2,7 @@
 #include <API_VLRProxy.h>
 #include <Config.h>
 #include <RaceManager.h>
-namespace vlrp::API
+namespace MPL::API
 {
     class Interface : public CurrentInterface, public REX::Singleton<Interface>
     {
@@ -17,7 +17,9 @@ namespace vlrp::API
         bool IsVampireLord(const RE::Actor* actor) override;
         bool IsRegisteredVL(const RE::TESRace* lord_race) override;
         bool IsRegisteredHV(const RE::TESRace* human_vampire) override;
+        /*
         bool Transform(RE::Actor*, RE::TESRace*) override;
         bool Revert(RE::Actor*) override;
+        */
     };
-}  // namespace vlrp::API
+}  // namespace MPL::API
