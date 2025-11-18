@@ -1,61 +1,59 @@
-#include <Papyrus.h>
-#include <Hook.h>
 #include <Config.h>
-#include <DOMManager.h>
-#include <RaceManager.h>
+#include <Hook.h>
 #include <ModAPI.h>
+#include <Papyrus.h>
+#include <RaceManager.h>
 
-void OnInit(SKSE::MessagingInterface::Message *a_msg)
-{
-	switch (a_msg->type)
-	{
-	case SKSE::MessagingInterface::kDataLoaded:
-		vlrp::config::LoadConfigs();
-		break;
-	case SKSE::MessagingInterface::kPostLoadGame:
-		if (vlrp::managers::RaceManager::GetSingleton()->IsVampireLord(RE::PlayerCharacter::GetSingleton()->GetRace()))
-		{
-			vlrp::managers::RaceManager::GetSingleton()->SetDOMRace(RE::PlayerCharacter::GetSingleton()->GetRace());
-		}
-		break;
-	default:
-		break;
-	}
-}
+extern "C" DLLEXPORT auto SKSEPlugin_Version = []() {
+    SKSE::PluginVersionData v;
+    v.PluginVersion({ 0, 7, 0, 0 });
+    v.PluginName("VLRProxy");
+    v.AuthorName("mini");
+    v.UsesAddressLibrary();
+    v.UsesUpdatedStructs();
 
-extern "C" DLLEXPORT auto SKSEPlugin_Version = []()
-{
-	SKSE::PluginVersionData v;
-	v.PluginVersion({1, 0, 0, 0});
-	v.PluginName("VLRProxy");
-	v.AuthorName("mini");
-	v.UsesAddressLibrary();
-	v.UsesNoStructs();
-
-	return v;
+    return v;
 }();
 
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface *a_skse)
+void SaveCallback(SKSE::SerializationInterface* a_intf)
 {
-	SKSE::Init(a_skse);
-	logger::info("Game version : {}", a_skse->RuntimeVersion().string());
-	if (!SKSE::GetMessagingInterface()->RegisterListener(OnInit))
-	{
-		return false;
-	}
-	SKSE::GetPapyrusInterface()->Register(vlrp::papyrus::Bind);
-	vlrp::hook::TryInstall();
-	vlrp::managers::DOMManager::Register();
-	return true;
+    MPL::managers::RaceManager::GetSingleton()->Save(a_intf);
 }
 
-extern "C" DLLEXPORT void *SKSEAPI RequestPluginAPI(vlrp::API::APIVersion ver)
+void LoadCallback(SKSE::SerializationInterface* a_intf)
 {
-	switch (ver)
-	{
-	case vlrp::API::APIVersion::V1:
-		return vlrp::API::Interface::GetSingleton();
-		break;
-	}
-	return nullptr;
+    MPL::managers::RaceManager::GetSingleton()->Load(a_intf);
+}
+
+void RevertCallback(SKSE::SerializationInterface* a_intf)
+{
+    MPL::managers::RaceManager::GetSingleton()->Revert(a_intf);
+}
+
+extern "C" DLLEXPORT bool SKSEAPI
+SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+{
+    SKSE::Init(a_skse);
+    logger::info("Game version : {}", a_skse->RuntimeVersion().string());
+    SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
+    /*
+    auto a_intf = SKSE::GetSerializationInterface();
+    a_intf->SetUniqueID('VLRP');
+    a_intf->SetLoadCallback(LoadCallback);
+    a_intf->SetSaveCallback(SaveCallback);
+    a_intf->SetRevertCallback(RevertCallback);
+    */
+    MPL::Hook::TryInstall();
+    return true;
+}
+
+extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(MPL::API::APIVersion ver)
+{
+    switch (ver)
+    {
+    case MPL::API::APIVersion::V1:
+        return MPL::API::Interface::GetSingleton();
+        break;
+    }
+    return nullptr;
 }

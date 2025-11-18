@@ -42,35 +42,12 @@
       "toolset": "v143"
     },
     {
-      "name": "se",
-      "hidden": true,
-      "binaryDir": "${sourceDir}/build"
-    },
-    {
       "name": "ae",
       "hidden": true,
       "binaryDir": "${sourceDir}/buildae",
       "cacheVariables": {
         "BUILD_SKYRIMAE": true
       }
-    },
-    {
-      "name": "vr",
-      "hidden": true,
-      "binaryDir": "${sourceDir}/buildvr",
-      "cacheVariables": {
-        "BUILD_SKYRIMVR": true
-      }
-    },
-    {
-      "name": "vs2022-windows-vcpkg-se",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows",
-        "vs2022",
-        "se"
-      ]
     },
     {
       "name": "vs2022-windows-vcpkg-ae",
@@ -81,32 +58,12 @@
         "vs2022",
         "ae"
       ]
-    },
-    {
-      "name": "vs2022-windows-vcpkg-vr",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows",
-        "vs2022",
-        "vr"
-      ]
     }
   ],
   "buildPresets": [
     {
       "name": "vs2022-windows-vcpkg-ae",
       "configurePreset": "vs2022-windows-vcpkg-ae",
-      "configuration": "Release"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-se",
-      "configurePreset": "vs2022-windows-vcpkg-se",
-      "configuration": "Release"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-vr",
-      "configurePreset": "vs2022-windows-vcpkg-vr",
       "configuration": "Release"
     }
   ]
