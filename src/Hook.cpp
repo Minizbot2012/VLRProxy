@@ -420,12 +420,12 @@ namespace MPL
 
         struct Papyrus_Actor_UnequipAll
         {
-            static inline constexpr REL::ID relocation = REL::ID(54773);
-            static inline constexpr std::size_t offset = 0xa;
+            static inline constexpr REL::ID relocation = REL::ID(54784);
+            static inline constexpr std::size_t offset = 0x50a9;
             static void thunk(RE::ActorEquipManager* eqm, RE::Actor* act)
             {
                 auto* RM = MPL::managers::RaceManager::GetSingleton();
-                if (act->IsPlayerRef() && RM->IsSupportedLord(act->GetRace()))
+                if (act->IsPlayerRef() && RM->IsSupportedLord(act->race))
                 {
                     return;
                 }
@@ -445,7 +445,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(54784);
             static inline constexpr std::size_t offset = 0x2245;
-            static RE::TESRace* thunk(int64_t a, int64_t b, RE::Actor* act)
+            static RE::TESRace* thunk([[maybe_unused]] int64_t a, [[maybe_unused]] int64_t b, RE::Actor* act)
             {
                 auto* RM = MPL::managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(act->GetRace()) && act->IsPlayerRef())

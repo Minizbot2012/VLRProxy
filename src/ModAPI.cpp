@@ -92,17 +92,4 @@ namespace MPL::API
             return false;
         }
     }
-    /*
-    bool Interface::Transform(RE::Actor* actor,
-        RE::TESRace* optional_race = nullptr)
-    {
-        return MPL::managers::RaceManager::GetSingleton()->TransformActor(
-            actor, optional_race);
-    }
-
-    bool Interface::Revert(RE::Actor* actor)
-    {
-        return MPL::managers::RaceManager::GetSingleton()->RevertActor(actor);
-    }
-    */
 }  // namespace MPL::API

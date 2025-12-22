@@ -52,9 +52,12 @@ namespace MPL::papyrus
     {
         return MPL::managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
+    [[nodiscard]] static auto GetRealRace(STATIC_ARGS, RE::Actor* actor) -> const RE::TESRace* {
+        return actor->race;
+    }
 
 #undef STATIC_ARGS
-    bool Bind(RE::BSScript::IVirtualMachine* vm)
+    inline bool Bind(RE::BSScript::IVirtualMachine* vm)
     {
         vm->RegisterFunction("GetVLRace", "VLRace", LordRace);
         vm->RegisterFunction("GetVampireRace", "VLRace", VampireRace);
@@ -66,6 +69,7 @@ namespace MPL::papyrus
         // New in 0.7.0+
         vm->RegisterFunction("OriginalVL", "VLRace", OriginalVL);
         vm->RegisterFunction("Version", "VLRace", Version);
+        vm->RegisterFunction("GetRealRace", "VLRace", GetRealRace);
         return true;
     }
 }  // namespace MPL::papyrus

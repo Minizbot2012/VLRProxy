@@ -32,14 +32,14 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>",
-        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+        "VCPKG_TARGET_TRIPLET": "x64-windows-mixed"
       }
     },
     {
       "name": "vs2022",
       "hidden": true,
-      "generator": "Visual Studio 17 2022",
-      "toolset": "v143"
+      "generator": "Visual Studio 18 2026",
+      "toolset": "v145"
     },
     {
       "name": "ae",
@@ -51,13 +51,7 @@
     },
     {
       "name": "vs2022-windows-vcpkg-ae",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows",
-        "vs2022",
-        "ae"
-      ]
+      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2022", "ae"]
     }
   ],
   "buildPresets": [

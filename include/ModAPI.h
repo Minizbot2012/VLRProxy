@@ -17,9 +17,5 @@ namespace MPL::API
         bool IsVampireLord(const RE::Actor* actor) override;
         bool IsRegisteredVL(const RE::TESRace* lord_race) override;
         bool IsRegisteredHV(const RE::TESRace* human_vampire) override;
-        /*
-        bool Transform(RE::Actor*, RE::TESRace*) override;
-        bool Revert(RE::Actor*) override;
-        */
     };
 }  // namespace MPL::API
