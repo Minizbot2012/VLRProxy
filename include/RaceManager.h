@@ -28,18 +28,11 @@ namespace MPL::managers
 
     public:
         int PushRaceData(RaceData&);
-        void Save(SKSE::SerializationInterface* inf);
-        void Load(SKSE::SerializationInterface* inf);
-        void Revert(SKSE::SerializationInterface* inf);
         auto GetLordRace(const RE::TESRace*) -> const RE::TESRace*;
         auto GetVampireRace(const RE::TESRace*) -> const RE::TESRace*;
         auto GetOriginalLord() -> const RE::TESRace*;
         bool IsVampireLord(const RE::TESRace*);
         bool IsSupportedRace(const RE::TESRace*);
         bool IsSupportedLord(const RE::TESRace*);
-        /*
-        bool TransformActor(RE::Actor*, RE::TESRace*);
-        bool RevertActor(RE::Actor*);
-        */
     };
 }  // namespace MPL::managers

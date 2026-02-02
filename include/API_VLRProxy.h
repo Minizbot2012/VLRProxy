@@ -21,8 +21,7 @@ namespace MPL::API
         [[nodiscard]] virtual const RE::TESRace*
         GetVampireRace(const RE::TESRace*) = 0;
         [[nodiscard]] virtual const RE::TESRace* GetRegularVL() = 0;
-        [[nodiscard]] virtual APIRes RegisterRace(const RE::TESRace*,
-            const RE::TESRace*) = 0;
+        [[nodiscard]] virtual APIRes RegisterRace(const RE::TESRace*, const RE::TESRace*) = 0;
         [[nodiscard]] virtual bool IsVampireLord(const RE::TESRace*) = 0;
         [[nodiscard]] virtual bool IsVampireLord(const RE::Actor*) = 0;
         [[nodiscard]] virtual bool IsRegisteredVL(const RE::TESRace*) = 0;

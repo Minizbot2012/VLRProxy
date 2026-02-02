@@ -1,4 +1,5 @@
 #include <Hook.h>
+#include <cstdint>
 namespace MPL
 {
     namespace Hook
@@ -422,7 +423,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(54784);
             static inline constexpr std::size_t offset = 0x50a9;
-            static void thunk(RE::ActorEquipManager* eqm, RE::Actor* act)
+            static void thunk(int64_t a, int64_t b, RE::Actor* act)
             {
                 auto* RM = MPL::managers::RaceManager::GetSingleton();
                 if (act->IsPlayerRef() && RM->IsSupportedLord(act->race))
@@ -431,7 +432,7 @@ namespace MPL
                 }
                 else
                 {
-                    return func(eqm, act);
+                    return func(a, b, act);
                 }
             }
             static void post_hook()
@@ -463,6 +464,7 @@ namespace MPL
             }
             static inline REL::Relocation<decltype(thunk)> func;
         };
+
         void TryInstall()
         {
             stl::install_hook<GetIsRace>();

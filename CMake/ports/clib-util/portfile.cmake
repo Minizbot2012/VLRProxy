@@ -3,7 +3,7 @@ vcpkg_from_git(
     OUT_SOURCE_PATH SOURCE_PATH
     URL https://github.com/powerof3/CLibUtil
     HEAD_REF master
-    REF e1eabe6a063a3abcd3e5b1e739e6ca842fc9a67c
+    REF 789abd27b8955e974da53713898bf8a3db0e2a66
 )
 
 # Install codes
