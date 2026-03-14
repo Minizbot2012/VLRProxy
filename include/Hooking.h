@@ -28,7 +28,7 @@ concept hook = requires {
 
 template <typename Hook>
 concept CInstall = hook<Hook> && requires {
-    { Hook::Install };
+    { Hook::install };
 };
 
 /// Optionally Hook can define a static member named func that will contain the
@@ -197,7 +197,7 @@ namespace stl
     template <CInstall Hook>
     void custom_install()
     {
-        Hook::Install();
+        Hook::install();
     }
 
     /// Installs given hook

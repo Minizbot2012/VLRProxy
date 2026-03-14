@@ -1,6 +1,6 @@
 #pragma once
 #include <Config.h>
-namespace MPL::managers
+namespace MPL::Managers
 {
     struct RaceData
     {
@@ -8,18 +8,10 @@ namespace MPL::managers
         const RE::TESRace* vlRace;
     };
 
-    struct TransformData
-    {
-        const RE::Actor* actor;
-        const RE::TESRace* original_race;
-        const RE::TESRace* transformed_race;
-    };
-
     class RaceManager : public REX::Singleton<RaceManager>
     {
     private:
         std::vector<RaceData> race_pairs;
-        std::vector<TransformData> transforms;
         const RE::TESRace* OriginalVL;
         std::mutex _lock;
         bool conf_loaded;

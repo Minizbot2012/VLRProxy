@@ -1,3 +1,4 @@
+#include <API_VLRProxy.h>
 #include <Config.h>
 #include <Hook.h>
 #include <ModAPI.h>
@@ -15,17 +16,8 @@ extern "C" DLLEXPORT auto SKSEPlugin_Version = []() {
 
     return v;
 }();
-extern "C" DLLEXPORT bool SKSEAPI
-SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
-{
-    SKSE::Init(a_skse);
-    logger::info("Game version : {}", a_skse->RuntimeVersion().string());
-    SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
-    MPL::Hook::TryInstall();
-    return true;
-}
 
-extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(MPL::API::APIVersion ver)
+void* RequestPluginAPI(MPL::API::APIVersion ver)
 {
     static MPL::API::Interface API;
     switch (ver)
@@ -35,4 +27,28 @@ extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(MPL::API::APIVersion ver)
         break;
     }
     return nullptr;
+}
+
+void MsgHandler(SKSE::MessagingInterface::Message* msg)
+{
+    switch (msg->type)
+    {
+    case SKSE::MessagingInterface::kDataLoaded:
+        break;
+    case MPL::API::VLRPMessage::kMessage_GetInterface:
+        ((MPL::API::VLRPMessage*)(msg->data))->GetAPI = RequestPluginAPI;
+        break;
+    default:
+        break;
+    }
+}
+
+extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+{
+    SKSE::Init(a_skse);
+    logger::info("Game version : {}", a_skse->RuntimeVersion().string());
+    SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
+    SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
+    MPL::Hook::TryInstall();
+    return true;
 }

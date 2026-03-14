@@ -1,49 +1,53 @@
+#include "Config.h"
 #include <RaceManager.h>
+#include <SKSE/API.h>
 #include <algorithm>
-namespace MPL::managers
+#include <format>
+#include <string_view>
+namespace MPL::Managers
 {
-    void managers::RaceManager::LoadConfig()
+    void Managers::RaceManager::LoadConfig()
     {
+        if(this->conf_loaded) return;
         std::lock_guard _guard(this->_lock);
         if (!this->conf_loaded)
         {
             logger::info("Loading Configs");
-            this->conf_loaded = true;
             this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
-            if (!std::filesystem::exists(MPL::config::ConfigFolder))
+            auto* dh = RE::TESDataHandler::GetSingleton();
+            for (auto file : dh->files)
             {
-                logger::error("Config directory is missing");
-                return;
-            }
-            for (auto ent : std::filesystem::directory_iterator(MPL::config::ConfigFolder))
-            {
-                if (ent.is_regular_file() && ent.path().filename().extension() == ".json")
+                auto data_file = file->GetFilename();
+                data_file.remove_suffix(4);
+                auto file_name = std::format("VLRP/{}.json", data_file);
+                RE::BSResourceNiBinaryStream fileStream(file_name);
+                if (fileStream.good())
                 {
-                    logger::info("Loading config file {}", ent.path().filename().string());
-                    auto gl = rfl::json::load<std::vector<MPL::config::RaceConfig>>(ent.path().string());
-                    if (gl)
+                    if (fileStream.stream->totalSize > 0)
                     {
+                        logger::info("Loading file {}", file_name);
+                        std::string contents;
+                        contents.resize(fileStream.stream->totalSize);
+                        fileStream.read(contents.data(), fileStream.stream->totalSize);
+                        auto gl = rfl::json::read<std::vector<MPL::Config::RaceConfig>>(contents);
                         for (auto itm : *gl)
                         {
-                            if (itm.VampireRace != 0x0 && itm.VLRace != 0x0)
+                            if (!itm.VampireRace.IsNull() && itm.VampireRace->Is(RE::FormType::Race) && !itm.VLRace.IsNull() && itm.VLRace->Is(RE::FormType::Race))
                             {
-                                auto vamprace = RE::TESForm::LookupByID<RE::TESRace>(itm.VampireRace);
-                                auto vlrace = RE::TESForm::LookupByID<RE::TESRace>(itm.VLRace);
+                                auto vamprace = itm.VampireRace->As<RE::TESRace>();
+                                auto vlrace = itm.VLRace->As<RE::TESRace>();
                                 if (vamprace && vlrace)
                                 {
-                                    auto rd = managers::RaceData{ vamprace, vlrace };
+                                    auto rd = Managers::RaceData{ vamprace, vlrace };
                                     this->PushRaceData(rd);
                                 }
                             }
                         }
                     }
-                    else
-                    {
-                        logger::warn("Config file {} has error {}", ent.path().filename().string(), gl.error().what());
-                    }
                 }
             }
         }
+        this->conf_loaded = true;
     }
     void RaceManager::Reset()
     {
@@ -51,7 +55,6 @@ namespace MPL::managers
         this->conf_loaded = false;
         this->LoadConfig();
     }
-
     int RaceManager::PushRaceData(RaceData& rd)
     {
         auto vm =

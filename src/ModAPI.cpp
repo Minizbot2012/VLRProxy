@@ -5,7 +5,7 @@ namespace MPL::API
     {
         if (race != nullptr)
         {
-            return MPL::managers::RaceManager::GetSingleton()->GetLordRace(race);
+            return MPL::Managers::RaceManager::GetSingleton()->GetLordRace(race);
         }
         else
         {
@@ -17,7 +17,7 @@ namespace MPL::API
     {
         if (race != nullptr)
         {
-            return MPL::managers::RaceManager::GetSingleton()->GetVampireRace(race);
+            return MPL::Managers::RaceManager::GetSingleton()->GetVampireRace(race);
         }
         else {
             return nullptr;
@@ -26,7 +26,7 @@ namespace MPL::API
 
     const RE::TESRace* Interface::GetRegularVL()
     {
-        return MPL::managers::RaceManager::GetSingleton()->GetOriginalLord();
+        return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
 
     APIRes Interface::RegisterRace(const RE::TESRace* lord_race,
@@ -34,8 +34,8 @@ namespace MPL::API
     {
         if (lord_race != nullptr && human_vampire != nullptr)
         {
-            auto insert = MPL::managers::RaceData{ human_vampire, lord_race };
-            return (APIRes)MPL::managers::RaceManager::GetSingleton()->PushRaceData(
+            auto insert = MPL::Managers::RaceData{ human_vampire, lord_race };
+            return (APIRes)MPL::Managers::RaceManager::GetSingleton()->PushRaceData(
                 insert);
         }
         return APIRes::Failed;
@@ -45,7 +45,7 @@ namespace MPL::API
     {
         if (test_race != nullptr)
         {
-            return MPL::managers::RaceManager::GetSingleton()->IsVampireLord(
+            return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(
                 test_race);
         }
         else
@@ -58,7 +58,7 @@ namespace MPL::API
     {
         if (actor != nullptr && actor->race != nullptr)
         {
-            return MPL::managers::RaceManager::GetSingleton()->IsVampireLord(
+            return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(
                 actor->race);
         }
         else
@@ -71,7 +71,7 @@ namespace MPL::API
     {
         if (lord_race != nullptr)
         {
-            return MPL::managers::RaceManager::GetSingleton()->IsSupportedLord(
+            return MPL::Managers::RaceManager::GetSingleton()->IsSupportedLord(
                 lord_race);
         }
         else
@@ -84,7 +84,7 @@ namespace MPL::API
     {
         if (human_vampire != nullptr)
         {
-            return MPL::managers::RaceManager::GetSingleton()->IsSupportedRace(
+            return MPL::Managers::RaceManager::GetSingleton()->IsSupportedRace(
                 human_vampire);
         }
         else

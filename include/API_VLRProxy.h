@@ -1,4 +1,7 @@
 #pragma once
+#include <SKSE/API.h>
+#include <SKSE/Interfaces.h>
+#include <cstdint>
 namespace MPL::API
 {
     enum struct APIRes : int8_t
@@ -14,12 +17,11 @@ namespace MPL::API
         Current = V1
     };
 
-    class APIV1
+    struct APIV1
     {
     public:
         [[nodiscard]] virtual const RE::TESRace* GetVLRace(const RE::TESRace*) = 0;
-        [[nodiscard]] virtual const RE::TESRace*
-        GetVampireRace(const RE::TESRace*) = 0;
+        [[nodiscard]] virtual const RE::TESRace* GetVampireRace(const RE::TESRace*) = 0;
         [[nodiscard]] virtual const RE::TESRace* GetRegularVL() = 0;
         [[nodiscard]] virtual APIRes RegisterRace(const RE::TESRace*, const RE::TESRace*) = 0;
         [[nodiscard]] virtual bool IsVampireLord(const RE::TESRace*) = 0;
@@ -31,14 +33,22 @@ namespace MPL::API
     using CurrentInterface = APIV1;
     typedef void* (*_RequestPluginAPI)(const APIVersion);
 
+    struct VLRPMessage
+    {
+        enum message_type : uint32_t
+        {
+            kMessage_GetInterface = 0x1a208e02
+        };
+        _RequestPluginAPI GetAPI;
+    };
+
     [[nodiscard]] inline void* RequestPluginAPI(const APIVersion ver = APIVersion::Current)
     {
-        auto pluginHandle = GetModuleHandle(L"VLRProxy.dll");
-        _RequestPluginAPI reqAPI =
-            (_RequestPluginAPI)GetProcAddress(pluginHandle, "RequestPluginAPI");
-        if (reqAPI)
+        VLRPMessage message;
+        SKSE::GetMessagingInterface()->Dispatch('VLRP', (void*)&message, sizeof(VLRPMessage), "VLRProxy");
+        if (message.GetAPI)
         {
-            return reqAPI(ver);
+            return message.GetAPI(ver);
         }
         return nullptr;
     }
