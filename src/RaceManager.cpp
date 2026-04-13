@@ -45,8 +45,7 @@ namespace MPL::Managers
                     }
                     else
                     {
-                        form->SetFormID(this->baseID | this->offset, false);
-                        this->offset = this->offset + 1;
+                        form->SetFormID(this->baseID | ++this->offset, false);
                         this->race_formid_cache[edid] = this->offset;
                     }
                     form->SetFormEditorID(edid.c_str());
