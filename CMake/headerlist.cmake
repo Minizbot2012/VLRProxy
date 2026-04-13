@@ -1,6 +1,5 @@
 set(headers ${headers}
  include/PCH.h
- include/Forms.h
  include/Papyrus.h
  include/API_VLRProxy.h
  include/ModAPI.h

@@ -9,8 +9,6 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <REX/REX.h>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 // clang-format on
 namespace logger = SKSE::log;
 using namespace REX;
