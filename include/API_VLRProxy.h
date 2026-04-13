@@ -20,14 +20,13 @@ namespace MPL::API
     struct APIV1
     {
     public:
-        [[nodiscard]] virtual const RE::TESRace* GetVLRace(const RE::TESRace*) = 0;
-        [[nodiscard]] virtual const RE::TESRace* GetVampireRace(const RE::TESRace*) = 0;
-        [[nodiscard]] virtual const RE::TESRace* GetRegularVL() = 0;
-        [[nodiscard]] virtual APIRes RegisterRace(const RE::TESRace*, const RE::TESRace*) = 0;
-        [[nodiscard]] virtual bool IsVampireLord(const RE::TESRace*) = 0;
-        [[nodiscard]] virtual bool IsVampireLord(const RE::Actor*) = 0;
-        [[nodiscard]] virtual bool IsRegisteredVL(const RE::TESRace*) = 0;
-        [[nodiscard]] virtual bool IsRegisteredHV(const RE::TESRace*) = 0;
+        [[nodiscard]] virtual RE::TESRace* GetVLRace(RE::TESRace*) = 0;
+        [[nodiscard]] virtual RE::TESRace* GetVampireRace(RE::TESRace*) = 0;
+        [[nodiscard]] virtual RE::TESRace* GetRegularVL() = 0;
+        [[nodiscard]] virtual bool IsVampireLord(RE::TESRace*) = 0;
+        [[nodiscard]] virtual bool IsVampireLord(RE::Actor*) = 0;
+        [[nodiscard]] virtual bool IsRegisteredVL(RE::TESRace*) = 0;
+        [[nodiscard]] virtual bool IsRegisteredHV(RE::TESRace*) = 0;
     };
 
     using CurrentInterface = APIV1;

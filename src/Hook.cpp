@@ -1,3 +1,4 @@
+#include <RaceManager.h>
 #include <Hook.h>
 #include <cstdint>
 namespace MPL
@@ -74,7 +75,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(23631);
             static inline constexpr std::size_t offset = 0x10;
-            static long thunk(const RE::BGSListForm* frm, const RE::TESForm* rc)
+            static long thunk(const RE::BGSListForm* frm, RE::TESForm* rc)
             {
                 auto* race = rc->As<RE::TESRace>();
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
@@ -97,7 +98,7 @@ namespace MPL
             static inline constexpr REL::ID relocation = REL::ID(17792);
             static inline constexpr std::size_t offset = 0x4b;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
-                const RE::TESRace* race)
+                RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
@@ -122,7 +123,7 @@ namespace MPL
             static inline constexpr REL::ID relocation = REL::ID(17794);
             static inline constexpr std::size_t offset = 0x17;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
-                const RE::TESRace* race)
+                RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
@@ -147,7 +148,7 @@ namespace MPL
             static inline constexpr REL::ID relocation = REL::ID(25362);
             static inline constexpr std::size_t offset = 0x91;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
-                const RE::TESRace* race)
+                RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
@@ -172,7 +173,7 @@ namespace MPL
             static inline constexpr REL::ID relocation = REL::ID(25362);
             static inline constexpr std::size_t offset = 0x131;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
-                const RE::TESRace* race)
+                RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
@@ -197,7 +198,7 @@ namespace MPL
             static inline constexpr REL::ID relocation = REL::ID(25363);
             static inline constexpr std::size_t offset = 0x81;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
-                const RE::TESRace* race)
+                RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
@@ -222,7 +223,7 @@ namespace MPL
             static inline constexpr REL::ID relocation = REL::ID(40114);
             static inline constexpr std::size_t offset = 0x1a3;
             static bool thunk(const RE::TESObjectARMA* armor_addon,
-                const RE::TESRace* race)
+                RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
                 if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
@@ -246,7 +247,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(37177);
             static inline constexpr std::size_t offset = 0x183;
-            static bool thunk(const RE::TESRace* me)
+            static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
@@ -269,7 +270,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(37652);
             static inline constexpr std::size_t offset = 0xfd6;
-            static bool thunk(const RE::TESRace* me)
+            static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
@@ -292,7 +293,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(37925);
             static inline constexpr std::size_t offset = 0xa4;
-            static bool thunk(const RE::TESRace* me)
+            static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
@@ -315,7 +316,7 @@ namespace MPL
         {
             static inline constexpr REL::ID relocation = REL::ID(37925);
             static inline constexpr std::size_t offset = 0x105;
-            static bool thunk(const RE::TESRace* me)
+            static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
                 if (RM->IsVampireLord(me))
@@ -414,7 +415,7 @@ namespace MPL
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
                 if (RM->GetOriginalLord() == rc && act->IsPlayerRef())
                 {
-                    return func(act, const_cast<RE::TESRace*>(RM->GetLordRace(const_cast<const RE::TESRace*>(act->race))), act->IsPlayerRef());
+                    return func(act, RM->GetLordRace(act->race), act->IsPlayerRef());
                 }
                 else
                 {

@@ -1,30 +1,34 @@
 #pragma once
-#include <Config.h>
+#include <cstdint>
+#include <unordered_map>
+#include <rfl/msgpack.hpp>
 namespace MPL::Managers
 {
     struct RaceData
     {
-        const RE::TESRace* vampireRace;
-        const RE::TESRace* vlRace;
+        RE::TESRace* vampireRace;
+        RE::TESRace* vlRace;
     };
 
     class RaceManager : public REX::Singleton<RaceManager>
     {
     private:
         std::vector<RaceData> race_pairs;
-        const RE::TESRace* OriginalVL;
-        std::mutex _lock;
+        RE::TESRace* OriginalVL;
+        std::unordered_map<std::string, uint32_t> race_formid_cache;
         bool conf_loaded;
-        void Reset();
+        std::mutex _lock;
         void LoadConfig();
 
     public:
+        RE::FormID baseID = 0x0;
+        uint32_t offset = 0x0;
         int PushRaceData(RaceData&);
-        auto GetLordRace(const RE::TESRace*) -> const RE::TESRace*;
-        auto GetVampireRace(const RE::TESRace*) -> const RE::TESRace*;
-        auto GetOriginalLord() -> const RE::TESRace*;
-        bool IsVampireLord(const RE::TESRace*);
-        bool IsSupportedRace(const RE::TESRace*);
-        bool IsSupportedLord(const RE::TESRace*);
+        auto GetLordRace(RE::TESRace*) -> RE::TESRace*;
+        auto GetVampireRace(RE::TESRace*) -> RE::TESRace*;
+        auto GetOriginalLord() -> RE::TESRace*;
+        bool IsVampireLord(RE::TESRace*);
+        bool IsSupportedRace(RE::TESRace*);
+        bool IsSupportedLord(RE::TESRace*);
     };
 }  // namespace MPL::managers

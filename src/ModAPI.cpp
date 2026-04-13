@@ -1,7 +1,7 @@
 #include <ModAPI.h>
 namespace MPL::API
 {
-    const RE::TESRace* Interface::GetVLRace(const RE::TESRace* race)
+    RE::TESRace* Interface::GetVLRace(RE::TESRace* race)
     {
         if (race != nullptr)
         {
@@ -13,7 +13,7 @@ namespace MPL::API
         }
     }
 
-    const RE::TESRace* Interface::GetVampireRace(const RE::TESRace* race)
+    RE::TESRace* Interface::GetVampireRace(RE::TESRace* race)
     {
         if (race != nullptr)
         {
@@ -24,24 +24,12 @@ namespace MPL::API
         }
     }
 
-    const RE::TESRace* Interface::GetRegularVL()
+    RE::TESRace* Interface::GetRegularVL()
     {
         return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
 
-    APIRes Interface::RegisterRace(const RE::TESRace* lord_race,
-        const RE::TESRace* human_vampire)
-    {
-        if (lord_race != nullptr && human_vampire != nullptr)
-        {
-            auto insert = MPL::Managers::RaceData{ human_vampire, lord_race };
-            return (APIRes)MPL::Managers::RaceManager::GetSingleton()->PushRaceData(
-                insert);
-        }
-        return APIRes::Failed;
-    }
-
-    bool Interface::IsVampireLord(const RE::TESRace* test_race)
+    bool Interface::IsVampireLord(RE::TESRace* test_race)
     {
         if (test_race != nullptr)
         {
@@ -54,7 +42,7 @@ namespace MPL::API
         }
     }
 
-    bool Interface::IsVampireLord(const RE::Actor* actor)
+    bool Interface::IsVampireLord(RE::Actor* actor)
     {
         if (actor != nullptr && actor->race != nullptr)
         {
@@ -67,7 +55,7 @@ namespace MPL::API
         }
     }
 
-    bool Interface::IsRegisteredVL(const RE::TESRace* lord_race)
+    bool Interface::IsRegisteredVL(RE::TESRace* lord_race)
     {
         if (lord_race != nullptr)
         {
@@ -80,7 +68,7 @@ namespace MPL::API
         }
     }
 
-    bool Interface::IsRegisteredHV(const RE::TESRace* human_vampire)
+    bool Interface::IsRegisteredHV(RE::TESRace* human_vampire)
     {
         if (human_vampire != nullptr)
         {

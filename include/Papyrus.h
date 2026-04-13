@@ -3,14 +3,14 @@
 namespace MPL::papyrus
 {
 #define STATIC_ARGS RE::StaticFunctionTag*
-    [[nodiscard]] static auto LordRace(STATIC_ARGS, const RE::TESRace* rc)
-        -> const RE::TESRace*
+    [[nodiscard]] static auto LordRace(STATIC_ARGS, RE::TESRace* rc)
+        -> RE::TESRace*
     {
         return MPL::Managers::RaceManager::GetSingleton()->GetLordRace(rc);
     }
 
-    [[nodiscard]] static auto VampireRace(STATIC_ARGS, const RE::TESRace* rc)
-        -> const RE::TESRace*
+    [[nodiscard]] static auto VampireRace(STATIC_ARGS, RE::TESRace* rc)
+        -> RE::TESRace*
     {
         auto mgr = MPL::Managers::RaceManager::GetSingleton();
         if (!mgr->IsVampireLord(rc))
@@ -27,20 +27,20 @@ namespace MPL::papyrus
         }
     }
 
-    [[nodiscard]] static auto IsVL(STATIC_ARGS, const RE::TESRace* rc) -> bool
+    [[nodiscard]] static auto IsVL(STATIC_ARGS, RE::TESRace* rc) -> bool
     {
         return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(rc);
     }
 
     [[nodiscard]] static auto IsSupportedVampireRace(STATIC_ARGS,
-        const RE::TESRace* rc)
+        RE::TESRace* rc)
         -> bool
     {
         return MPL::Managers::RaceManager::GetSingleton()->IsSupportedRace(rc);
     }
 
     [[nodiscard]] static auto IsSupportedVampireLord(STATIC_ARGS,
-        const RE::TESRace* rc)
+        RE::TESRace* rc)
         -> bool
     {
         return MPL::Managers::RaceManager::GetSingleton()->IsSupportedLord(rc);

@@ -1,4 +1,8 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "version-string": "1",
-  "dependencies": ["commonlibsse", "reflectcpp"]
+  "dependencies": [
+    "commonlibsse",
+    { "name": "reflectcpp", "features": ["msgpack"] }
+  ]
 }

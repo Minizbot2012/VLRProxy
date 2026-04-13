@@ -1,5 +1,4 @@
 #include <API_VLRProxy.h>
-#include <Config.h>
 #include <Hook.h>
 #include <ModAPI.h>
 #include <Papyrus.h>
