@@ -101,7 +101,7 @@ namespace MPL
                 RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
+                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
                 {
                     auto* va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race);
@@ -126,7 +126,7 @@ namespace MPL
                 RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
+                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
                 {
                     auto* va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race);
@@ -151,7 +151,7 @@ namespace MPL
                 RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
+                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
                 {
                     auto* va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race);
@@ -176,7 +176,7 @@ namespace MPL
                 RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
+                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
                 {
                     auto* va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race);
@@ -201,7 +201,7 @@ namespace MPL
                 RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
+                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
                 {
                     auto* va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race);
@@ -226,7 +226,7 @@ namespace MPL
                 RE::TESRace* race)
             {
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != NULL && armor_addon != NULL && rm->IsSupportedLord(race))
+                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
                 {
                     auto* va_race = rm->GetVampireRace(race);
                     return func(armor_addon, va_race);
