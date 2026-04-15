@@ -1,5 +1,5 @@
-#include <RaceManager.h>
 #include <Hook.h>
+#include <RaceManager.h>
 #include <cstdint>
 namespace MPL
 {
@@ -14,14 +14,14 @@ namespace MPL
             {
                 if (obj && race_form)
                 {
-                    const auto npc = obj->data.objectReference->As<RE::TESNPC>();
-                    const auto race = race_form->As<RE::TESRace>();
-                    if (npc && race)
+                    auto rm = MPL::Managers::RaceManager::GetSingleton();
+                    if (auto actor = obj->GetObjectReference(); actor != nullptr && actor->IsActor() && race_form->Is(RE::FormType::Race) && race_form->As<RE::TESRace>() == rm->GetOriginalLord() )
                     {
-                        auto rm = MPL::Managers::RaceManager::GetSingleton();
-                        if (race == rm->GetOriginalLord())
+                        const auto npc = actor->As<RE::Actor>();
+                        const auto race = race_form->As<RE::TESRace>();
+                        if (race && npc && npc->race != nullptr)
                         {
-                            if (const auto npc_race = npc->race;
+                            if (auto npc_race = npc->race;
                                 npc_race && rm->IsVampireLord(npc_race))
                             {
                                 result = 1.0;
@@ -37,6 +37,7 @@ namespace MPL
                     }
                     return true;
                 }
+                logger::info("GetIsRace Calling Original");
                 return func(obj, race_form, unused, result);
             }
             static void post_hook() { logger::info("Installed hooks for GetIsRace"); };

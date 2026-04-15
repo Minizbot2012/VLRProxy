@@ -30,9 +30,11 @@ void* RequestPluginAPI(MPL::API::APIVersion ver)
 
 void MsgHandler(SKSE::MessagingInterface::Message* msg)
 {
+    auto sta = MPL::Managers::RaceManager::GetSingleton();
     switch (msg->type)
     {
     case SKSE::MessagingInterface::kDataLoaded:
+        sta->InitLords();
         break;
     case MPL::API::VLRPMessage::kMessage_GetInterface:
         ((MPL::API::VLRPMessage*)(msg->data))->GetAPI = RequestPluginAPI;

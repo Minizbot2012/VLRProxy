@@ -2,7 +2,7 @@
 #include <SKSE/API.h>
 namespace MPL::Managers
 {
-    void Managers::RaceManager::LoadConfig()
+    void Managers::RaceManager::InitLords()
     {
         if (this->conf_loaded) return;
         std::lock_guard _guard(this->_lock);
@@ -171,7 +171,6 @@ namespace MPL::Managers
     }
     auto RaceManager::GetLordRace(RE::TESRace* rc) -> RE::TESRace*
     {
-        this->LoadConfig();
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
             [&](auto rd) { return rd.vampireRace == rc; });
         if (it != this->race_pairs.end())
@@ -186,7 +185,6 @@ namespace MPL::Managers
 
     auto RaceManager::GetVampireRace(RE::TESRace* rc) -> RE::TESRace*
     {
-        this->LoadConfig();
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
             [&](auto rd) { return rd.vlRace == rc; });
         if (it != this->race_pairs.end())
@@ -202,13 +200,11 @@ namespace MPL::Managers
 
     auto RaceManager::GetOriginalLord() -> RE::TESRace*
     {
-        this->LoadConfig();
         return this->OriginalVL;
     }
 
     bool RaceManager::IsVampireLord(RE::TESRace* rc)
     {
-        this->LoadConfig();
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rn) { return rn.vlRace == rc; }) !=
                    this->race_pairs.end() ||
@@ -217,7 +213,6 @@ namespace MPL::Managers
 
     bool RaceManager::IsSupportedRace(RE::TESRace* race)
     {
-        this->LoadConfig();
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rd) { return race == rd.vampireRace; }) !=
                this->race_pairs.end();
@@ -225,7 +220,6 @@ namespace MPL::Managers
 
     bool RaceManager::IsSupportedLord(RE::TESRace* race)
     {
-        this->LoadConfig();
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
                    [&](auto rd) { return race == rd.vlRace; }) !=
                this->race_pairs.end();

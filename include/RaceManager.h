@@ -18,11 +18,11 @@ namespace MPL::Managers
         std::unordered_map<std::string, uint32_t> race_formid_cache;
         bool conf_loaded;
         std::mutex _lock;
-        void LoadConfig();
 
     public:
         RE::FormID baseID = 0x0;
         uint32_t offset = 0x0;
+        void InitLords();
         int PushRaceData(RaceData&);
         auto GetLordRace(RE::TESRace*) -> RE::TESRace*;
         auto GetVampireRace(RE::TESRace*) -> RE::TESRace*;
