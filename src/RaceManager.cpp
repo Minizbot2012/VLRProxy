@@ -29,7 +29,7 @@ namespace MPL::Managers
             for (auto frm : races)
             {
                 auto race = frm->As<RE::TESRace>();
-                if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
+                if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL && race->GetPlayable())
                 {
                     auto form = cfc->Create();
                     auto edid = std::format("{}Lord", race->GetFormEditorID());
