@@ -19,34 +19,30 @@ namespace MPL::Managers
             this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
             if (std::filesystem::exists("./Data/SKSE/vlrp-cache.bin"))
             {
-                auto fl = rfl::msgpack::load<std::unordered_map<std::string, uint32_t>>("./Data/SKSE/vlrp-cache.bin");
+                auto fl = rfl::msgpack::load<RaceCache>("./Data/SKSE/vlrp-cache.bin");
                 if (fl.has_value())
                 {
-                    this->race_formid_cache = fl.value();
-                    logger::info("Loaded formid cache with {} entries", this->race_formid_cache.size());
+                    this->cache = fl.value();
+                    logger::info("Loaded formid cache with {} entries", this->cache.map.size());
                 }
             }
             for (auto frm : races)
             {
                 auto race = frm->As<RE::TESRace>();
-                if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL && race->GetPlayable())
+                if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
                 {
                     auto form = cfc->Create();
                     auto edid = std::format("{}Lord", race->GetFormEditorID());
-                    if (this->race_formid_cache.contains(edid))
+                    if (this->cache.map.contains(edid))
                     {
-                        auto oset = this->race_formid_cache.at(edid);
+                        auto oset = this->cache.map.at(edid);
                         form->SetFormID(this->baseID | oset, false);
                         logger::info("Using formid cache with id of {:8X}", this->baseID | oset);
-                        if (oset > this->offset)
-                        {
-                            this->offset = oset;
-                        }
                     }
                     else
                     {
-                        form->SetFormID(this->baseID | ++this->offset, false);
-                        this->race_formid_cache[edid] = this->offset;
+                        this->cache.map[edid] = this->cache.offset;
+                        form->SetFormID(this->baseID | this->cache.offset++, false);
                     }
                     form->SetFormEditorID(edid.c_str());
                     form->SetFullName(this->OriginalVL->GetFullName());
@@ -131,8 +127,8 @@ namespace MPL::Managers
                     logger::info("Generated VL Race {} {:08X} for Vampire Race {} {:06X}:{}", form->GetFormEditorID(), form->formID, race->GetFormEditorID(), race->GetLocalFormID(), race->GetFile(0)->GetFilename());
                 }
             }
-            logger::info("Saving formid cache with {} entries", this->race_formid_cache.size());
-            rfl::msgpack::save("./Data/SKSE/vlrp-cache.bin", this->race_formid_cache);
+            logger::info("Saving formid cache with {} entries", this->cache.map.size());
+            rfl::msgpack::save("./Data/SKSE/vlrp-cache.bin", this->cache);
         }
         this->conf_loaded = true;
     }

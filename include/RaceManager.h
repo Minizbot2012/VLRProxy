@@ -10,18 +10,22 @@ namespace MPL::Managers
         RE::TESRace* vlRace;
     };
 
+    struct RaceCache {
+        uint32_t offset = 0x0;
+        std::unordered_map<std::string, uint32_t> map;
+    };
+
     class RaceManager : public REX::Singleton<RaceManager>
     {
     private:
         std::vector<RaceData> race_pairs;
         RE::TESRace* OriginalVL;
-        std::unordered_map<std::string, uint32_t> race_formid_cache;
+        RaceCache cache;
         bool conf_loaded;
         std::mutex _lock;
 
     public:
         RE::FormID baseID = 0x0;
-        uint32_t offset = 0x0;
         void InitLords();
         int PushRaceData(RaceData&);
         auto GetLordRace(RE::TESRace*) -> RE::TESRace*;
