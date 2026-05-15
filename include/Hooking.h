@@ -1,5 +1,7 @@
 #pragma once
 
+#include <REL/Module.h>
+#include <REL/Relocation.h>
 #include <SKSE/SKSE.h>
 
 #define ByteAt(addr) *reinterpret_cast<std::uint8_t*>(addr)

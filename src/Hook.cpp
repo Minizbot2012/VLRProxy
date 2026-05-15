@@ -19,9 +19,9 @@ namespace MPL
                     {
                         const auto npc = actor->As<RE::Actor>();
                         const auto race = race_form->As<RE::TESRace>();
-                        if (race && npc && npc->race != nullptr)
+                        if (race && npc && npc->GetActorRuntimeData().race != nullptr)
                         {
-                            if (auto npc_race = npc->race;
+                            if (auto npc_race = npc->GetActorRuntimeData().race;
                                 npc_race && rm->IsVampireLord(npc_race))
                             {
                                 result = 1.0;
@@ -416,7 +416,7 @@ namespace MPL
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
                 if (RM->GetOriginalLord() == rc && act->IsPlayerRef())
                 {
-                    return func(act, RM->GetLordRace(act->race), act->IsPlayerRef());
+                    return func(act, RM->GetLordRace(act->GetActorRuntimeData().race), act->IsPlayerRef());
                 }
                 else
                 {
@@ -453,7 +453,7 @@ namespace MPL
             static void thunk(int64_t a, int64_t b, RE::Actor* act)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
-                if (act->IsPlayerRef() && RM->IsSupportedLord(act->race))
+                if (act->IsPlayerRef() && RM->IsSupportedLord(act->GetActorRuntimeData().race))
                 {
                     return;
                 }
@@ -482,7 +482,7 @@ namespace MPL
                 }
                 else
                 {
-                    return act->race;
+                    return act->GetActorRuntimeData().race;
                 }
             }
             static void post_hook()
