@@ -4,20 +4,20 @@
 #include <cstdint>
 namespace MPL::API
 {
-    enum struct APIRes : int8_t
+    enum struct VLRAPIRes : int8_t
     {
         Failed = -1,
         Ok,
         Overriden
     };
 
-    enum struct APIVersion : uint8_t
+    enum struct VLAPIVersion : uint8_t
     {
         V1 = 1,
         Current = V1
     };
 
-    struct APIV1
+    class VLRP_APIV1
     {
     public:
         [[nodiscard]] virtual RE::TESRace* GetVLRace(RE::TESRace*) = 0;
@@ -29,25 +29,25 @@ namespace MPL::API
         [[nodiscard]] virtual bool IsRegisteredHV(RE::TESRace*) = 0;
     };
 
-    using CurrentInterface = APIV1;
-    typedef void* (*_RequestPluginAPI)(const APIVersion);
+    using CurrentInterface = VLRP_APIV1;
+    typedef void* (*_RequestPluginAPI)(const VLAPIVersion);
 
     struct VLRPMessage
     {
         enum message_type : uint32_t
         {
-            kMessage_GetInterface = 0x1a208e02
+            kMessage_GetInterface = 'VLRP'
         };
-        _RequestPluginAPI GetAPI;
+        CurrentInterface* API;
     };
 
-    [[nodiscard]] inline void* RequestPluginAPI(const APIVersion ver = APIVersion::Current)
+    [[nodiscard]] inline CurrentInterface* RequestVLAPI()
     {
         VLRPMessage message;
-        SKSE::GetMessagingInterface()->Dispatch('VLRP', (void*)&message, sizeof(VLRPMessage), "VLRProxy");
-        if (message.GetAPI)
+        SKSE::GetMessagingInterface()->Dispatch(VLRPMessage::kMessage_GetInterface, &message, sizeof(VLRPMessage), nullptr);
+        if (message.API)
         {
-            return message.GetAPI(ver);
+            return message.API;
         }
         return nullptr;
     }

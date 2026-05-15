@@ -1,7 +1,5 @@
 #pragma once
-#include <cstdint>
-#include <unordered_map>
-#include <rfl/msgpack.hpp>
+#include <MMSF_API.h>
 namespace MPL::Managers
 {
     struct RaceData
@@ -10,22 +8,17 @@ namespace MPL::Managers
         RE::TESRace* vlRace;
     };
 
-    struct RaceCache {
-        uint32_t offset = 0x0;
-        std::unordered_map<std::string, uint32_t> map;
-    };
 
     class RaceManager : public REX::Singleton<RaceManager>
     {
     private:
         std::vector<RaceData> race_pairs;
         RE::TESRace* OriginalVL;
-        RaceCache cache;
+        MPL::API::ServiceMap* MMSF;
         bool conf_loaded;
         std::mutex _lock;
 
     public:
-        RE::FormID baseID = 0x0;
         void InitLords();
         int PushRaceData(RaceData&);
         auto GetLordRace(RE::TESRace*) -> RE::TESRace*;

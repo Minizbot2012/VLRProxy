@@ -53,7 +53,7 @@ namespace MPL::papyrus
         return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
     [[nodiscard]] static auto GetRealRace(STATIC_ARGS, RE::Actor* actor) -> const RE::TESRace* {
-        return actor->race;
+        return actor->GetActorRuntimeData().race;
     }
 
 #undef STATIC_ARGS

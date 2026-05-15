@@ -1,10 +1,5 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 21,
-    "patch": 0
-  },
   "configurePresets": [
     {
       "name": "cmake-dev",
@@ -31,8 +26,7 @@
       "name": "windows",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded$<$<CONFIG:Debug>:Debug>",
-        "VCPKG_TARGET_TRIPLET": "x64-windows-mixed"
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md"
       }
     },
     {
@@ -42,38 +36,25 @@
       "toolset": "v145"
     },
     {
-      "name": "vs2022",
+      "name": "ng",
       "hidden": true,
-      "generator": "Visual Studio 17 2022",
-      "toolset": "v143"
+      "binaryDir": "${sourceDir}/build"
     },
     {
-      "name": "ae",
-      "hidden": true,
-      "binaryDir": "${sourceDir}/buildae",
-      "cacheVariables": {
-        "BUILD_SKYRIMAE": true
-      }
-    },
-    {
-      "name": "vs2022-windows-vcpkg-ae",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2022", "ae"]
-    },
-    {
-      "name": "vs2026-windows-vcpkg-ae",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "ae"]
+      "name": "vs2026-windows-vcpkg",
+      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "ng"]
     }
   ],
   "buildPresets": [
     {
-      "name": "vs2022-windows-vcpkg-ae",
-      "configurePreset": "vs2022-windows-vcpkg-ae",
+      "name": "vs2026-windows-vcpkg",
+      "configurePreset": "vs2026-windows-vcpkg",
       "configuration": "Release"
     },
     {
-      "name": "vs2026-windows-vcpkg-ae",
-      "configurePreset": "vs2026-windows-vcpkg-ae",
-      "configuration": "Release"
+      "name": "vs2026-windows-vcpkg-debug",
+      "configurePreset": "vs2026-windows-vcpkg",
+      "configuration": "Debug"
     }
   ]
 }

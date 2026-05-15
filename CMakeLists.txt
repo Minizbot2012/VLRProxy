@@ -1,15 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 set(NAME "VLRProxy" CACHE STRING "")
 set(VERSION 1.0.0 CACHE STRING "")
-set(VR_VERSION 1)
-set(AE_VERSION 1)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# ---- Options ----
-option(BUILD_SKYRIMVR "Build for Skyrim VR" OFF)
-option(BUILD_SKYRIMAE "Build for Skyrim AE" OFF)
 
 # ---- Cache build vars ----
 
@@ -20,40 +12,15 @@ macro(set_from_environment VARIABLE)
 endmacro()
 
 set_from_environment(VCPKG_ROOT)
-if(BUILD_SKYRIMAE)
-  add_compile_definitions(SKYRIM_AE)
-  add_compile_definitions(SKYRIM_SUPPORT_AE)
-  set(CommonLibName "CommonLibSSE")
-  set_from_environment(SkyrimAEPath)
-  set(SkyrimPath ${SkyrimAEPath})
-  set(SkyrimVersion "Skyrim AE")
-  set(VERSION ${VERSION}.${AE_VERSION})
-elseif(BUILD_SKYRIMVR)
-  add_compile_definitions(SKYRIMVR)
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-  set(CommonLibName "CommonLibVR")
-  set_from_environment(SkyrimVRPath)
-  set(SkyrimPath ${SkyrimVRPath})
-  set(SkyrimVersion "Skyrim VR")
-  set(VERSION ${VERSION}.${VR_VERSION})
-else()
-  set(CommonLibName "CommonLibSSE")
-  set_from_environment(Skyrim64Path)
-  set(SkyrimPath ${Skyrim64Path})
-  set(SkyrimVersion "Skyrim SSE")
-endif()
 
 if (DEFINED VCPKG_ROOT)
   set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-  set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
 else ()
   message(
   WARNING
   "Variable VCPKG_ROOT is not set. Continuing without vcpkg."
  )
 endif ()
-
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "")
 
 # ---- Project ----
 
@@ -72,20 +39,15 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
  )
 endif()
 
-
-if (MSVC)
-  if (NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
-    add_compile_options(
-   /MP	# Build with Multiple Processes
-  )
-  endif ()
-endif ()
-
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 
 # ---- Add source files ----
 
+set(BUILD_TESTS OFF CACHE BOOL "Disable Tests" FORCE)
+set(ENABLE_SKYRIM_VR OFF CACHE BOOL "Disable VR" FORCE)
+set(ENABLE_SKYRIM_SE OFF CACHE BOOL "Disable SE" FORCE)
+add_subdirectory(extern/CommonLibSSE)
 include(CMake/headerlist.cmake)
 include(CMake/sourcelist.cmake)
 
@@ -133,14 +95,13 @@ target_include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-find_package(reflectcpp CONFIG REQUIRED)
-find_package(${CommonLibName} CONFIG REQUIRED)
+#find_package(reflectcpp CONFIG REQUIRED)
 
 target_link_libraries(
  ${PROJECT_NAME}
  PRIVATE
-  ${CommonLibName}::${CommonLibName}
-  reflectcpp::reflectcpp
+  CommonLibSSE::CommonLibSSE
+  #reflectcpp::reflectcpp
 )
 
 target_precompile_headers(
@@ -156,7 +117,7 @@ if (MSVC)
    /sdl             # Enable Additional Security Checks
    /utf-8           # Set Source and Executable character sets to UTF-8
    /Zi              # Debug Information Format
-
+   /MD
    /permissive-     # Standards conformance
    /Zc:preprocessor # Enable preprocessor conformance mode
 

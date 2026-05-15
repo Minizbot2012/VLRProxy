@@ -4,6 +4,5 @@
     "baseline": "0b88aacde46a853151730fbe7d0b7ee45f4b6864",
     "repository": "https://github.com/microsoft/vcpkg"
   },
-  "overlay-ports": ["CMake/ports/"],
-  "overlay-triplets": ["CMake/triplets/"]
+  "overlay-ports": ["CMake/ports/"]
 }

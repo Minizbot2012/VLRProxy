@@ -44,10 +44,10 @@ namespace MPL::API
 
     bool Interface::IsVampireLord(RE::Actor* actor)
     {
-        if (actor != nullptr && actor->race != nullptr)
+        if (actor != nullptr && actor->GetActorRuntimeData().race != nullptr)
         {
             return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(
-                actor->race);
+                actor->GetActorRuntimeData().race);
         }
         else
         {

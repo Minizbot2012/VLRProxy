@@ -3,6 +3,7 @@
 #define UNICODE
 #define _UNICODE
 // clang-format off
+#define EXCLUSIVE_SKYRIM_FLAT
 #include <SKSE/SKSE.h>
 #include <RE/Skyrim.h>
 #include <windows.h>
