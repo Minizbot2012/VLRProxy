@@ -7,6 +7,7 @@ namespace MPL::API
     public:
         virtual RE::FormID LookupFormIDForEDID(std::string) = 0;
         virtual std::string LookupEDIDForFormID(RE::FormID) = 0;
+        virtual RE::TESForm* LookupCachedForm(std::string) = 0;
         virtual RE::TESForm* AllocateForm(std::string, RE::FormType) = 0;
     };
     struct MMSFMessage
