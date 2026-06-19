@@ -1,3 +1,4 @@
+#include "REL/ID.h"
 #include <Hook.h>
 #include <RaceManager.h>
 #include <cstdint>
@@ -7,15 +8,15 @@ namespace MPL
     {
         struct GetIsRace
         {
-            static inline constexpr REL::ID relocation = REL::ID(22173);
-            static inline constexpr std::size_t offset = 0x68;
-            static bool thunk(const RE::TESObjectREFR* obj, const RE::TESForm* race_form,
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 22173, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x68, 0x0);
+            static bool thunk(const RE::TESObjectREFR* actor, const RE::TESForm* race_form,
                 [[maybe_unused]] void* unused, double& result)
             {
-                if (obj && race_form)
+                if (actor && race_form->Is(RE::FormType::Race))
                 {
                     auto rm = MPL::Managers::RaceManager::GetSingleton();
-                    if (auto actor = obj->GetObjectReference(); actor != nullptr && actor->IsActor() && race_form->Is(RE::FormType::Race) && race_form->As<RE::TESRace>() == rm->GetOriginalLord())
+                    if (actor != nullptr && actor->IsPlayerRef() && race_form->Is(RE::FormType::Race) && race_form->As<RE::TESRace>() == rm->GetOriginalLord())
                     {
                         const auto npc = actor->As<RE::Actor>();
                         const auto race = race_form->As<RE::TESRace>();
@@ -37,8 +38,7 @@ namespace MPL
                     }
                     return true;
                 }
-                logger::info("GetIsRace Calling Original");
-                return func(obj, race_form, unused, result);
+                return func(actor, race_form, unused, result);
             }
             static void post_hook() { logger::info("Installed hooks for GetIsRace"); };
             static inline REL::Relocation<decltype(thunk)> func;
@@ -46,7 +46,7 @@ namespace MPL
 
         struct GetIsRaceAddr
         {
-            static inline constexpr REL::ID addr = REL::ID(361561);
+            static inline constexpr REL::VariantID addr = REL::VariantID(0, 361561, 0);
             static bool thunk(RE::TESObjectREFR* obj, RE::TESForm* race_form,
                 [[maybe_unused]] void* unused, double& result)
             {
@@ -60,8 +60,8 @@ namespace MPL
 
         struct GetPcIsRace
         {
-            static inline constexpr REL::ID relocation = REL::ID(22179);
-            static inline constexpr std::size_t offset = 0x66;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 22179, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x66, 0x0);
             static bool thunk([[maybe_unused]] RE::TESObjectREFR* obj,
                 RE::TESForm* race_form, [[maybe_unused]] void* unused,
                 double& result)
@@ -74,8 +74,8 @@ namespace MPL
 
         struct IsValidHeadpart
         {
-            static inline constexpr REL::ID relocation = REL::ID(23631);
-            static inline constexpr std::size_t offset = 0x10;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 23631, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x10, 0x0);
             static long thunk(const RE::BGSListForm* frm, RE::TESForm* rc)
             {
                 auto* race = rc->As<RE::TESRace>();
@@ -96,8 +96,8 @@ namespace MPL
 
         struct IsValidRace_Hook1
         {
-            static inline constexpr REL::ID relocation = REL::ID(17792);
-            static inline constexpr std::size_t offset = 0x4b;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 17792, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x4B, 0x0);
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 RE::TESRace* race)
             {
@@ -121,8 +121,8 @@ namespace MPL
 
         struct IsValidRace_Hook2
         {
-            static inline constexpr REL::ID relocation = REL::ID(17794);
-            static inline constexpr std::size_t offset = 0x17;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 17794, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x17, 0x0);
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 RE::TESRace* race)
             {
@@ -146,8 +146,8 @@ namespace MPL
 
         struct IsValidRace_Hook3
         {
-            static inline constexpr REL::ID relocation = REL::ID(25362);
-            static inline constexpr std::size_t offset = 0x91;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 25362, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x91, 0x0);
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 RE::TESRace* race)
             {
@@ -171,8 +171,8 @@ namespace MPL
 
         struct IsValidRace_Hook4
         {
-            static inline constexpr REL::ID relocation = REL::ID(25362);
-            static inline constexpr std::size_t offset = 0x131;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 25362, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x131, 0x0);
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 RE::TESRace* race)
             {
@@ -196,8 +196,8 @@ namespace MPL
 
         struct IsValidRace_Hook5
         {
-            static inline constexpr REL::ID relocation = REL::ID(25363);
-            static inline constexpr std::size_t offset = 0x81;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 25363, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x81, 0x0);
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 RE::TESRace* race)
             {
@@ -221,8 +221,8 @@ namespace MPL
 
         struct IsValidRace_Hook6
         {
-            static inline constexpr REL::ID relocation = REL::ID(40114);
-            static inline constexpr std::size_t offset = 0x1a3;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 40114, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x1a3, 0x0);
             static bool thunk(const RE::TESObjectARMA* armor_addon,
                 RE::TESRace* race)
             {
@@ -246,8 +246,8 @@ namespace MPL
 
         struct Load3D_TESRace_IsTransformRace
         {
-            static inline constexpr REL::ID relocation = REL::ID(37177);
-            static inline constexpr std::size_t offset = 0x183;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 37177, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x183, 0x0);
             static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -269,8 +269,8 @@ namespace MPL
 
         struct FinishLoadGame_TESRace_IsTransformRace
         {
-            static inline constexpr REL::ID relocation = REL::ID(37652);
-            static inline constexpr std::size_t offset = 0xfd6;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 37652, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0xfd6, 0x0);
             static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -292,8 +292,8 @@ namespace MPL
 
         struct SetRace_TESRace_IsTransformRace1
         {
-            static inline constexpr REL::ID relocation = REL::ID(37925);
-            static inline constexpr std::size_t offset = 0xa4;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 37925, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0xa4, 0x0);
             static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -315,8 +315,8 @@ namespace MPL
 
         struct SetRace_TESRace_IsTransformRace2
         {
-            static inline constexpr REL::ID relocation = REL::ID(37925);
-            static inline constexpr std::size_t offset = 0x105;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 37925, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x105, 0x0);
             static bool thunk(RE::TESRace* me)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -337,8 +337,8 @@ namespace MPL
         };
         struct CharacterMenu_GetFromDOM
         {
-            static inline constexpr REL::ID relocation = REL::ID(52249);
-            static inline constexpr std::size_t offset = 0x1C1;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 52249, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x1C1, 0x0);
             static RE::TESForm* thunk(uint32_t id)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -361,8 +361,8 @@ namespace MPL
 
         struct FavoritesMenu_GetFromDOM
         {
-            static inline constexpr REL::ID relocation = REL::ID(52247);
-            static inline constexpr std::size_t offset = 0x13C;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 52247, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x13C, 0x0);
             static RE::TESForm* thunk(uint32_t id)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -385,8 +385,8 @@ namespace MPL
 
         struct IMenu_GetFromDOM
         {
-            static inline constexpr REL::ID relocation = REL::ID(51532);
-            static inline constexpr std::size_t offset = 0x13E;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 51532, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x13E, 0x0);
             static RE::TESForm* thunk(uint32_t id)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -409,8 +409,8 @@ namespace MPL
 
         struct Papyrus_Actor_SetRace
         {
-            static inline constexpr REL::ID relocation = REL::ID(54758);
-            static inline constexpr std::size_t offset = 0x23;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54758, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x23, 0x0);
             static void thunk(RE::Actor* act, RE::TESRace* rc, bool)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -432,8 +432,8 @@ namespace MPL
 
         struct Papyrus_Actor_EquipRobe
         {
-            static inline constexpr REL::ID relocation = REL::ID(54784);
-            static inline constexpr std::size_t offset = 0xeb3;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0xeb3, 0x0);
             static void thunk(int64_t a1, uint32_t a2, RE::Actor* act, RE::TESForm* frm, float flt, uint8_t a5, char a6)
             {
                 if (act->IsPlayerRef() && frm != nullptr && (frm == RE::TESForm::LookupByEditorID("DLC1ClothesVampireRoyalArmor") || frm == RE::TESForm::LookupByEditorID("DLC1ClothesVampireLordArmor"))) return;
@@ -448,8 +448,8 @@ namespace MPL
 
         struct Papyrus_Actor_UnequipAll
         {
-            static inline constexpr REL::ID relocation = REL::ID(54784);
-            static inline constexpr std::size_t offset = 0x50a9;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x50a9, 0x0);
             static void thunk(int64_t a, int64_t b, RE::Actor* act)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();
@@ -471,8 +471,8 @@ namespace MPL
 
         struct Papyrus_Actor_GetRace
         {
-            static inline constexpr REL::ID relocation = REL::ID(54784);
-            static inline constexpr std::size_t offset = 0x2245;
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x2245, 0x0);
             static RE::TESRace* thunk([[maybe_unused]] int64_t a, [[maybe_unused]] int64_t b, RE::Actor* act)
             {
                 auto* RM = MPL::Managers::RaceManager::GetSingleton();

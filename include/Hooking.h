@@ -1,10 +1,48 @@
 #pragma once
-
-#include <REL/Module.h>
-#include <REL/Relocation.h>
-#include <SKSE/SKSE.h>
+#include <cstdint>
+#include <format>
 
 #define ByteAt(addr) *reinterpret_cast<std::uint8_t*>(addr)
+
+class VariantIndex
+{
+private:
+    size_t a_se;
+    size_t a_ae;
+    size_t a_vr;
+
+public:
+    constexpr VariantIndex() noexcept = default;
+    explicit constexpr VariantIndex(size_t universal) noexcept
+    {
+        a_se = a_ae = a_vr = universal;
+    }
+    explicit constexpr VariantIndex(size_t se, size_t ae) noexcept
+    {
+        a_vr = a_se = se;
+        ae = ae;
+    }
+    explicit constexpr VariantIndex(size_t se, size_t ae, size_t vr) noexcept
+    {
+        a_se = se;
+        a_ae = ae;
+        a_vr = vr;
+    }
+    size_t index() const noexcept
+    {
+        switch (REL::Module::GetRuntime())
+        {
+        case REL::Module::Runtime::AE:
+            return a_ae;
+        case REL::Module::Runtime::SE:
+            return a_se;
+        case REL::Module::Runtime::VR:
+            return a_vr;
+        default:
+            return a_ae;
+        }
+    }
+};
 
 /// Declraing a pre_hook function allows Hook to receive a call before the main
 /// hook will be installed.
@@ -29,7 +67,7 @@ concept hook = requires {
 };
 
 template <typename Hook>
-concept CInstall = hook<Hook> && requires {
+concept custom_install = hook<Hook> && requires {
     { Hook::install };
 };
 
@@ -46,13 +84,13 @@ concept chain_hook = requires {
 /// addresses.
 template <typename Hook>
 concept call_hook = hook<Hook> && requires {
-    { Hook::relocation } -> std::convertible_to<REL::ID>;
-    { Hook::offset } -> std::convertible_to<std::size_t>;
+    { Hook::relocation } -> std::convertible_to<REL::VariantID>;
+    { Hook::offset } -> std::convertible_to<REL::VariantOffset>;
 };
 
 template <typename Hook>
 concept addr_hook = hook<Hook> && requires {
-    { Hook::addr } -> std::convertible_to<REL::ID>;
+    { Hook::addr } -> std::convertible_to<REL::VariantID>;
 };
 
 /// A type that has a vtable to hook into.
@@ -67,8 +105,13 @@ concept has_vtable = requires {
 /// table will be used by default.
 template <typename Hook>
 concept vtable_hook = hook<Hook> && requires {
-    { Hook::index } -> std::convertible_to<std::size_t>;
+    { Hook::index } -> std::convertible_to<VariantIndex>;
     requires(has_vtable<typename Hook::Target>);
+};
+
+template <typename Hook>
+concept offset_vtable_hook = hook<Hook> && vtable_hook<Hook> && requires {
+    { Hook::offset } -> std::convertible_to<REL::VariantOffset>;
 };
 
 /// Allows to provide a custom vtable index for a vtable hook.
@@ -121,16 +164,15 @@ namespace stl
     void write_vfunc()
     {
         REL::Relocation<std::uintptr_t> vtbl{ F::VTABLE[details::get_vtable<Hook>()] };
-        details::set_func<Hook>(vtbl.write_vfunc(Hook::index, Hook::thunk));
+        details::set_func<Hook>(vtbl.write_vfunc(Hook::index.index(), Hook::thunk));
     }
 
     template <addr_hook Hook>
     void write_addr()
     {
-        REL::Relocation addr = REL::Relocation(Hook::addr, 0);
-        auto res = *reinterpret_cast<uintptr_t*>(addr.address());
+        auto res = *reinterpret_cast<uintptr_t*>(Hook::addr.address());
         details::set_func<Hook>(res);
-        addr.write(reinterpret_cast<uintptr_t>(&Hook::thunk));
+        REL::safe_write(Hook::addr.address(), reinterpret_cast<uintptr_t>(&Hook::thunk));
     }
 
     template <vtable_hook Hook>
@@ -196,10 +238,24 @@ namespace stl
         }
     }
 
-    template <CInstall Hook>
-    void custom_install()
+    template <class Hook>
+    void write_offset_vtable()
     {
-        Hook::install();
+        auto vtable = 0;
+        if constexpr (custom_vtable_index<Hook>)
+        {
+            vtable = Hook::vtable;
+        }
+        REL::Relocation<uintptr_t> vtbl{ Hook::Target::VTABLE[vtable] };
+        auto func = reinterpret_cast<std::uintptr_t*>(vtbl.address())[Hook::index.index()];
+        auto callSite = func + Hook::offset.offset();
+        logger::info("Function address: 0x{:X}", func);
+        if (auto opcode = *reinterpret_cast<std::uint8_t*>(callSite); opcode != 0xE8)
+        {
+            stl::report_and_fail(std::format("Expected a CALL (0xE8) at {:X} for offset but found {:X};\ncrashing to avoid corrupting code. The call-site offset may have \nchanged in this game version.", callSite, opcode));
+            return;
+        }
+        stl::write_thunk_call<Hook>(callSite);
     }
 
     /// Installs given hook
@@ -220,9 +276,13 @@ namespace stl
         {
             Hook::pre_hook();
         }
-        if constexpr (CInstall<Hook>)
+        if constexpr (custom_install<Hook>)
         {
-            custom_install<Hook>();
+            Hook::install();
+        }
+        else if constexpr (offset_vtable_hook<Hook>)
+        {
+            stl::write_offset_vtable<Hook>();
         }
         else if constexpr (call_hook<Hook>)
         {

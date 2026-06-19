@@ -1,7 +1,6 @@
-#include "MMSF_API.h"
+#include <MMSF_API.h>
 #include <RaceManager.h>
-#include <SKSE/API.h>
-#include <SKSE/Impl/PCH.h>
+#include <format>
 namespace MPL::Managers
 {
     void Managers::RaceManager::InitLords()
@@ -12,10 +11,11 @@ namespace MPL::Managers
                 stl::report_and_fail("Failed to get MMSF API");
             }
         }
-        if (this->conf_loaded) return;
+        if (this->lords_initialized) return;
         std::lock_guard _guard(this->_lock);
-        if (!this->conf_loaded)
+        if (!this->lords_initialized)
         {
+            this->lords_initialized = true;
             auto TDH = RE::TESDataHandler::GetSingleton();
             auto races = TDH->GetFormArray(RE::FormType::Race);
             auto headParts = TDH->GetFormArray(RE::FormType::HeadPart);
@@ -28,6 +28,7 @@ namespace MPL::Managers
                 {
                     auto edid = std::format("{}Lord", race->GetFormEditorID());
                     auto form = this->MMSF->AllocateForm(edid, RE::FormType::Race)->As<RE::TESRace>();
+                    form->SetFullName(this->OriginalVL->GetFullName());
                     form->clampFaceGeoValue = race->clampFaceGeoValue;
                     form->clampFaceGeoValue2 = race->clampFaceGeoValue2;
                     form->corpseOpenSound = race->corpseOpenSound;
@@ -109,7 +110,6 @@ namespace MPL::Managers
                 }
             }
         }
-        this->conf_loaded = true;
     }
     int RaceManager::PushRaceData(RaceData& rd)
     {

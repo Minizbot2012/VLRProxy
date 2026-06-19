@@ -15,7 +15,7 @@ namespace MPL::Managers
         std::vector<RaceData> race_pairs;
         RE::TESRace* OriginalVL;
         MPL::API::ServiceMap* MMSF;
-        bool conf_loaded;
+        bool lords_initialized;
         std::mutex _lock;
 
     public:
