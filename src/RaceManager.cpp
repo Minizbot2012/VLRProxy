@@ -20,7 +20,6 @@ namespace MPL::Managers
             this->lords_initialized = true;
             auto TDH = RE::TESDataHandler::GetSingleton();
             auto races = TDH->GetFormArray(RE::FormType::Race);
-            auto armorAddons = TDH->GetFormArray(RE::FormType::Armature);
             this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
             for (auto frm : races)
             {
@@ -39,7 +38,7 @@ namespace MPL::Managers
                     form->numKeywords = this->OriginalVL->numKeywords;
                     form->dismemberBlood = race->dismemberBlood;
                     form->validEquipTypes = race->validEquipTypes;
-                    if (form->armorParentRace != nullptr)
+                    if (race->armorParentRace != nullptr)
                     {
                         form->armorParentRace = race->armorParentRace;
                     }
