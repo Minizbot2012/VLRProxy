@@ -9,13 +9,12 @@ namespace MPL
         {
             static inline constexpr REL::VariantID relocation = REL::VariantID(0, 22173, 0);
             static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x68, 0x0);
-            static bool thunk(const RE::TESObjectREFR* actor, const RE::TESForm* race_form,
-                [[maybe_unused]] void* unused, double& result)
+            static bool thunk(const RE::TESObjectREFR* actor, const RE::TESForm* race_form, [[maybe_unused]] void* unused, double& result)
             {
-                if (actor && race_form->Is(RE::FormType::Race))
+                if (actor && race_form)
                 {
                     auto rm = MPL::Managers::RaceManager::GetSingleton();
-                    if (actor != nullptr && actor->IsPlayerRef() && race_form->Is(RE::FormType::Race) && race_form->As<RE::TESRace>() == rm->GetOriginalLord())
+                    if (actor->IsPlayerRef() && race_form->Is(RE::FormType::Race) && race_form->As<RE::TESRace>() == rm->GetOriginalLord())
                     {
                         const auto npc = actor->As<RE::Actor>();
                         const auto race = race_form->As<RE::TESRace>();
@@ -71,15 +70,15 @@ namespace MPL
             static void post_hook() { logger::info("Installed hooks for GetPcIsRace"); };
         };
 
-        struct IsValidHeadpart
+        struct TESNPC_IsValidHeadpart
         {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 23631, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x10, 0x0);
-            static long thunk(const RE::BGSListForm* frm, RE::TESForm* rc)
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 24707, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x1F, 0x0);
+            static bool thunk(const RE::BGSHeadPart* frm, RE::TESForm* rc)
             {
                 auto* race = rc->As<RE::TESRace>();
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (rm->IsSupportedLord(race) && !frm->HasForm(race))
+                if (rm->IsSupportedLord(race))
                 {
                     auto hr = rm->GetVampireRace(race);
                     return func(frm, hr);
@@ -88,157 +87,51 @@ namespace MPL
             };
             static void post_hook()
             {
-                logger::info("Installed hooks for BGSHeadPart::IsValid?");
+                logger::info("Installed hooks for TESNPC::IsValidHeadpart");
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
-        struct IsValidRace_Hook1
+        struct PlayerChar_IsValidHeadpart
         {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 17792, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x4B, 0x0);
-            static bool thunk(const RE::TESObjectARMA* armor_addon,
-                RE::TESRace* race)
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 52369, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0xDE, 0x0);
+            static bool thunk(const RE::BGSHeadPart* frm, RE::TESForm* rc)
             {
+                auto* race = rc->As<RE::TESRace>();
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
+                if (rm->IsSupportedLord(race))
                 {
-                    auto* va_race = rm->GetVampireRace(race);
-                    return func(armor_addon, va_race);
+                    auto hr = rm->GetVampireRace(race);
+                    return func(frm, hr);
                 }
-                else
-                {
-                    return func(armor_addon, race);
-                }
-            }
+                return func(frm, rc);
+            };
             static void post_hook()
             {
-                logger::info("Installed hook1 for TESObjectARMA::IsValid");
+                logger::info("Installed hooks for PlayerCharacter::IsValidHeadpart");
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
 
-        struct IsValidRace_Hook2
+        struct RSM_IsValidHeadpart
         {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 17794, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x17, 0x0);
-            static bool thunk(const RE::TESObjectARMA* armor_addon,
-                RE::TESRace* race)
+            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 52409, 0);
+            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x3AC, 0x0);
+            static bool thunk(const RE::BGSHeadPart* frm, RE::TESForm* rc)
             {
+                auto* race = rc->As<RE::TESRace>();
                 auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
+                if (rm->IsSupportedLord(race))
                 {
-                    auto* va_race = rm->GetVampireRace(race);
-                    return func(armor_addon, va_race);
+                    auto hr = rm->GetVampireRace(race);
+                    return func(frm, hr);
                 }
-                else
-                {
-                    return func(armor_addon, race);
-                }
-            }
-            static void post_hook()
-            {
-                logger::info("Installed hook2 for TESObjectARMA::IsValid");
+                return func(frm, rc);
             };
-            static inline REL::Relocation<decltype(thunk)> func;
-        };
-
-        struct IsValidRace_Hook3
-        {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 25362, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x91, 0x0);
-            static bool thunk(const RE::TESObjectARMA* armor_addon,
-                RE::TESRace* race)
-            {
-                auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
-                {
-                    auto* va_race = rm->GetVampireRace(race);
-                    return func(armor_addon, va_race);
-                }
-                else
-                {
-                    return func(armor_addon, race);
-                }
-            }
             static void post_hook()
             {
-                logger::info("Installed hook3 for TESObjectARMA::IsValid");
-            };
-            static inline REL::Relocation<decltype(thunk)> func;
-        };
-
-        struct IsValidRace_Hook4
-        {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 25362, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x131, 0x0);
-            static bool thunk(const RE::TESObjectARMA* armor_addon,
-                RE::TESRace* race)
-            {
-                auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
-                {
-                    auto* va_race = rm->GetVampireRace(race);
-                    return func(armor_addon, va_race);
-                }
-                else
-                {
-                    return func(armor_addon, race);
-                }
-            }
-            static void post_hook()
-            {
-                logger::info("Installed hook4 for TESObjectARMA::IsValid");
-            };
-            static inline REL::Relocation<decltype(thunk)> func;
-        };
-
-        struct IsValidRace_Hook5
-        {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 25363, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x81, 0x0);
-            static bool thunk(const RE::TESObjectARMA* armor_addon,
-                RE::TESRace* race)
-            {
-                auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
-                {
-                    auto* va_race = rm->GetVampireRace(race);
-                    return func(armor_addon, va_race);
-                }
-                else
-                {
-                    return func(armor_addon, race);
-                }
-            }
-            static void post_hook()
-            {
-                logger::info("Installed hook5 for TESObjectARMA::IsValid");
-            };
-            static inline REL::Relocation<decltype(thunk)> func;
-        };
-
-        struct IsValidRace_Hook6
-        {
-            static inline constexpr REL::VariantID relocation = REL::VariantID(0, 40114, 0);
-            static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x1a3, 0x0);
-            static bool thunk(const RE::TESObjectARMA* armor_addon,
-                RE::TESRace* race)
-            {
-                auto* rm = MPL::Managers::RaceManager::GetSingleton();
-                if (race != nullptr && armor_addon != nullptr && rm->IsSupportedLord(race))
-                {
-                    auto* va_race = rm->GetVampireRace(race);
-                    return func(armor_addon, va_race);
-                }
-                else
-                {
-                    return func(armor_addon, race);
-                }
-            }
-            static void post_hook()
-            {
-                logger::info("Installed hook6 for TESObjectARMA::IsValid");
+                logger::info("Installed hooks for RSM::IsValidHeadpart");
             };
             static inline REL::Relocation<decltype(thunk)> func;
         };
@@ -496,13 +389,9 @@ namespace MPL
             stl::install_hook<GetIsRace>();
             stl::install_hook<GetIsRaceAddr>();
             stl::install_hook<GetPcIsRace>();
-            stl::install_hook<IsValidHeadpart>();
-            stl::install_hook<IsValidRace_Hook1>();
-            stl::install_hook<IsValidRace_Hook2>();
-            stl::install_hook<IsValidRace_Hook3>();
-            stl::install_hook<IsValidRace_Hook4>();
-            stl::install_hook<IsValidRace_Hook5>();
-            stl::install_hook<IsValidRace_Hook6>();
+            stl::install_hook<TESNPC_IsValidHeadpart>();
+            stl::install_hook<PlayerChar_IsValidHeadpart>();
+            stl::install_hook<RSM_IsValidHeadpart>();
             stl::install_hook<Load3D_TESRace_IsTransformRace>();
             stl::install_hook<FinishLoadGame_TESRace_IsTransformRace>();
             stl::install_hook<SetRace_TESRace_IsTransformRace1>();

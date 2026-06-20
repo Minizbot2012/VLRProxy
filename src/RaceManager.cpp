@@ -5,9 +5,11 @@ namespace MPL::Managers
 {
     void Managers::RaceManager::InitLords()
     {
-        if(this->MMSF == nullptr) {
+        if (this->MMSF == nullptr)
+        {
             this->MMSF = MPL::API::RequestMMSFAPI();
-            if(this->MMSF == nullptr) {
+            if (this->MMSF == nullptr)
+            {
                 stl::report_and_fail("Failed to get MMSF API");
             }
         }
@@ -18,7 +20,6 @@ namespace MPL::Managers
             this->lords_initialized = true;
             auto TDH = RE::TESDataHandler::GetSingleton();
             auto races = TDH->GetFormArray(RE::FormType::Race);
-            auto headParts = TDH->GetFormArray(RE::FormType::HeadPart);
             auto armorAddons = TDH->GetFormArray(RE::FormType::Armature);
             this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
             for (auto frm : races)
@@ -38,7 +39,14 @@ namespace MPL::Managers
                     form->numKeywords = this->OriginalVL->numKeywords;
                     form->dismemberBlood = race->dismemberBlood;
                     form->validEquipTypes = race->validEquipTypes;
-                    form->armorParentRace = race->armorParentRace;
+                    if (form->armorParentRace != nullptr)
+                    {
+                        form->armorParentRace = race->armorParentRace;
+                    }
+                    else
+                    {
+                        form->armorParentRace = race->morphRace;
+                    }
                     form->morphRace = race->morphRace;
                     form->bodyPartData = race->bodyPartData;
                     form->phonemeTargets = race->phonemeTargets;
@@ -90,17 +98,6 @@ namespace MPL::Managers
                     form->skeletonModels[0] = race->skeletonModels[0];
                     form->skeletonModels[1] = race->skeletonModels[1];
                     form->bloodImpactMaterial = race->bloodImpactMaterial;
-                    for (auto hp : headParts)
-                    {
-                        auto headPart = hp->As<RE::BGSHeadPart>();
-                        if (headPart->validRaces)
-                        {
-                            if (headPart->validRaces->HasForm(race) && !headPart->validRaces->HasForm(form))
-                            {
-                                headPart->validRaces->AddForm(form);
-                            }
-                        }
-                    }
                     Managers::RaceData rd{
                         .vampireRace = race,
                         .vlRace = form
