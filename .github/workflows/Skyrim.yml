@@ -1,4 +1,4 @@
-name: Build Skyrim AE
+name: Build Skyrim
 
 on:
   push:
@@ -19,23 +19,16 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
       - name: Update VCPKG
         run: |
           cd ${{ env.VCPKG_INSTALLATION_ROOT }}
           bootstrap-vcpkg.bat -disableMetrics
           vcpkg integrate install
-      - name: vcpkg cache
-        id: vcpkg-cache
-        uses: TAServers/vcpkg-cache@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Configure CMake
         run: cmake --preset ${{env.PRESET}}
-        env:
-          VCPKG_FEATURE_FLAGS: "binarycaching"
-          VCPKG_BINARY_SOURCES: "clear;files,${{ steps.vcpkg-cache.outputs.path }},readwrite"
-
       - name: Build
         run: cmake --build --preset ${{env.PRESET}}
       - name: Archive
@@ -43,9 +36,9 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "Skyrim AE"
+          name: "Skyrim"
           path: |
-            ./buildae/release/*.*
+            ./build/release/*.*
       - name: Create & Upload Release
         id: upload-release
         uses: softprops/action-gh-release@v2
