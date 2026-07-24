@@ -43,11 +43,6 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 
 # ---- Add source files ----
-
-set(BUILD_TESTS OFF CACHE BOOL "Disable Tests" FORCE)
-set(ENABLE_SKYRIM_VR OFF CACHE BOOL "Disable VR" FORCE)
-set(ENABLE_SKYRIM_SE OFF CACHE BOOL "Disable SE" FORCE)
-add_subdirectory(extern/CommonLibSSE)
 include(CMake/headerlist.cmake)
 include(CMake/sourcelist.cmake)
 
@@ -95,6 +90,9 @@ target_include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+find_package(CommonLibSSE CONFIG REQUIRED)
+find_package(DirectXTK CONFIG REQUIRED)
+
 target_link_libraries(
  ${PROJECT_NAME}
  PRIVATE
@@ -114,14 +112,14 @@ if (MSVC)
    /sdl             # Enable Additional Security Checks
    /utf-8           # Set Source and Executable character sets to UTF-8
    /Zi              # Debug Information Format
-   /MD
+
    /permissive-     # Standards conformance
    /Zc:preprocessor # Enable preprocessor conformance mode
 
    /wd4200          # nonstandard extension used : zero-sized array in struct/union
 
    "$<$<CONFIG:DEBUG>:>"
-   "$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3>"
+   "$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3;/MD>"
  )
 
   target_link_options(

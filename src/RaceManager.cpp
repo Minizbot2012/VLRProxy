@@ -180,14 +180,18 @@ namespace MPL::Managers
         if (!actor) return;
         if (!this->transforms.contains(actor->GetDisplayFullName())) return;
         auto& transform = this->transforms[actor->GetDisplayFullName()];
-        auto artObject = this->MMSF->AllocateForm(std::format("{}_Wings", actor->GetActorBase()->GetFormEditorID()), RE::FormType::ArtObject);
-        if (!artObject) return;
-        auto effect = artObject->As<RE::BGSArtObject>();
-        if (!effect) return;
-        effect->data.artType = RE::BGSArtObject::ArtType::kMagicCastingArt;
-        effect->model = transform.wingPath;
-        transform.artObject = effect;
-        actor->ApplyArtObject(effect);
+        if (!transform.artObject) {
+            auto artObject = this->MMSF->AllocateForm(std::format("{}_Wings", actor->GetActorBase()->GetFormEditorID()), RE::FormType::ArtObject);
+            if (!artObject) return;
+            auto effect = artObject->As<RE::BGSArtObject>();
+            if (!effect) return;
+            effect->data.artType = RE::BGSArtObject::ArtType::kMagicCastingArt;
+            effect->model = transform.wingPath;
+            transform.artObject = effect;
+        }
+        if (!transform.artObject) return;
+        transform.artObject->model = transform.wingPath;
+        actor->ApplyArtObject(transform.artObject);
         logger::info("Attached wings to actor {}", actor->GetActorBase()->GetFormEditorID());
     };
 
@@ -196,24 +200,23 @@ namespace MPL::Managers
         if (!actor) return;
         if (!this->transforms.contains(actor->GetDisplayFullName())) return;
         auto& transform = this->transforms[actor->GetDisplayFullName()];
-        if (transform.artObject) return;
+        if (!transform.artObject) return;
         SKSE::GetTaskInterface()->AddTask([&]() {
             auto procList = RE::ProcessLists::GetSingleton();
             for (auto effect : procList->globalTempEffects)
             {
-                if (auto mrf = effect->As<RE::ModelReferenceEffect>())
+                if (auto* mrf = effect->As<RE::ModelReferenceEffect>(); mrf)
                 {
                     if (mrf->artObject == transform.artObject && mrf->target.get().get() == actor)
                     {
                         mrf->Detach();
                         mrf->finished = true;
-                        transform.artObject = nullptr;
+                        logger::info("Detached wings from actor {}", actor->GetActorBase()->GetFormEditorID());
                         break;
                     }
                 }
             }
         });
-        logger::info("Detached wings from actor {}", actor->GetActorBase()->GetFormEditorID());
     }
 
     void RaceManager::ClearTransforms()
