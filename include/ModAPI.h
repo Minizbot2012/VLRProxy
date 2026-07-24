@@ -1,18 +1,21 @@
 #pragma once
-#include <API_VLRProxy.h>
+#include <VLRProxy_API.h>
 #include <RaceManager.h>
-namespace MPL::API
+#include <cstdint>
+namespace MPL::API::VLRProxy
 {
-    class Interface : public CurrentInterface
+    class ModAPI : public Interface
     {
     public:
-        // API V1
-        RE::TESRace* GetVLRace(RE::TESRace* race) override;
-        RE::TESRace* GetVampireRace(RE::TESRace* race) override;
+        uint16_t GetVersion() override;
+        RE::TESRace* GetVLRace(RE::TESRace*) override;
+        RE::TESRace* GetVampireRace(RE::TESRace*) override;
         RE::TESRace* GetRegularVL() override;
-        bool IsVampireLord(RE::TESRace* test_race) override;
-        bool IsVampireLord(RE::Actor* actor) override;
-        bool IsRegisteredVL(RE::TESRace* lord_race) override;
-        bool IsRegisteredHV(RE::TESRace* human_vampire) override;
+        bool IsVampireLord(RE::TESRace*) override;
+        bool IsVampireLord(RE::Actor*) override;
+        bool IsRegisteredVL(RE::TESRace*) override;
+        bool IsRegisteredHV(RE::TESRace*) override;
+        void TransformNPC(RE::Actor*) override;
+        void RevertNPC(RE::Actor*) override;
     };
 }  // namespace MPL::API

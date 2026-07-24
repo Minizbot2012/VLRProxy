@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.40)
 set(NAME "VLRProxy" CACHE STRING "")
-set(VERSION 0.8.5.0 CACHE STRING "")
+set(VERSION 0.9.0.0 CACHE STRING "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ---- Cache build vars ----
@@ -95,13 +95,10 @@ target_include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-#find_package(reflectcpp CONFIG REQUIRED)
-
 target_link_libraries(
  ${PROJECT_NAME}
  PRIVATE
   CommonLibSSE::CommonLibSSE
-  #reflectcpp::reflectcpp
 )
 
 target_precompile_headers(

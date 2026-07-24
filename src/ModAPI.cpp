@@ -1,7 +1,12 @@
 #include <ModAPI.h>
-namespace MPL::API
+namespace MPL::API::VLRProxy
 {
-    RE::TESRace* Interface::GetVLRace(RE::TESRace* race)
+    uint16_t ModAPI::GetVersion()
+    {
+        return 1;
+    }
+
+    RE::TESRace* ModAPI::GetVLRace(RE::TESRace* race)
     {
         if (race != nullptr)
         {
@@ -13,7 +18,7 @@ namespace MPL::API
         }
     }
 
-    RE::TESRace* Interface::GetVampireRace(RE::TESRace* race)
+    RE::TESRace* ModAPI::GetVampireRace(RE::TESRace* race)
     {
         if (race != nullptr)
         {
@@ -24,12 +29,12 @@ namespace MPL::API
         }
     }
 
-    RE::TESRace* Interface::GetRegularVL()
+    RE::TESRace* ModAPI::GetRegularVL()
     {
         return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
 
-    bool Interface::IsVampireLord(RE::TESRace* test_race)
+    bool ModAPI::IsVampireLord(RE::TESRace* test_race)
     {
         if (test_race != nullptr)
         {
@@ -42,7 +47,7 @@ namespace MPL::API
         }
     }
 
-    bool Interface::IsVampireLord(RE::Actor* actor)
+    bool ModAPI::IsVampireLord(RE::Actor* actor)
     {
         if (actor != nullptr && actor->GetActorRuntimeData().race != nullptr)
         {
@@ -55,7 +60,7 @@ namespace MPL::API
         }
     }
 
-    bool Interface::IsRegisteredVL(RE::TESRace* lord_race)
+    bool ModAPI::IsRegisteredVL(RE::TESRace* lord_race)
     {
         if (lord_race != nullptr)
         {
@@ -68,7 +73,7 @@ namespace MPL::API
         }
     }
 
-    bool Interface::IsRegisteredHV(RE::TESRace* human_vampire)
+    bool ModAPI::IsRegisteredHV(RE::TESRace* human_vampire)
     {
         if (human_vampire != nullptr)
         {
@@ -79,5 +84,14 @@ namespace MPL::API
         {
             return false;
         }
+    }
+
+    void ModAPI::TransformNPC(RE::Actor* actor)
+    {
+        MPL::Managers::RaceManager::GetSingleton()->AttachWings(actor);
+    }
+    void ModAPI::RevertNPC(RE::Actor* actor)
+    {
+        MPL::Managers::RaceManager::GetSingleton()->DetachWings(actor);
     }
 }  // namespace MPL::API
