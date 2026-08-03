@@ -28,7 +28,6 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
         sta->InitLords();
         break;
     case SKSE::MessagingInterface::kPreLoadGame:
-        sta->ClearTransforms();
         break;
     default:
         break;
@@ -36,12 +35,13 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
 }
 
 SKSEPluginInfo(
-        .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
-    .Name = "VLRProxy"sv,
+    .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
+    .Name = MPL::Plugin::PROJECT,
     .Author = "Mini"sv,
     .SupportEmail = ""sv,
     .StructCompatibility = SKSE::StructCompatibility::Independent,
-    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary);
+    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary
+);
 
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {

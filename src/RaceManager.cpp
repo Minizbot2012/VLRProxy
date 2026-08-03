@@ -218,12 +218,4 @@ namespace MPL::Managers
             }
         });
     }
-
-    void RaceManager::ClearTransforms()
-    {
-        for (auto& [npc, transform] : this->transforms)
-        {
-            transform.artObject = nullptr;
-        }
-    }
 }  // namespace MPL::Managers

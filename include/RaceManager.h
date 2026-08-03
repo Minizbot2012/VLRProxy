@@ -1,5 +1,4 @@
 #pragma once
-#include "RE/R/ReferenceEffect.h"
 #include <Externals/MMSF_API.h>
 namespace MPL::Managers
 {
@@ -20,9 +19,10 @@ namespace MPL::Managers
     private:
         std::vector<RaceData> race_pairs;
         std::unordered_map<std::string, ActorTransforms> transforms = {
-            {"Vrel", ActorTransforms { .wingPath = "[Anton] mods\\Animated Dragon Wings\\Bloody Red Dragon Wings.nif" }}
+            {"Vrel", ActorTransforms { .wingPath = "[Anton] mods\\Animated Dragon Wings\\Bloody Red Dragon Wings.nif" }},
+            {"Lord Harkon", ActorTransforms { .wingPath = "[Anton] mods\\Animated Dragon Wings\\Evil Blue Dragon Wings.nif" }}
         };
-        MPL::API::MMSF::ServiceMap* MMSF;
+        MPL::API::MMSF::Interface* MMSF;
         RE::TESRace* OriginalVL;
         bool lords_initialized;
         std::mutex _lock;
@@ -39,6 +39,5 @@ namespace MPL::Managers
         bool IsSupportedLord(RE::TESRace*);
         void AttachWings(RE::Actor*);
         void DetachWings(RE::Actor*);
-        void ClearTransforms();
     };
 }  // namespace MPL::managers
