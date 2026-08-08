@@ -1,9 +1,14 @@
+#include "RaceManager.h"
 #include <ModAPI.h>
 namespace MPL::API::VLRProxy
 {
-    uint16_t ModAPI::GetVersion()
+    uint64_t ModAPI::GetVersion()
     {
-        return 1;
+        return 2;
+    }
+
+    void ModAPI::WaitForReadySignal() {
+        MPL::Managers::RaceManager::GetSingleton()->WaitForReadySignal();
     }
 
     RE::TESRace* ModAPI::GetVLRace(RE::TESRace* race)
@@ -60,7 +65,7 @@ namespace MPL::API::VLRProxy
         }
     }
 
-    bool ModAPI::IsRegisteredVL(RE::TESRace* lord_race)
+    bool ModAPI::IsSupportedVL(RE::TESRace* lord_race)
     {
         if (lord_race != nullptr)
         {
@@ -73,7 +78,7 @@ namespace MPL::API::VLRProxy
         }
     }
 
-    bool ModAPI::IsRegisteredHV(RE::TESRace* human_vampire)
+    bool ModAPI::IsSupportedVH(RE::TESRace* human_vampire)
     {
         if (human_vampire != nullptr)
         {

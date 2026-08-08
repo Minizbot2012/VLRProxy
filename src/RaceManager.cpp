@@ -1,114 +1,260 @@
-#include <Externals/MMSF_API.h>
 #include <RaceManager.h>
 #include <algorithm>
+#include <cstdint>
+#include <filesystem>
 #include <format>
+#include <fstream>
+#include <ostream>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <vector>
 namespace MPL::Managers
 {
+    const std::string WHITESPACE = " \n\r\t\f\v";
+    // Trim from both ends
+    void trim(std::string& s)
+    {
+        size_t start = s.find_first_not_of(WHITESPACE);
+        if (start != std::string::npos)
+        {
+            s.erase(0, start);
+        }
+        else
+        {
+            s.clear();
+        }
+        size_t end = s.find_last_not_of(WHITESPACE);
+        if (end != std::string::npos)
+        {
+            s.erase(end + 1);
+        }
+        else
+        {
+            s.clear();  // String is entirely whitespace
+        }
+    }
+    RaceManager::RaceManager()
+    {
+        logger::info("Race Manager Initialized");
+    }
+    RaceManager::~RaceManager()
+    {
+    }
     void RaceManager::InitMMSF()
     {
         this->MMSF = MPL::API::MMSF::RequestMMSFAPI();
     }
-
-    void RaceManager::InitLords()
+    void RaceManager::PatchRMInis(std::filesystem::path drp)
     {
-        if (this->lords_initialized) return;
-        std::lock_guard _guard(this->_lock);
-        if (!this->lords_initialized)
+        std::vector<std::string> newFile;
+        std::vector<std::string> oldFile;
+        bool was_good = false;
+        auto races = drp / "races.ini";
         {
-            this->lords_initialized = true;
-            auto TDH = RE::TESDataHandler::GetSingleton();
-            auto races = TDH->GetFormArray(RE::FormType::Race);
-            this->OriginalVL = RE::TESForm::LookupByEditorID<RE::TESRace>("DLC1VampireBeastRace");
-            for (auto frm : races)
+            auto race_ini = RE::BSResourceNiBinaryStream(races.string());
+            if (was_good = race_ini.good(); was_good)
             {
-                auto race = frm->As<RE::TESRace>();
-                if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
+                std::string read;
+                while (std::getline(race_ini, read))
                 {
-                    std::string temp_edid = race->GetFormEditorID();
-                    temp_edid.erase(temp_edid.length() - 7);
-                    auto humanRace = RE::TESForm::LookupByEditorID<RE::TESRace>(temp_edid);
-                    if (humanRace)
+                    trim(read);
+                    if (!read.empty())
                     {
-                        auto edid = std::format("{}Lord", race->GetFormEditorID());
-                        auto form = this->MMSF->AllocateForm(edid, RE::FormType::Race)->As<RE::TESRace>();
-                        form->SetFullName(this->OriginalVL->GetFullName());
-                        form->clampFaceGeoValue = race->clampFaceGeoValue;
-                        form->clampFaceGeoValue2 = race->clampFaceGeoValue2;
-                        form->corpseOpenSound = race->corpseOpenSound;
-                        form->corpseCloseSound = race->corpseCloseSound;
-                        form->skin = race->skin;
-                        form->keywords = this->OriginalVL->keywords;
-                        form->numKeywords = this->OriginalVL->numKeywords;
-                        form->dismemberBlood = race->dismemberBlood;
-                        form->validEquipTypes = race->validEquipTypes;
-                        if (race->armorParentRace)
-                        {
-                            form->armorParentRace = race->armorParentRace;
-                        }
-                        else
-                        {
-                            form->armorParentRace = race->morphRace;
-                        }
-                        form->morphRace = race->morphRace;
-                        form->bodyPartData = race->bodyPartData;
-                        form->phonemeTargets = race->phonemeTargets;
-                        form->attackDataMap = this->OriginalVL->attackDataMap;
-                        form->impactDataSet = this->OriginalVL->impactDataSet;
-                        form->unarmedEquipSlot = this->OriginalVL->unarmedEquipSlot;
-                        form->bipedModelData = race->bipedModelData;
-                        form->data = race->data;
-                        form->data.flags.set(RE::RACE_DATA::Flag::kNoKnockdowns);
-                        form->unk280 = race->unk280;
-                        form->unk298 = race->unk298;
-                        form->unk2B0 = race->unk2B0;
-                        form->unk2B8 = race->unk2B8;
-                        form->unk2C0 = race->unk2C0;
-                        form->unk2C8 = race->unk2C8;
-                        form->unk42C = race->unk42C;
-                        form->unk448 = race->unk448;
-                        form->actorEffects = this->OriginalVL->actorEffects;
-                        for (int i = 0; i < 32; i++)
-                        {
-                            form->bipedObjectNameA[i] = race->bipedObjectNameA[i];
-                        }
-                        for (int i = 0; i < RE::TESRace::MovementTypes::kTotal; i++)
-                        {
-                            form->baseMoveTypes[i] = this->OriginalVL->baseMoveTypes[i];
-                        }
-                        form->data.weight[0] = race->data.weight[0];
-                        form->data.weight[1] = race->data.weight[1];
-                        form->data.height[0] = race->data.height[0];
-                        form->data.height[1] = race->data.height[1];
-                        form->rootBehaviorGraphNames[0] = this->OriginalVL->rootBehaviorGraphNames[0];
-                        form->rootBehaviorGraphNames[1] = this->OriginalVL->rootBehaviorGraphNames[1];
-                        form->behaviorGraphProjectNames[0] = this->OriginalVL->behaviorGraphProjectNames[0];
-                        form->behaviorGraphProjectNames[1] = this->OriginalVL->behaviorGraphProjectNames[1];
-                        form->behaviorGraphs[0] = this->OriginalVL->behaviorGraphs[0];
-                        form->behaviorGraphs[1] = this->OriginalVL->behaviorGraphs[1];
-                        form->attackAnimationArrayMap[0] = this->OriginalVL->attackAnimationArrayMap[0];
-                        form->attackAnimationArrayMap[1] = this->OriginalVL->attackAnimationArrayMap[1];
-                        form->defaultVoiceTypes[0] = race->defaultVoiceTypes[0];
-                        form->defaultVoiceTypes[1] = race->defaultVoiceTypes[1];
-                        form->faceRelatedData[0] = race->faceRelatedData[0];
-                        form->faceRelatedData[1] = race->faceRelatedData[1];
-                        form->decapitateArmors[0] = race->decapitateArmors[0];
-                        form->decapitateArmors[1] = race->decapitateArmors[1];
-                        form->bodyTextureModels[0] = race->bodyTextureModels[0];
-                        form->bodyTextureModels[1] = race->bodyTextureModels[1];
-                        form->defaultVoiceTypes[0] = race->defaultVoiceTypes[0];
-                        form->defaultVoiceTypes[1] = race->defaultVoiceTypes[1];
-                        form->skeletonModels[0] = race->skeletonModels[0];
-                        form->skeletonModels[1] = race->skeletonModels[1];
-                        form->bloodImpactMaterial = race->bloodImpactMaterial;
-                        Managers::RaceData rd{
-                            .vampireRace = race,
-                            .vlRace = form,
-                            .humanRace = humanRace
-                        };
-                        this->PushRaceData(rd);
+                        oldFile.push_back(read);
                     }
                 }
             }
+        }
+        for (auto read : oldFile)
+        {
+            if (!read.starts_with("#") && !read.empty())
+            {
+                auto config_parts = read | std::views::split('=') | std::ranges::to<std::vector<std::string>>();
+                if (config_parts.size() == 2)
+                {
+                    trim(config_parts[0]);
+                    trim(config_parts[1]);
+                    auto humLine = std::format("{} = {}", config_parts[0], config_parts[1]);
+                    auto vlLine = std::format("{}Lord = {}", config_parts[0], config_parts[1]);
+                    if (!config_parts[0].ends_with("Lord") && !config_parts[0].ends_with("Vampire"))
+                    {
+                        newFile.push_back(humLine);
+                    }
+                    else if (!config_parts[0].ends_with("Lord") && config_parts[0].ends_with("Vampire"))
+                    {
+                        newFile.push_back(humLine);
+                        newFile.push_back(vlLine);
+                    }
+                }
+            }
+            else if (read.starts_with("#"))
+            {
+                newFile.push_back(read);
+            }
+        }
+        if (was_good && oldFile.size() != newFile.size())
+        {
+            logger::info("Patched {} racemenu Races.ini from {} to {} lines", drp.stem().string(), oldFile.size(), newFile.size());
+            std::ofstream output("Data" / drp / "races.ini");
+            for (auto line : newFile)
+            {
+                output << line << std::endl;
+            }
+            output.flush();
+            output.close();
+        }
+        this->Ready.store(true);
+        this->Ready.notify_all();
+    }
+
+    void RaceManager::WaitForReadySignal() {
+        this->Ready.wait(false);
+    }
+
+    void RaceManager::InitLords()
+    {
+        if(!this->MMSF) {
+            this->InitMMSF();
+        }
+        this->race_pairs.clear();
+        auto TDH = RE::TESDataHandler::GetSingleton();
+        auto races = TDH->GetFormArray<RE::TESRace>();
+        this->OriginalVL = TDH->LookupForm<RE::TESRace>(0x283A, "Dawnguard.esm");
+        for (auto* race : races)
+        {
+            if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
+            {
+                std::string temp_edid = race->GetFormEditorID();
+                temp_edid.erase(temp_edid.length() - 7);
+                auto humanRace = RE::TESForm::LookupByEditorID<RE::TESRace>(temp_edid);
+                if (humanRace)
+                {
+                    auto edid = std::format("{}Lord", race->GetFormEditorID());
+                    auto form = this->MMSF->AllocateForm(edid, RE::FormType::Race)->As<RE::TESRace>();
+                    form->SetFullName(this->OriginalVL->GetFullName());
+                    form->clampFaceGeoValue = race->clampFaceGeoValue;
+                    form->clampFaceGeoValue2 = race->clampFaceGeoValue2;
+                    form->corpseOpenSound = race->corpseOpenSound;
+                    form->corpseCloseSound = race->corpseCloseSound;
+                    form->skin = race->skin;
+                    for (uint32_t i = 0; i < OriginalVL->GetNumKeywords(); i++)
+                    {
+                        auto keyword = OriginalVL->GetKeywordAt(i);
+                        if (keyword)
+                        {
+                            form->AddKeyword(*keyword);
+                        }
+                    }
+                    form->dismemberBlood = race->dismemberBlood;
+                    form->validEquipTypes = race->validEquipTypes;
+                    if (race->armorParentRace)
+                    {
+                        form->armorParentRace = race->armorParentRace;
+                    }
+                    else
+                    {
+                        form->armorParentRace = race->morphRace;
+                    }
+                    if (race->morphRace != race)
+                    {
+                        form->morphRace = race->morphRace;
+                    }
+                    else
+                    {
+                        form->morphRace = race;
+                    }
+                    form->bodyPartData = race->bodyPartData;
+                    form->phonemeTargets = race->phonemeTargets;
+                    form->attackDataMap = this->OriginalVL->attackDataMap;
+                    form->impactDataSet = this->OriginalVL->impactDataSet;
+                    form->unarmedEquipSlot = this->OriginalVL->unarmedEquipSlot;
+                    form->bipedModelData = race->bipedModelData;
+                    form->data = race->data;
+                    form->data.flags.set(RE::RACE_DATA::Flag::kNoKnockdowns);
+                    form->data.flags.set(RE::RACE_DATA::Flag::kFaceGenHead);
+                    form->unk280 = race->unk280;
+                    form->unk298 = race->unk298;
+                    form->unk2B0 = race->unk2B0;
+                    form->unk2B8 = race->unk2B8;
+                    form->unk2C0 = race->unk2C0;
+                    form->unk2C8 = race->unk2C8;
+                    form->unk42C = race->unk42C;
+                    form->unk448 = race->unk448;
+                    form->actorEffects = this->OriginalVL->actorEffects;
+                    form->bloodImpactMaterial = race->bloodImpactMaterial;
+                    for (int i = 0; i < RE::BIPED_OBJECT::kEditorTotal; i++)
+                    {
+                        form->bipedObjectNameA[i] = race->bipedObjectNameA[i];
+                    }
+                    for (int i = 0; i < RE::TESRace::MovementTypes::kTotal; i++)
+                    {
+                        form->baseMoveTypes[i] = this->OriginalVL->baseMoveTypes[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->data.weight[i] = race->data.weight[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->data.height[i] = race->data.height[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->rootBehaviorGraphNames[i] = this->OriginalVL->rootBehaviorGraphNames[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->behaviorGraphProjectNames[i] = this->OriginalVL->behaviorGraphProjectNames[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->behaviorGraphs[i] = this->OriginalVL->behaviorGraphs[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->attackAnimationArrayMap[i] = this->OriginalVL->attackAnimationArrayMap[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->defaultVoiceTypes[i] = race->defaultVoiceTypes[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->faceRelatedData[i] = race->faceRelatedData[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->decapitateArmors[i] = race->decapitateArmors[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->bodyTextureModels[i] = race->bodyTextureModels[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->bodyTextureModels[i] = race->bodyTextureModels[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->defaultVoiceTypes[i] = race->defaultVoiceTypes[i];
+                    }
+                    for (std::size_t i = 0; i < RE::SEXES::kTotal; ++i)
+                    {
+                        form->skeletonModels[i] = race->skeletonModels[i];
+                    }
+                    Managers::RaceData rd{
+                        .vampireRace = race,
+                        .vlRace = form,
+                        .humanRace = humanRace
+                    };
+                    this->PushRaceData(rd);
+                }
+            }
+        }
+        for (auto file : TDH->files)
+        {
+            PatchRMInis(SLIDER_DIR / file->GetFilename());
         }
     }
     int RaceManager::PushRaceData(RaceData& rd)
@@ -180,7 +326,8 @@ namespace MPL::Managers
         if (!actor) return;
         if (!this->transforms.contains(actor->GetDisplayFullName())) return;
         auto& transform = this->transforms[actor->GetDisplayFullName()];
-        if (!transform.artObject) {
+        if (!transform.artObject)
+        {
             auto artObject = this->MMSF->AllocateForm(std::format("{}_Wings", actor->GetActorBase()->GetFormEditorID()), RE::FormType::ArtObject);
             if (!artObject) return;
             auto effect = artObject->As<RE::BGSArtObject>();

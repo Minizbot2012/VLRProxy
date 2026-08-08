@@ -4,7 +4,6 @@
 #include <Plugin.h>
 #include <RaceManager.h>
 #include <VLRProxy_API.h>
-
 MPL::API::VLRProxy::ModAPI g_vlrpAPI;
 void APIHandler(SKSE::MessagingInterface::Message* msg)
 {
@@ -21,13 +20,8 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
     auto sta = MPL::Managers::RaceManager::GetSingleton();
     switch (msg->type)
     {
-    case SKSE::MessagingInterface::kPostPostLoad:
-        sta->InitMMSF();
-        break;
     case SKSE::MessagingInterface::kDataLoaded:
         sta->InitLords();
-        break;
-    case SKSE::MessagingInterface::kPreLoadGame:
         break;
     default:
         break;
@@ -36,7 +30,7 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
 
 SKSEPluginInfo(
     .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
-    .Name = MPL::Plugin::PROJECT,
+    .Name = "VLRProxy",
     .Author = "Mini"sv,
     .SupportEmail = ""sv,
     .StructCompatibility = SKSE::StructCompatibility::Independent,
@@ -46,6 +40,7 @@ SKSEPluginInfo(
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {
     SKSE::Init(a_skse);
+    //AddVectoredExceptionHandler(1, VEHHandler);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
     SKSE::GetMessagingInterface()->RegisterListener(nullptr, APIHandler);

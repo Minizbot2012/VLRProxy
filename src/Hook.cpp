@@ -1,4 +1,3 @@
-#include "Hooking.h"
 #include <Hook.h>
 #include <RaceManager.h>
 #include <cstdint>
@@ -311,7 +310,7 @@ namespace MPL::Hooks
             }
             return func(a_this, a_race, a_player);
         }
-        static inline REL::Relocation<decltype(thunk)> func {REL::ID(37925)};
+        static inline REL::Relocation<decltype(thunk)> func{ REL::ID(37925) };
     };
 
     struct Papyrus_Actor_EquipRobe
@@ -426,6 +425,25 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
+    struct Papyrus_ActorBase_GetRace {
+        static RE::TESRace* thunk([[maybe_unused]]int64_t a1,[[maybe_unused]] int64_t a2, RE::TESNPC* act) {
+            auto sta = Managers::RaceManager::GetSingleton();
+            if(act->IsPlayer() && sta->IsSupportedLord(act->race)) {
+                return sta->GetVampireRace(act->race);
+            }
+            return act->race;
+        }
+        static void install() {
+            auto addr = REL::ID(56004).address();
+            auto& trampoline = SKSE::GetTrampoline();
+            SKSE::AllocTrampoline(14);
+            trampoline.write_branch<5>(addr, reinterpret_cast<uintptr_t>(&thunk));
+        }
+        static void post_hook() {
+            logger::info("Installed Papyrus_ActorBase::GetRace hook");
+        }
+    };
+
     void Install()
     {
         stl::install_hook<GetIsRace>();
@@ -447,5 +465,6 @@ namespace MPL::Hooks
         stl::install_hook<Actor_SetRace>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
+        stl::install_hook<Papyrus_ActorBase_GetRace>();
     }
 }  // namespace MPL::Hooks

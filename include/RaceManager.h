@@ -1,7 +1,10 @@
 #pragma once
 #include <Externals/MMSF_API.h>
+#include <unordered_map>
+#include <vector>
 namespace MPL::Managers
 {
+    static const std::filesystem::path SLIDER_DIR("Meshes/actors/character/FaceGenMorphs");
     struct RaceData
     {
         RE::TESRace* vampireRace;
@@ -14,7 +17,7 @@ namespace MPL::Managers
         RE::BGSArtObject* artObject;
     };
 
-    class RaceManager : public REX::Singleton<RaceManager>
+    class RaceManager
     {
     private:
         std::vector<RaceData> race_pairs;
@@ -26,10 +29,18 @@ namespace MPL::Managers
         RE::TESRace* OriginalVL;
         bool lords_initialized;
         std::mutex _lock;
-
+        std::atomic<bool> Ready {false};
+        ~RaceManager();
+        RaceManager();
     public:
+        inline static RaceManager* GetSingleton() {
+            static RaceManager Instance;
+            return std::addressof(Instance);
+        }
         void InitMMSF();
         void InitLords();
+        void WaitForReadySignal();
+        void PatchRMInis(std::filesystem::path);
         int PushRaceData(RaceData&);
         auto GetLordRace(RE::TESRace*) -> RE::TESRace*;
         auto GetVampireRace(RE::TESRace*) -> RE::TESRace*;
