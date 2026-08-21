@@ -27,8 +27,6 @@ namespace MPL::Managers
         };
         MPL::API::MMSF::Interface* MMSF;
         RE::TESRace* OriginalVL;
-        bool lords_initialized;
-        std::mutex _lock;
         std::atomic<bool> Ready {false};
         ~RaceManager();
         RaceManager();
