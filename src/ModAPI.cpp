@@ -90,11 +90,11 @@ namespace MPL::API::VLRProxy
             return false;
         }
     }
-    void ModAPI::TransformNPC(RE::Actor* actor)
+    void ModAPI::TransformNPC([[maybe_unused]] RE::Actor* actor)
     {
         //TODO: Implementation
     }
-    void ModAPI::RevertNPC(RE::Actor* actor)
+    void ModAPI::RevertNPC([[maybe_unused]] RE::Actor*  actor)
     {
         //TODO: Implemenation
     }
