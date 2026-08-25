@@ -1,4 +1,5 @@
 #include <RaceManager.h>
+#include <SKSE/Logger.h>
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
@@ -118,19 +119,27 @@ namespace MPL::Managers
             this->InitMMSF();
         }
         this->race_pairs.clear();
+        if(!this->VampireLordKeyword) {
+            this->VampireLordKeyword = this->MMSF->AllocateForm("VampireLord", RE::FormType::Keyword)->As<RE::BGSKeyword>();
+            if(!this->VampireLordKeyword) {
+                logger::info("FAILED TO ALLOCATE VAMPIRE LORD KEYWORD");
+            };
+        }
         auto TDH = RE::TESDataHandler::GetSingleton();
         auto races = TDH->GetFormArray<RE::TESRace>();
         this->OriginalVL = TDH->LookupForm<RE::TESRace>(0x283A, "Dawnguard.esm");
+        if(!this->OriginalVL->HasKeyword(this->VampireLordKeyword)) this->OriginalVL->AddKeyword(this->VampireLordKeyword);
         for (auto* race : races)
         {
             if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
             {
                 std::string temp_edid = race->GetFormEditorID();
+                auto edid = std::format("{}Lord", race->GetFormEditorID());
                 temp_edid.erase(temp_edid.length() - 7);
                 auto humanRace = RE::TESForm::LookupByEditorID<RE::TESRace>(temp_edid);
-                if (humanRace)
+                auto vlRace = RE::TESForm::LookupByEditorID<RE::TESRace>(edid);
+                if (humanRace && !vlRace)
                 {
-                    auto edid = std::format("{}Lord", race->GetFormEditorID());
                     auto form = this->MMSF->AllocateForm(edid, RE::FormType::Race)->As<RE::TESRace>();
                     form->SetFullName(this->OriginalVL->GetFullName());
                     form->clampFaceGeoValue = race->clampFaceGeoValue;
@@ -146,6 +155,7 @@ namespace MPL::Managers
                             form->AddKeyword(*keyword);
                         }
                     }
+                    form->AddKeyword(this->VampireLordKeyword);
                     form->dismemberBlood = race->dismemberBlood;
                     form->validEquipTypes = race->validEquipTypes;
                     if (race->armorParentRace)
@@ -283,7 +293,7 @@ namespace MPL::Managers
     auto RaceManager::GetVampireRace(RE::TESRace* rc) -> RE::TESRace*
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-            [&](auto rd) { return rd.vlRace == rc; });
+            [&](auto rd) { return rd.vlRace == rc || rd.humanRace == rc; });
         if (it != this->race_pairs.end())
         {
             return it->vampireRace;
@@ -321,6 +331,8 @@ namespace MPL::Managers
                    [&](auto rd) { return race == rd.vlRace; }) !=
                this->race_pairs.end();
     }
+
+    //You found it! Secret WIPs, but how does it work? (Look for something about "Harkon") This is definitely WIP ;)
     void RaceManager::AttachWings(RE::Actor* actor)
     {
         if (!actor) return;

@@ -225,7 +225,7 @@ namespace MPL::Hooks
         };
         static inline REL::Relocation<decltype(thunk)> func;
     };
-    struct CharacterMenu_GetFromDOM
+    struct OpenMenuHandler_ProcessButton_IsVampireLord
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 52249, 0);
         static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x1C1, 0x0);
@@ -249,7 +249,7 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
-    struct FavoritesMenu_GetFromDOM
+    struct FavoritesMenuHandler_ProcessButton_IsVampireLord
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 52247, 0);
         static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x13C, 0x0);
@@ -424,24 +424,24 @@ namespace MPL::Hooks
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
-
-    struct Papyrus_ActorBase_GetRace {
-        static RE::TESRace* thunk([[maybe_unused]]int64_t a1,[[maybe_unused]] int64_t a2, RE::TESNPC* act) {
+    struct Papyrus_ActorBase_GetRace
+    {
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 55991, 0);
+        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0, 0x3A6, 0);
+        static RE::TESRace* thunk(int64_t a1, int64_t a2, RE::TESNPC* act)
+        {
             auto sta = Managers::RaceManager::GetSingleton();
-            if(act->IsPlayer() && sta->IsSupportedLord(act->race)) {
+            if (act->IsPlayer() && sta->IsSupportedLord(act->race))
+            {
                 return sta->GetVampireRace(act->race);
             }
-            return act->race;
+            return func(a1, a2, act);
         }
-        static void install() {
-            auto addr = REL::ID(56004).address();
-            auto& trampoline = SKSE::GetTrampoline();
-            SKSE::AllocTrampoline(14);
-            trampoline.write_branch<5>(addr, reinterpret_cast<uintptr_t>(&thunk));
-        }
-        static void post_hook() {
+        static void post_hook()
+        {
             logger::info("Installed Papyrus_ActorBase::GetRace hook");
         }
+        static inline REL::Relocation<decltype(thunk)> func;
     };
 
     void Install()
@@ -456,15 +456,15 @@ namespace MPL::Hooks
         stl::install_hook<FinishLoadGame_TESRace_IsTransformRace>();
         stl::install_hook<SetRace_TESRace_IsTransformRace1>();
         stl::install_hook<SetRace_TESRace_IsTransformRace2>();
-        stl::install_hook<CharacterMenu_GetFromDOM>();
-        stl::install_hook<FavoritesMenu_GetFromDOM>();
+        stl::install_hook<OpenMenuHandler_ProcessButton_IsVampireLord>();
+        stl::install_hook<FavoritesMenuHandler_ProcessButton_IsVampireLord>();
         stl::install_hook<IMenu_GetFromDOM>();
         stl::install_hook<Papyrus_Actor_GetRace>();
         stl::install_hook<Papyrus_Actor_UnequipAll>();
         stl::install_hook<Papyrus_Actor_EquipRobe>();
         stl::install_hook<Actor_SetRace>();
+        stl::install_hook<Papyrus_ActorBase_GetRace>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
-        stl::install_hook<Papyrus_ActorBase_GetRace>();
     }
 }  // namespace MPL::Hooks

@@ -4,7 +4,7 @@ namespace MPL::API::VLRProxy
 {
     uint64_t ModAPI::GetVersion()
     {
-        return 2;
+        return 3;
     }
 
     void ModAPI::WaitForReadySignal() {
@@ -90,13 +90,12 @@ namespace MPL::API::VLRProxy
             return false;
         }
     }
-
     void ModAPI::TransformNPC(RE::Actor* actor)
     {
-        MPL::Managers::RaceManager::GetSingleton()->AttachWings(actor);
+        //TODO: Implementation
     }
     void ModAPI::RevertNPC(RE::Actor* actor)
     {
-        MPL::Managers::RaceManager::GetSingleton()->DetachWings(actor);
+        //TODO: Implemenation
     }
 }  // namespace MPL::API

@@ -40,7 +40,6 @@ SKSEPluginInfo(
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {
     SKSE::Init(a_skse);
-    //AddVectoredExceptionHandler(1, VEHHandler);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
     SKSE::GetMessagingInterface()->RegisterListener(nullptr, APIHandler);
