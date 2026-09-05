@@ -25,13 +25,14 @@ namespace MPL::Managers
         ~RaceManager();
         std::vector<RaceData> race_pairs;
         MPL::API::MMSF::Interface* MMSF;
+        MPL::API::MMSF::IFormAllocator* alloc;
         RE::TESRace* OriginalVL;
         std::atomic<bool> Ready{ false };
         RE::BGSKeyword* VampireLordKeyword;
         //This whole thing is still WIP and might change, but this is included in 0.8.1 for concepting :)
         std::unordered_map<std::string, ActorTransforms> transforms = {
-            { "Vrel", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Bloody Red Dragon Wings.nif" } },
-            { "Lord Harkon", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Evil Blue Dragon Wings.nif" } }
+            { "Vrel", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Bloody Red Dragon Wings.nif", .artObject = nullptr} },
+            { "Lord Harkon", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Evil Blue Dragon Wings.nif", .artObject = nullptr } }
         };
 
     public:
