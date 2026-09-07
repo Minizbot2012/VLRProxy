@@ -35,7 +35,7 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
-    SKSE::GetMessagingInterface()->RegisterListener(nullptr, MsgHandler);
+    SKSE::GetMessagingInterface()->RegisterListener("MMSF", MsgHandler);
     SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
     MPL::Hooks::Install();
     return true;
