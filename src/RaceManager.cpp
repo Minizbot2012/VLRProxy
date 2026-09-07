@@ -1,5 +1,6 @@
 #include "Externals/MMSF_API.h"
 #include <RaceManager.h>
+#include <SKSE/Impl/PCH.h>
 #include <SKSE/Logger.h>
 #include <algorithm>
 #include <cstdint>
@@ -122,6 +123,7 @@ namespace MPL::Managers
         this->alloc = static_cast<API::MMSF::IFormAllocator*>(this->MMSF->QueryService("ALLOC"));
         if(!this->alloc) {
             logger::info("FAILED TO GET FORM ALLOCATOR");
+            stl::report_and_error("FAILED TO GET FORM ALLOCATOR");
             return;
         }
 

@@ -14,7 +14,7 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
     case MPL::API::MMSF::MMSFMessage::kMessage_MMSFServicesReg:
         static_cast<MPL::API::MMSF::MMSFMessage*>(msg->data)->API->RegisterService(MPL::API::VLRProxy::ModAPI::GetSingleton());
         break;
-    case SKSE::MessagingInterface::kDataLoaded:
+    case MPL::API::MMSF::MMSFMessage::kMessage_MMSFServicesReady:
         sta->InitLords();
         break;
     default:
@@ -24,7 +24,7 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
 
 SKSEPluginInfo(
     .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
-    .Name = "VLRProxy",
+    .Name = MPL::Plugin::PROJECT,
     .Author = "Mini"sv,
     .SupportEmail = ""sv,
     .StructCompatibility = SKSE::StructCompatibility::Independent,

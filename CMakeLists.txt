@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.40)
-set(NAME "00_VLRProxy" CACHE STRING "")
+set(NAME "VLRProxy" CACHE STRING "")
 set(VERSION 0.8.6.0 CACHE STRING "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
