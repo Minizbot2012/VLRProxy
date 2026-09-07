@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_ROOT: C:\vcpkg
   PRESET: clang-windows-vcpkg
   PROJECT_NAME: 00_VLRProxy
+  VCPKG_ROOT: C:\vcpkg
 
 permissions:
   actions: read

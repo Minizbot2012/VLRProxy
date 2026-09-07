@@ -2,11 +2,6 @@
 #include <ModAPI.h>
 namespace MPL::API::VLRProxy
 {
-    uint64_t ModAPI::GetVersion()
-    {
-        return 3;
-    }
-
     void ModAPI::WaitForReadySignal() {
         MPL::Managers::RaceManager::GetSingleton()->WaitForReadySignal();
     }

@@ -1,25 +1,19 @@
+#include <Externals/MMSF_API.h>
 #include <Hook.h>
 #include <ModAPI.h>
 #include <Papyrus.h>
 #include <Plugin.h>
 #include <RaceManager.h>
 #include <VLRProxy_API.h>
-MPL::API::VLRProxy::ModAPI g_vlrpAPI;
-void APIHandler(SKSE::MessagingInterface::Message* msg)
-{
-    switch (msg->type)
-    {
-    case MPL::API::VLRProxy::VLRPMessage::kMessage_GetInterface:
-        reinterpret_cast<MPL::API::VLRProxy::VLRPMessage*>(msg->data)->API = &g_vlrpAPI;
-        break;
-    }
-}
 
 void MsgHandler(SKSE::MessagingInterface::Message* msg)
 {
     auto sta = MPL::Managers::RaceManager::GetSingleton();
     switch (msg->type)
     {
+    case MPL::API::MMSF::MMSFMessage::kMessage_MMSFServicesReg:
+        static_cast<MPL::API::MMSF::MMSFMessage*>(msg->data)->API->RegisterService(MPL::API::VLRProxy::ModAPI::GetSingleton());
+        break;
     case SKSE::MessagingInterface::kDataLoaded:
         sta->InitLords();
         break;
@@ -34,15 +28,14 @@ SKSEPluginInfo(
     .Author = "Mini"sv,
     .SupportEmail = ""sv,
     .StructCompatibility = SKSE::StructCompatibility::Independent,
-    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary
-);
+    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary);
 
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
-    SKSE::GetMessagingInterface()->RegisterListener(nullptr, APIHandler);
+    SKSE::GetMessagingInterface()->RegisterListener(nullptr, MsgHandler);
     SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
     MPL::Hooks::Install();
     return true;

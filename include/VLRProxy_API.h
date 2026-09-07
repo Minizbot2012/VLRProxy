@@ -1,4 +1,5 @@
 #pragma once
+#include "Externals/MMSF_API.h"
 #include <cstdint>
 namespace MPL::API::VLRProxy
 {
@@ -8,12 +9,10 @@ namespace MPL::API::VLRProxy
         Ok,
         Overriden
     };
-
-    class Interface
+    //Service name "VLRP"
+    class Interface : public MPL::API::MMSF::IPluginService
     {
     public:
-        //Version of the interface
-        virtual uint64_t GetVersion() = 0;
         //Not to be called on the main thread, will wait for Lord Initialization and return
         virtual void WaitForReadySignal() = 0;
         //Get the VL Race for a TESRace
@@ -33,25 +32,4 @@ namespace MPL::API::VLRProxy
         virtual void TransformNPC(RE::Actor*) = 0;
         virtual void RevertNPC(RE::Actor*) = 0;
     };
-
-    static const char* sender = "VLRProxy";
-    struct VLRPMessage
-    {
-        enum message_type : uint32_t
-        {
-            kMessage_GetInterface = 'VLRP'
-        };
-        Interface* API;
-    };
-
-    [[nodiscard]] inline Interface* RequestVLAPI()
-    {
-        VLRPMessage message;
-        SKSE::GetMessagingInterface()->Dispatch(VLRPMessage::kMessage_GetInterface, &message, sizeof(VLRPMessage), sender);
-        if (message.API)
-        {
-            return message.API;
-        }
-        return nullptr;
-    }
 }  // namespace MPL::API
