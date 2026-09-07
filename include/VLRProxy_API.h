@@ -1,14 +1,7 @@
 #pragma once
-#include "Externals/MMSF_API.h"
-#include <cstdint>
+#include <Externals/MMSF_API.h>
 namespace MPL::API::VLRProxy
 {
-    enum struct VLRAPIRes : int8_t
-    {
-        Failed = -1,
-        Ok,
-        Overriden
-    };
     //Service name "VLRP"
     class Interface : public MPL::API::MMSF::IPluginService
     {
