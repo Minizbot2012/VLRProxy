@@ -94,6 +94,10 @@
     {
       "name": "compiler-msvc",
       "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      },
       "environment": {
         "PROJECT_COMPILER_FLAGS": "/permissive- /Zc:preprocessor /EHsc /MP /W4 /WX /external:anglebrackets /external:W0 /bigobj",
         "PROJECT_COMPILER": "msvc"
@@ -141,7 +145,7 @@
     {
       "name": "clang-windows-vcpkg",
       "inherits": [
-        "buildtype-relwithdebinfo",
+        "buildtype-release",
         "architecture-x64",
         "platform-win32-unicode",
         "generator-ninja",
@@ -154,7 +158,7 @@
     {
       "name": "clang-linux-vcpkg",
       "inherits": [
-        "buildtype-relwithdebinfo",
+        "buildtype-release",
         "architecture-x64",
         "platform-win32-unicode",
         "generator-ninja",
@@ -163,9 +167,26 @@
         "common"
       ],
       "binaryDir": "${sourceDir}/build/release-linux-clangcl-vcpkg-all"
+    },
+    {
+      "name": "vs-windows-vcpkg",
+      "inherits": [
+        "buildtype-release",
+        "architecture-x64",
+        "platform-win32-unicode",
+        "generator-ninja",
+        "compiler-msvc",
+        "packaging-vcpkg",
+        "common"
+      ],
+      "binaryDir": "${sourceDir}/build/release-msvc-vcpkg-all"
     }
   ],
   "buildPresets": [
+    {
+      "name": "vs-windows-vcpkg",
+      "configurePreset": "vs-windows-vcpkg"
+    },
     {
       "name": "clang-windows-vcpkg",
       "configurePreset": "clang-windows-vcpkg"
