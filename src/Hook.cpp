@@ -233,7 +233,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
-            if (RM->IsVampireLord(plr) && id == RE::DEFAULT_OBJECTS::kVampireRace)
+            if (RM->IsVampireLord(plr) && id == 0x15A)
             {
                 return plr;
             }
@@ -257,7 +257,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
-            if (RM->IsVampireLord(plr) && id == RE::DEFAULT_OBJECTS::kVampireRace)
+            if (RM->IsVampireLord(plr) && id == 0x15A)
             {
                 return plr;
             }
@@ -281,7 +281,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
-            if (RM->IsVampireLord(plr) && id == RE::DEFAULT_OBJECTS::kVampireRace)
+            if (RM->IsVampireLord(plr) && id == 0x15A)
             {
                 return plr;
             }

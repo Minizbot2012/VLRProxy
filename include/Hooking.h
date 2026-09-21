@@ -20,7 +20,7 @@ public:
     explicit constexpr VariantIndex(size_t se, size_t ae) noexcept
     {
         a_vr = a_se = se;
-        ae = ae;
+        a_ae = ae;
     }
     explicit constexpr VariantIndex(size_t se, size_t ae, size_t vr) noexcept
     {
@@ -156,7 +156,6 @@ namespace stl
     void write_thunk_call(std::uintptr_t a_src)
     {
         auto& trampoline = SKSE::GetTrampoline();
-        SKSE::AllocTrampoline(14);
         details::set_func<Hook>(trampoline.write_call<5>(a_src, Hook::thunk));
     }
 

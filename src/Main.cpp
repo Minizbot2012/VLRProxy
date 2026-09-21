@@ -5,6 +5,7 @@
 #include <Plugin.h>
 #include <RaceManager.h>
 #include <VLRProxy_API.h>
+#include <winnt.h>
 
 void MsgHandler(SKSE::MessagingInterface::Message* msg)
 {
@@ -23,7 +24,7 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
 }
 
 SKSEPluginInfo(
-    .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
+        .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
     .Name = MPL::Plugin::PROJECT,
     .Author = "Mini"sv,
     .SupportEmail = ""sv,
@@ -32,7 +33,11 @@ SKSEPluginInfo(
 
 SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 {
-    SKSE::Init(a_skse);
+    SKSE::InitInfo info;
+    info.logName = MPL::Plugin::PROJECT.data();
+    info.trampoline = true;
+    info.trampolineSize = 20 * 14;
+    SKSE::Init(a_skse, info);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
     SKSE::GetMessagingInterface()->RegisterListener("MMSF", MsgHandler);
