@@ -383,11 +383,11 @@ namespace MPL::Hooks
         {
             auto RM = Managers::RaceManager::GetSingleton();
             auto niNode = func(actor, bg);
-            if (RM->IsSupportedLord(actor->GetRace()))
+            if (RM->IsSupportedLord(actor->race))
             {
                 RM->AttachWings(actor);
             }
-            else
+            else if (RM->IsSupportedRace(actor->race))
             {
                 RM->DetachWings(actor);
             }
@@ -402,17 +402,17 @@ namespace MPL::Hooks
 
     struct Actor_Load3D
     {
-        using Target = RE::Actor;
+        using Target = RE::Character;
         static inline VariantIndex index = VariantIndex(0x6A);
         static inline RE::NiAVObject* thunk(Target* actor, bool bg)
         {
-            auto RM = Managers::RaceManager::GetSingleton();
-            auto niNode = func(actor, bg);
-            if (RM->IsSupportedLord(actor->GetRace()))
+            auto* RM = Managers::RaceManager::GetSingleton();
+            auto* niNode = func(actor, bg);
+            if (RM->IsSupportedLord(actor->race))
             {
                 RM->AttachWings(actor);
             }
-            else
+            else if (RM->IsSupportedRace(actor->race))
             {
                 RM->DetachWings(actor);
             }
@@ -460,10 +460,10 @@ namespace MPL::Hooks
         stl::install_hook<FavoritesMenuHandler_ProcessButton_IsVampireLord>();
         stl::install_hook<IMenu_GetFromDOM>();
         stl::install_hook<Papyrus_Actor_GetRace>();
+        stl::install_hook<Papyrus_ActorBase_GetRace>();
         stl::install_hook<Papyrus_Actor_UnequipAll>();
         stl::install_hook<Papyrus_Actor_EquipRobe>();
         stl::install_hook<Actor_SetRace>();
-        stl::install_hook<Papyrus_ActorBase_GetRace>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
     }

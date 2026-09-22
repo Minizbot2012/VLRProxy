@@ -29,7 +29,7 @@ namespace MPL::Managers
         RE::TESRace* OriginalVL;
         std::atomic<bool> Ready{ false };
         RE::BGSKeyword* VampireLordKeyword;
-        //This whole thing is still WIP and might change, but this is included in 0.8.1 for concepting :)
+        //This whole thing is still WIP and might change, but this is included in 0.8.6 for concepting :)
         std::unordered_map<std::string, ActorTransforms> transforms = {
             { "Vrel", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Bloody Red Dragon Wings.nif", .artObject = nullptr} },
             { "Lord Harkon", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Evil Blue Dragon Wings.nif", .artObject = nullptr } }

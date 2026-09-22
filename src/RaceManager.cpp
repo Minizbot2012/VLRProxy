@@ -1,7 +1,4 @@
-#include "Externals/MMSF_API.h"
 #include <RaceManager.h>
-#include <SKSE/Impl/PCH.h>
-#include <SKSE/Logger.h>
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
@@ -360,7 +357,7 @@ namespace MPL::Managers
         if (!transform.artObject) return;
         transform.artObject->model = transform.wingPath;
         actor->ApplyArtObject(transform.artObject);
-        logger::info("Attached wings to actor {}", actor->GetActorBase()->GetFormEditorID());
+        logger::info("Attached wings to actor {}", actor->GetDisplayFullName());
     };
 
     void RaceManager::DetachWings(RE::Actor* actor)
@@ -379,7 +376,7 @@ namespace MPL::Managers
                     {
                         mrf->Detach();
                         mrf->finished = true;
-                        logger::info("Detached wings from actor {}", actor->GetActorBase()->GetFormEditorID());
+                        logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
                         break;
                     }
                 }
