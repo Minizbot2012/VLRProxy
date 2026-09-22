@@ -346,7 +346,8 @@ namespace MPL::Managers
         auto& transform = this->transforms[actor->GetDisplayFullName()];
         if (!transform.artObject)
         {
-            auto artObject = alloc->AllocateForm(std::format("{}_Wings", actor->GetActorBase()->GetFormEditorID()), RE::FormType::ArtObject);
+            auto file = actor->GetFile(0);
+            auto artObject = alloc->AllocateForm(std::format("{}_{:06X}_Wings", file ? file->GetFilename() : "FF", actor->GetLocalFormID()), RE::FormType::ArtObject);
             if (!artObject) return;
             auto effect = artObject->As<RE::BGSArtObject>();
             if (!effect) return;

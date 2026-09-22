@@ -387,7 +387,7 @@ namespace MPL::Hooks
             {
                 RM->AttachWings(actor);
             }
-            else if (RM->IsSupportedRace(actor->race))
+            else
             {
                 RM->DetachWings(actor);
             }
@@ -412,7 +412,7 @@ namespace MPL::Hooks
             {
                 RM->AttachWings(actor);
             }
-            else if (RM->IsSupportedRace(actor->race))
+            else
             {
                 RM->DetachWings(actor);
             }

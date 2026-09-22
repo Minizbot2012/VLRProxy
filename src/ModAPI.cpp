@@ -38,8 +38,7 @@ namespace MPL::API::VLRProxy
     {
         if (test_race != nullptr)
         {
-            return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(
-                test_race);
+            return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(test_race);
         }
         else
         {
@@ -49,10 +48,10 @@ namespace MPL::API::VLRProxy
 
     bool ModAPI::IsVampireLord(RE::Actor* actor)
     {
-        if (actor != nullptr && actor->GetActorRuntimeData().race != nullptr)
+        if (actor != nullptr && actor->race != nullptr)
         {
             return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(
-                actor->GetActorRuntimeData().race);
+                actor->race);
         }
         else
         {
