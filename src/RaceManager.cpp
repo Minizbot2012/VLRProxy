@@ -1,3 +1,4 @@
+#include <Externals/MMSF_API.h>
 #include <RaceManager.h>
 #include <algorithm>
 #include <cstdint>
@@ -108,33 +109,53 @@ namespace MPL::Managers
         this->Ready.notify_all();
     }
 
-    void RaceManager::WaitForReadySignal() {
+    void RaceManager::WaitForReadySignal()
+    {
         this->Ready.wait(false);
     }
 
     void RaceManager::InitLords()
     {
-        if(!this->MMSF) {
+        if (!this->MMSF)
+        {
             this->InitMMSF();
         }
-        this->alloc = static_cast<API::MMSF::IFormAllocator*>(this->MMSF->QueryService("ALLOC"));
-        if(!this->alloc) {
-            logger::info("FAILED TO GET FORM ALLOCATOR");
-            stl::report_and_error("FAILED TO GET FORM ALLOCATOR");
+        if (!API::MMSF::HasFeature(this->MMSF->GetVersion(), API::MMSF::MMSFAPIFeatures::kCoreService))
+        {
+            logger::error("MMSF CORE SERVICE NOT AVAILABLE");
+            stl::report_and_fail("MMSF CORE SERVICE NOT AVAILABLE");
             return;
+        }
+        if (!API::MMSF::HasFeature(this->MMSF->GetVersion(), API::MMSF::MMSFAPIFeatures::kAllocator))
+        {
+            logger::error("MMSF ALLOCATOR NOT AVAILABLE");
+            stl::report_and_fail("MMSF ALLOCATOR NOT AVAILABLE");
+            return;
+        }
+        if (!this->alloc)
+        {
+            this->alloc = static_cast<API::MMSF::IFormAllocator*>(this->MMSF->QueryService("ALLOC"));
+            if (!this->alloc)
+            {
+                logger::info("FAILED TO GET FORM ALLOCATOR");
+                stl::report_and_error("FAILED TO GET FORM ALLOCATOR");
+                return;
+            }
         }
 
         this->race_pairs.clear();
-        if(!this->VampireLordKeyword) {
+        if (!this->VampireLordKeyword)
+        {
             this->VampireLordKeyword = alloc->AllocateForm("VampireLord", RE::FormType::Keyword)->As<RE::BGSKeyword>();
-            if(!this->VampireLordKeyword) {
+            if (!this->VampireLordKeyword)
+            {
                 logger::info("FAILED TO ALLOCATE VAMPIRE LORD KEYWORD");
             };
         }
         auto TDH = RE::TESDataHandler::GetSingleton();
         auto races = TDH->GetFormArray<RE::TESRace>();
         this->OriginalVL = TDH->LookupForm<RE::TESRace>(0x283A, "Dawnguard.esm");
-        if(!this->OriginalVL->HasKeyword(this->VampireLordKeyword)) this->OriginalVL->AddKeyword(this->VampireLordKeyword);
+        if (!this->OriginalVL->HasKeyword(this->VampireLordKeyword)) this->OriginalVL->AddKeyword(this->VampireLordKeyword);
         for (auto* race : races)
         {
             if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
@@ -143,8 +164,7 @@ namespace MPL::Managers
                 auto edid = std::format("{}Lord", race->GetFormEditorID());
                 temp_edid.erase(temp_edid.length() - 7);
                 auto humanRace = RE::TESForm::LookupByEditorID<RE::TESRace>(temp_edid);
-                auto vlRace = RE::TESForm::LookupByEditorID<RE::TESRace>(edid);
-                if (humanRace && !vlRace)
+                if (humanRace && race)
                 {
                     auto form = alloc->AllocateForm(edid, RE::FormType::Race)->As<RE::TESRace>();
                     form->SetFullName(this->OriginalVL->GetFullName());
@@ -378,7 +398,6 @@ namespace MPL::Managers
                         mrf->Detach();
                         mrf->finished = true;
                         logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
-                        break;
                     }
                 }
             }

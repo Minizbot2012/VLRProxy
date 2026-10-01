@@ -55,7 +55,39 @@ namespace MPL::papyrus
     static auto GetRealRace(STATIC_ARGS, RE::Actor* actor) -> const RE::TESRace* {
         return actor->GetActorRuntimeData().race;
     }
-
+    static RE::TESRace* GetRace_ActorBase(RE::TESNPC* actor)
+    {
+        if(!actor)
+            return nullptr;
+        auto* RM = MPL::Managers::RaceManager::GetSingleton();
+        if(RM->IsSupportedLord(actor->race)) {
+            return RM->GetVampireRace(actor->race);
+        }
+        return actor->race;
+    }
+    static RE::TESRace* GetRace_Actor(RE::Actor* actor)
+    {
+        if(!actor)
+            return nullptr;
+        auto* RM = MPL::Managers::RaceManager::GetSingleton();
+        if(RM->IsSupportedLord(actor->race)) {
+            return RM->GetOriginalLord();
+        }
+        return actor->race;
+    }
+    static void SetRace(RE::Actor* actor, RE::TESRace* race)
+    {
+        if(!actor || !race)
+            return;
+        auto* RM = MPL::Managers::RaceManager::GetSingleton();
+        if(RM->GetOriginalLord() == race && RM->IsSupportedRace(actor->GetRace())) {
+            actor->SwitchRace(RM->GetLordRace(actor->GetRace()), actor->IsPlayerRef());
+            //RM->AttachWings(actor);
+            return;
+        }
+        //RM->DetachWings(actor);
+        actor->SwitchRace(race, actor->IsPlayerRef());
+    }
 #undef STATIC_ARGS
     inline bool Bind(RE::BSScript::IVirtualMachine* vm)
     {
@@ -70,6 +102,9 @@ namespace MPL::papyrus
         vm->RegisterFunction("OriginalVL", "VLRace", OriginalVL);
         vm->RegisterFunction("GetRealRace", "VLRace", GetRealRace);
         vm->RegisterFunction("Version", "VLRace", Version);
+        vm->RegisterFunction("GetRace", "ActorBase", GetRace_ActorBase);
+        vm->RegisterFunction("GetRace", "Actor", GetRace_Actor);
+        vm->RegisterFunction("SetRace", "Actor", SetRace);
         return true;
     }
 }  // namespace MPL::papyrus

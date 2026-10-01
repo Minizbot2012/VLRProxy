@@ -297,22 +297,6 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
-    struct Actor_SetRace
-    {
-        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54758, 0);
-        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x23, 0x0);
-        static void thunk(RE::Actor* a_this, RE::TESRace* a_race, bool a_player)
-        {
-            auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->GetOriginalLord() == a_race)
-            {
-                return func(a_this, RM->GetLordRace(a_this->GetActorRuntimeData().race), a_player);
-            }
-            return func(a_this, a_race, a_player);
-        }
-        static inline REL::Relocation<decltype(thunk)> func{ REL::ID(37925) };
-    };
-
     struct Papyrus_Actor_EquipRobe
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
@@ -352,29 +336,6 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
-    struct Papyrus_Actor_GetRace
-    {
-        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
-        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x2245, 0x0);
-        static RE::TESRace* thunk([[maybe_unused]] int64_t a, [[maybe_unused]] int64_t b, RE::Actor* act)
-        {
-            auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->IsVampireLord(act->GetRace()))
-            {
-                return const_cast<RE::TESRace*>(RM->GetOriginalLord());
-            }
-            else
-            {
-                return act->GetActorRuntimeData().race;
-            }
-        }
-        static void post_hook()
-        {
-            logger::info("Installed hook for Papyrus_Actor::GetRace");
-        }
-        static inline REL::Relocation<decltype(thunk)> func;
-    };
-
     struct PlayerCharacter_Load3D
     {
         using Target = RE::PlayerCharacter;
@@ -383,7 +344,7 @@ namespace MPL::Hooks
         {
             auto RM = Managers::RaceManager::GetSingleton();
             auto niNode = func(actor, bg);
-            if (RM->IsSupportedLord(actor->race))
+            if (RM->IsSupportedLord(actor->GetRace()))
             {
                 RM->AttachWings(actor);
             }
@@ -408,7 +369,7 @@ namespace MPL::Hooks
         {
             auto* RM = Managers::RaceManager::GetSingleton();
             auto* niNode = func(actor, bg);
-            if (RM->IsSupportedLord(actor->race))
+            if (RM->IsSupportedLord(actor->GetRace()))
             {
                 RM->AttachWings(actor);
             }
@@ -423,6 +384,26 @@ namespace MPL::Hooks
             logger::info("Installed hook for Actor::Load3D");
         }
         static inline REL::Relocation<decltype(thunk)> func;
+    };
+    /*
+    struct Actor_SetRace
+    {
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54758, 0);
+        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x23, 0x0);
+        static void thunk(RE::Actor* a_this, RE::TESRace* a_race, bool a_player)
+        {
+            auto* RM = MPL::Managers::RaceManager::GetSingleton();
+            if (RM->GetOriginalLord() == a_race)
+            {
+                auto* RM = MPL::Managers::RaceManager::GetSingleton();
+                if (RM->GetOriginalLord() == a_race)
+                {
+                    return func(a_this, RM->GetLordRace(a_this->GetActorRuntimeData().race), a_player);
+                }
+            }
+            return func(a_this, a_race, a_player);
+        }
+        static inline REL::Relocation<decltype(thunk)> func{ REL::ID(37925) };
     };
     struct Papyrus_ActorBase_GetRace
     {
@@ -444,6 +425,30 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
+    struct Papyrus_Actor_GetRace
+    {
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
+        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x2245, 0x0);
+        static RE::TESRace* thunk([[maybe_unused]] int64_t a, [[maybe_unused]] int64_t b, RE::Actor* act)
+        {
+            auto* RM = MPL::Managers::RaceManager::GetSingleton();
+            if (RM->IsVampireLord(act->GetRace()))
+            {
+                return const_cast<RE::TESRace*>(RM->GetOriginalLord());
+            }
+            else
+            {
+                return act->GetActorRuntimeData().race;
+            }
+        }
+        static void post_hook()
+        {
+            logger::info("Installed hook for Papyrus_Actor::GetRace");
+        }
+        static inline REL::Relocation<decltype(thunk)> func;
+    };
+    */
+
     void Install()
     {
         stl::install_hook<GetIsRace>();
@@ -459,12 +464,12 @@ namespace MPL::Hooks
         stl::install_hook<OpenMenuHandler_ProcessButton_IsVampireLord>();
         stl::install_hook<FavoritesMenuHandler_ProcessButton_IsVampireLord>();
         stl::install_hook<IMenu_GetFromDOM>();
-        stl::install_hook<Papyrus_Actor_GetRace>();
-        stl::install_hook<Papyrus_ActorBase_GetRace>();
         stl::install_hook<Papyrus_Actor_UnequipAll>();
         stl::install_hook<Papyrus_Actor_EquipRobe>();
-        stl::install_hook<Actor_SetRace>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
+        //stl::install_hook<Actor_SetRace>();
+        //stl::install_hook<Papyrus_Actor_GetRace>();
+        //stl::install_hook<Papyrus_ActorBase_GetRace>();
     }
 }  // namespace MPL::Hooks
