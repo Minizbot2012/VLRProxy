@@ -347,7 +347,7 @@ namespace MPL::Managers
     bool RaceManager::IsSupportedRace(RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rd) { return race == rd.vampireRace; }) !=
+                   [&](auto rd) { return race == rd.vampireRace || race == rd.humanRace; }) !=
                this->race_pairs.end();
     }
 
