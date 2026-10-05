@@ -1,8 +1,39 @@
 #include <Hook.h>
 #include <RaceManager.h>
 #include <cstdint>
+#include <limits>
 namespace MPL::Hooks
 {
+
+    // From CommonLibSSE-NG by alandtse if this fails I won't be able to do anything more for 1.6.1170
+    inline std::size_t MapIndex(std::underlying_type_t<RE::DefaultObjectID> a_idx) noexcept
+    {
+        if (a_idx <= std::to_underlying(RE::DefaultObjectID::kKeywordActivatorFurnitureNoPlayer))
+        {
+            return a_idx;
+        }
+        std::size_t result;
+        if SKYRIM_REL_CONSTEXPR (REL::Module::IsVR())
+        {
+            result = (0xFFFF0000 & a_idx) >> 16;
+        }
+        else
+        {
+            result = 0x0000FFFF & a_idx;
+            if (REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99))
+            {
+                if (result >= 263)
+                {
+                    result += 6;
+                }
+                else if (result >= 188)
+                {
+                    result += 1;
+                }
+            }
+        }
+        return result ? result : std::numeric_limits<std::size_t>::max();
+    }
     struct GetIsRace
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 22173, 0);
@@ -233,7 +264,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
-            if (RM->IsVampireLord(plr) && id == 0x15A)
+            if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
             {
                 return plr;
             }
@@ -257,7 +288,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
-            if (RM->IsVampireLord(plr) && id == 0x15A)
+            if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
             {
                 return plr;
             }
@@ -281,7 +312,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
-            if (RM->IsVampireLord(plr) && id == 0x15A)
+            if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
             {
                 return plr;
             }
@@ -320,7 +351,7 @@ namespace MPL::Hooks
         static void thunk(int64_t a, int64_t b, RE::Actor* act)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->IsSupportedLord(act->GetActorRuntimeData().race))
+            if (RM->IsSupportedLord(act->GetRace()))
             {
                 return;
             }
@@ -342,7 +373,7 @@ namespace MPL::Hooks
         static inline VariantIndex index = VariantIndex(0x6A);
         static inline RE::NiAVObject* thunk(Target* actor, bool bg)
         {
-            auto RM = Managers::RaceManager::GetSingleton();
+            auto* RM = Managers::RaceManager::GetSingleton();
             auto* niNode = func(actor, bg);
             if (RM->IsSupportedLord(actor->GetRace()))
             {
