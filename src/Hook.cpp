@@ -343,7 +343,7 @@ namespace MPL::Hooks
         static inline RE::NiAVObject* thunk(Target* actor, bool bg)
         {
             auto RM = Managers::RaceManager::GetSingleton();
-            auto niNode = func(actor, bg);
+            auto* niNode = func(actor, bg);
             if (RM->IsSupportedLord(actor->GetRace()))
             {
                 RM->AttachWings(actor);

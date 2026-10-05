@@ -1,4 +1,7 @@
 #include <Externals/MMSF_API.h>
+#include <RE/B/BSContainer.h>
+#include <RE/B/BSTEvent.h>
+#include <RE/P/ProcessLists.h>
 #include <RaceManager.h>
 #include <algorithm>
 #include <cstdint>
@@ -305,7 +308,7 @@ namespace MPL::Managers
     auto RaceManager::GetLordRace(RE::TESRace* rc) -> RE::TESRace*
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-            [&](auto rd) { return rd.vampireRace == rc || rd.humanRace == rc; });
+            [&](auto rd) { return rd.vampireRace->GetFormID() == rc->GetFormID() || rd.humanRace->GetFormID() == rc->GetFormID(); });
         if (it != this->race_pairs.end())
         {
             return it->vlRace;
@@ -319,7 +322,7 @@ namespace MPL::Managers
     auto RaceManager::GetVampireRace(RE::TESRace* rc) -> RE::TESRace*
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-            [&](auto rd) { return rd.vlRace == rc || rd.humanRace == rc; });
+            [&](auto rd) { return rd.vlRace->GetFormID() == rc->GetFormID() || rd.humanRace->GetFormID() == rc->GetFormID(); });
         if (it != this->race_pairs.end())
         {
             return it->vampireRace;
@@ -339,22 +342,22 @@ namespace MPL::Managers
     bool RaceManager::IsVampireLord(RE::TESRace* rc)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rn) { return rn.vlRace == rc; }) !=
+                   [&](auto rn) { return rn.vlRace->GetFormID() == rc->GetFormID(); }) !=
                    this->race_pairs.end() ||
-               rc == this->OriginalVL;
+               rc->GetFormID() == this->OriginalVL->GetFormID();
     }
 
     bool RaceManager::IsSupportedRace(RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rd) { return race == rd.vampireRace || race == rd.humanRace; }) !=
+                   [&](auto rd) { return race->GetFormID() == rd.vampireRace->GetFormID() || race->GetFormID() == rd.humanRace->GetFormID(); }) !=
                this->race_pairs.end();
     }
 
     bool RaceManager::IsSupportedLord(RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rd) { return race == rd.vlRace; }) !=
+                   [&](auto rd) { return race->GetFormID() == rd.vlRace->GetFormID(); }) !=
                this->race_pairs.end();
     }
 
@@ -371,12 +374,21 @@ namespace MPL::Managers
             if (!artObject) return;
             auto effect = artObject->As<RE::BGSArtObject>();
             if (!effect) return;
-            effect->data.artType = RE::BGSArtObject::ArtType::kMagicCastingArt;
-            effect->model = transform.wingPath;
+            effect->data.artType.set(RE::BGSArtObject::ArtType::kMagicCastingArt);
+            effect->SetModel(transform.wingPath.c_str());
             transform.artObject = effect;
         }
         if (!transform.artObject) return;
         transform.artObject->model = transform.wingPath;
+        RE::ProcessLists::GetSingleton()->ForEachModelEffect([&](RE::ModelReferenceEffect* mrf) {
+            if (mrf->artObject == transform.artObject && mrf->target.get().get() == actor)
+            {
+                mrf->DetachImpl();
+                mrf->finished = true;
+                logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
+            }
+            return RE::BSContainer::ForEachResult::kContinue;
+        });
         actor->ApplyArtObject(transform.artObject);
         logger::info("Attached wings to actor {}", actor->GetDisplayFullName());
     };
@@ -387,20 +399,14 @@ namespace MPL::Managers
         if (!this->transforms.contains(actor->GetDisplayFullName())) return;
         auto& transform = this->transforms[actor->GetDisplayFullName()];
         if (!transform.artObject) return;
-        SKSE::GetTaskInterface()->AddTask([&]() {
-            auto procList = RE::ProcessLists::GetSingleton();
-            for (auto effect : procList->globalTempEffects)
+        RE::ProcessLists::GetSingleton()->ForEachModelEffect([&](RE::ModelReferenceEffect* mrf) {
+            if (mrf->artObject == transform.artObject && mrf->target.get().get() == actor)
             {
-                if (auto* mrf = effect->As<RE::ModelReferenceEffect>(); mrf)
-                {
-                    if (mrf->artObject == transform.artObject && mrf->target.get().get() == actor)
-                    {
-                        mrf->Detach();
-                        mrf->finished = true;
-                        logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
-                    }
-                }
+                mrf->DetachImpl();
+                mrf->finished = true;
+                logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
             }
+            return RE::BSContainer::ForEachResult::kContinue;
         });
     }
 }  // namespace MPL::Managers

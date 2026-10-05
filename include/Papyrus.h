@@ -12,19 +12,7 @@ namespace MPL::papyrus
     static auto VampireRace(STATIC_ARGS, RE::TESRace* rc)
         -> RE::TESRace*
     {
-        auto mgr = MPL::Managers::RaceManager::GetSingleton();
-        if (!mgr->IsVampireLord(rc))
-        {
-            return rc;
-        }
-        else if (mgr->IsSupportedLord(rc))
-        {
-            return mgr->GetVampireRace(rc);
-        }
-        else
-        {
-            return nullptr;
-        }
+        return MPL::Managers::RaceManager::GetSingleton()->GetVampireRace(rc);
     }
 
     static auto IsVL(STATIC_ARGS, RE::TESRace* rc) -> bool
@@ -53,7 +41,7 @@ namespace MPL::papyrus
         return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
     static auto GetRealRace(STATIC_ARGS, RE::Actor* actor) -> const RE::TESRace* {
-        return actor->GetActorRuntimeData().race;
+        return actor->GetRace();
     }
     static RE::TESRace* GetRace_ActorBase(RE::TESNPC* actor)
     {
@@ -80,7 +68,7 @@ namespace MPL::papyrus
         if(!actor || !race)
             return;
         auto* RM = MPL::Managers::RaceManager::GetSingleton();
-        if(RM->GetOriginalLord() == race && RM->IsSupportedRace(actor->GetRace())) {
+        if(RM->GetOriginalLord()->GetFormID() == race->GetFormID() && RM->IsSupportedRace(actor->GetRace())) {
             actor->SwitchRace(RM->GetLordRace(actor->GetRace()), actor->IsPlayerRef());
             //RM->AttachWings(actor);
             return;
