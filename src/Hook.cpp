@@ -1,32 +1,11 @@
 #include <Hook.h>
+#include <REL/Module.h>
 #include <RaceManager.h>
+#include <SKSE/Version.h>
 #include <cstdint>
-#include <limits>
 namespace MPL::Hooks
 {
-
-    // From CommonLibSSE-NG by alandtse if this fails I won't be able to do anything more for 1.6.1170
-    inline std::size_t MapIndex(std::underlying_type_t<RE::DefaultObjectID> a_idx) noexcept
-    {
-        if (a_idx <= std::to_underlying(RE::DefaultObjectID::kKeywordActivatorFurnitureNoPlayer))
-        {
-            return a_idx;
-        }
-        std::size_t result;
-        result = 0x0000FFFF & a_idx;
-        if (REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99))
-        {
-            if (result >= 263)
-            {
-                result += 6;
-            }
-            else if (result >= 188)
-            {
-                result += 1;
-            }
-        }
-        return result ? result : std::numeric_limits<std::size_t>::max();
-    }
+    const std::size_t kVampireLord = REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99) ? 0x15A: 0x154;
     struct GetIsRace
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 22173, 0);
@@ -257,7 +236,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->race;
-            if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
+            if (RM->IsVampireLord(plr) && kVampireLord == id)
             {
                 return plr;
             }
@@ -281,7 +260,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->race;
-            if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
+            if (RM->IsVampireLord(plr) && kVampireLord == id)
             {
                 return plr;
             }
@@ -305,7 +284,7 @@ namespace MPL::Hooks
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             auto* plr = RE::PlayerCharacter::GetSingleton()->race;
-            if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
+            if (RM->IsVampireLord(plr) && kVampireLord == id)
             {
                 return plr;
             }
