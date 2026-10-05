@@ -5,7 +5,6 @@
 #include <Plugin.h>
 #include <RaceManager.h>
 #include <VLRProxy_API.h>
-#include <winnt.h>
 
 void MsgHandler(SKSE::MessagingInterface::Message* msg)
 {

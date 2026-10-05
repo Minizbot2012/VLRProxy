@@ -41,8 +41,9 @@ namespace MPL::papyrus
         return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
     static auto GetRealRace(STATIC_ARGS, RE::Actor* actor) -> const RE::TESRace* {
-        return actor->GetRace();
+        return actor->GetActorRuntimeData().race;
     }
+
     static RE::TESRace* GetRace_ActorBase(RE::TESNPC* actor)
     {
         if(!actor)
@@ -58,24 +59,23 @@ namespace MPL::papyrus
         if(!actor)
             return nullptr;
         auto* RM = MPL::Managers::RaceManager::GetSingleton();
-        if(RM->IsSupportedLord(actor->race)) {
+        if(RM->IsSupportedLord(actor->GetActorRuntimeData().race)) {
             return RM->GetOriginalLord();
         }
-        return actor->race;
+        return actor->GetActorRuntimeData().race;
     }
     static void SetRace(RE::Actor* actor, RE::TESRace* race)
     {
         if(!actor || !race)
             return;
         auto* RM = MPL::Managers::RaceManager::GetSingleton();
-        if(RM->GetOriginalLord()->GetFormID() == race->GetFormID() && RM->IsSupportedRace(actor->GetRace())) {
-            actor->SwitchRace(RM->GetLordRace(actor->GetRace()), actor->IsPlayerRef());
-            //RM->AttachWings(actor);
+        if(RM->GetOriginalLord()->GetFormID() == race->GetFormID() && RM->IsSupportedRace(actor->GetActorRuntimeData().race)) {
+            actor->SwitchRace(RM->GetLordRace(actor->GetActorRuntimeData().race), actor->IsPlayerRef());
             return;
         }
-        //RM->DetachWings(actor);
         actor->SwitchRace(race, actor->IsPlayerRef());
     }
+
 #undef STATIC_ARGS
     inline bool Bind(RE::BSScript::IVirtualMachine* vm)
     {

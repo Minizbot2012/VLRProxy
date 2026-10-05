@@ -13,23 +13,16 @@ namespace MPL::Hooks
             return a_idx;
         }
         std::size_t result;
-        if SKYRIM_REL_CONSTEXPR (REL::Module::IsVR())
+        result = 0x0000FFFF & a_idx;
+        if (REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99))
         {
-            result = (0xFFFF0000 & a_idx) >> 16;
-        }
-        else
-        {
-            result = 0x0000FFFF & a_idx;
-            if (REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99))
+            if (result >= 263)
             {
-                if (result >= 263)
-                {
-                    result += 6;
-                }
-                else if (result >= 188)
-                {
-                    result += 1;
-                }
+                result += 6;
+            }
+            else if (result >= 188)
+            {
+                result += 1;
             }
         }
         return result ? result : std::numeric_limits<std::size_t>::max();
@@ -263,7 +256,7 @@ namespace MPL::Hooks
         static RE::TESForm* thunk(uint32_t id)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
+            auto* plr = RE::PlayerCharacter::GetSingleton()->race;
             if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
             {
                 return plr;
@@ -287,7 +280,7 @@ namespace MPL::Hooks
         static RE::TESForm* thunk(uint32_t id)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
+            auto* plr = RE::PlayerCharacter::GetSingleton()->race;
             if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
             {
                 return plr;
@@ -311,7 +304,7 @@ namespace MPL::Hooks
         static RE::TESForm* thunk(uint32_t id)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            auto* plr = RE::PlayerCharacter::GetSingleton()->GetRace();
+            auto* plr = RE::PlayerCharacter::GetSingleton()->race;
             if (RM->IsVampireLord(plr) && MPL::Hooks::MapIndex(RE::DEFAULT_OBJECTS::kVampireRace) == id)
             {
                 return plr;
@@ -351,7 +344,7 @@ namespace MPL::Hooks
         static void thunk(int64_t a, int64_t b, RE::Actor* act)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->IsSupportedLord(act->GetRace()))
+            if (RM->IsSupportedLord(act->GetActorRuntimeData().race))
             {
                 return;
             }
@@ -375,7 +368,7 @@ namespace MPL::Hooks
         {
             auto* RM = Managers::RaceManager::GetSingleton();
             auto* niNode = func(actor, bg);
-            if (RM->IsSupportedLord(actor->GetRace()))
+            if (RM->IsSupportedLord(actor->GetActorRuntimeData().race))
             {
                 RM->AttachWings(actor);
             }
@@ -400,7 +393,7 @@ namespace MPL::Hooks
         {
             auto* RM = Managers::RaceManager::GetSingleton();
             auto* niNode = func(actor, bg);
-            if (RM->IsSupportedLord(actor->GetRace()))
+            if (RM->IsSupportedLord(actor->GetActorRuntimeData().race))
             {
                 RM->AttachWings(actor);
             }
@@ -424,13 +417,9 @@ namespace MPL::Hooks
         static void thunk(RE::Actor* a_this, RE::TESRace* a_race, bool a_player)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->GetOriginalLord() == a_race)
+            if (RM->GetOriginalLord()->GetFormID() == a_race->GetFormID())
             {
-                auto* RM = MPL::Managers::RaceManager::GetSingleton();
-                if (RM->GetOriginalLord() == a_race)
-                {
-                    return func(a_this, RM->GetLordRace(a_this->GetActorRuntimeData().race), a_player);
-                }
+                return func(a_this, RM->GetLordRace(a_this->GetActorRuntimeData().race), a_player);
             }
             return func(a_this, a_race, a_player);
         }
@@ -463,9 +452,9 @@ namespace MPL::Hooks
         static RE::TESRace* thunk([[maybe_unused]] int64_t a, [[maybe_unused]] int64_t b, RE::Actor* act)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->IsVampireLord(act->GetRace()))
+            if (RM->IsSupportedLord(act->GetActorRuntimeData().race))
             {
-                return const_cast<RE::TESRace*>(RM->GetOriginalLord());
+                return RM->GetOriginalLord();
             }
             else
             {
@@ -499,8 +488,10 @@ namespace MPL::Hooks
         stl::install_hook<Papyrus_Actor_EquipRobe>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
-        //stl::install_hook<Actor_SetRace>();
-        //stl::install_hook<Papyrus_Actor_GetRace>();
-        //stl::install_hook<Papyrus_ActorBase_GetRace>();
+        /*
+        stl::install_hook<Actor_SetRace>();
+        stl::install_hook<Papyrus_Actor_GetRace>();
+        stl::install_hook<Papyrus_ActorBase_GetRace>();
+        */
     }
 }  // namespace MPL::Hooks
