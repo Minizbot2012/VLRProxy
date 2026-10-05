@@ -1,7 +1,4 @@
 #include <Externals/MMSF_API.h>
-#include <RE/B/BSContainer.h>
-#include <RE/B/BSTEvent.h>
-#include <RE/P/ProcessLists.h>
 #include <RaceManager.h>
 #include <algorithm>
 #include <cstdint>
@@ -308,7 +305,7 @@ namespace MPL::Managers
     auto RaceManager::GetLordRace(RE::TESRace* rc) -> RE::TESRace*
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-            [&](auto rd) { return rd.vampireRace->GetFormID() == rc->GetFormID() || rd.humanRace->GetFormID() == rc->GetFormID(); });
+            [&](auto rd) { return rd.vampireRace == rc || rd.humanRace == rc; });
         if (it != this->race_pairs.end())
         {
             return it->vlRace;
@@ -322,7 +319,7 @@ namespace MPL::Managers
     auto RaceManager::GetVampireRace(RE::TESRace* rc) -> RE::TESRace*
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-            [&](auto rd) { return rd.vlRace->GetFormID() == rc->GetFormID() || rd.humanRace->GetFormID() == rc->GetFormID(); });
+            [&](auto rd) { return rd.vlRace == rc || rd.humanRace == rc; });
         if (it != this->race_pairs.end())
         {
             return it->vampireRace;
@@ -342,22 +339,22 @@ namespace MPL::Managers
     bool RaceManager::IsVampireLord(RE::TESRace* rc)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rn) { return rn.vlRace->GetFormID() == rc->GetFormID(); }) !=
+                   [&](auto rn) { return rn.vlRace == rc; }) !=
                    this->race_pairs.end() ||
-               rc->GetFormID() == this->OriginalVL->GetFormID();
+               rc == this->OriginalVL;
     }
 
     bool RaceManager::IsSupportedRace(RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rd) { return race->GetFormID() == rd.vampireRace->GetFormID() || race->GetFormID() == rd.humanRace->GetFormID(); }) !=
+                   [&](auto rd) { return race == rd.vampireRace || race == rd.humanRace; }) !=
                this->race_pairs.end();
     }
 
     bool RaceManager::IsSupportedLord(RE::TESRace* race)
     {
         return std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
-                   [&](auto rd) { return race->GetFormID() == rd.vlRace->GetFormID(); }) !=
+                   [&](auto rd) { return race == rd.vlRace; }) !=
                this->race_pairs.end();
     }
 
