@@ -184,22 +184,8 @@ namespace MPL::Managers
                     form->AddKeyword(this->VampireLordKeyword);
                     form->dismemberBlood = race->dismemberBlood;
                     form->validEquipTypes = race->validEquipTypes;
-                    if (race->armorParentRace)
-                    {
-                        form->armorParentRace = race->armorParentRace;
-                    }
-                    else
-                    {
-                        form->armorParentRace = race->morphRace;
-                    }
-                    if (race->morphRace != race)
-                    {
-                        form->morphRace = race->morphRace;
-                    }
-                    else
-                    {
-                        form->morphRace = race;
-                    }
+                    form->armorParentRace = race->armorParentRace ? race->armorParentRace : humanRace;
+                    form->morphRace = race->morphRace ? race->morphRace : humanRace;
                     form->bodyPartData = race->bodyPartData;
                     form->phonemeTargets = race->phonemeTargets;
                     form->attackDataMap = this->OriginalVL->attackDataMap;
