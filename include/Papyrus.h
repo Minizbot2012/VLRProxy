@@ -1,81 +1,49 @@
 #pragma once
+#include <REX/W32/KERNEL32.h>
 #include <RaceManager.h>
+#include <cstdint>
+#include <string_view>
+
 namespace MPL::papyrus
 {
 #define STATIC_ARGS RE::StaticFunctionTag*
-    static auto LordRace(STATIC_ARGS, RE::TESRace* rc)
-        -> RE::TESRace*
+    static RE::TESRace* LordRace(STATIC_ARGS, RE::TESRace* rc)
     {
         return MPL::Managers::RaceManager::GetSingleton()->GetLordRace(rc);
     }
 
-    static auto VampireRace(STATIC_ARGS, RE::TESRace* rc)
-        -> RE::TESRace*
+    static RE::TESRace* VampireRace(STATIC_ARGS, RE::TESRace* rc)
     {
         return MPL::Managers::RaceManager::GetSingleton()->GetVampireRace(rc);
     }
 
-    static auto IsVL(STATIC_ARGS, RE::TESRace* rc) -> bool
+    static bool IsVL(STATIC_ARGS, RE::TESRace* rc)
     {
         return MPL::Managers::RaceManager::GetSingleton()->IsVampireLord(rc);
     }
 
-    static auto IsSupportedVampireRace(STATIC_ARGS,
+    static bool IsSupportedVampireRace(STATIC_ARGS,
         RE::TESRace* rc)
-        -> bool
     {
         return MPL::Managers::RaceManager::GetSingleton()->IsSupportedRace(rc);
     }
 
-    static auto IsSupportedVampireLord(STATIC_ARGS,
+    static bool IsSupportedVampireLord(STATIC_ARGS,
         RE::TESRace* rc)
-        -> bool
     {
         return MPL::Managers::RaceManager::GetSingleton()->IsSupportedLord(rc);
     }
 
-    static auto Version(STATIC_ARGS) -> uint32_t { return 1; }
+    static uint32_t Version(STATIC_ARGS) { return 1; }
 
-    static auto OriginalVL(STATIC_ARGS) -> const RE::TESRace*
+    static RE::TESRace* OriginalVL(STATIC_ARGS)
     {
         return MPL::Managers::RaceManager::GetSingleton()->GetOriginalLord();
     }
-    static auto GetRealRace(STATIC_ARGS, RE::Actor* actor) -> const RE::TESRace* {
+    static RE::TESRace* GetRealRace(STATIC_ARGS, RE::Actor* actor)
+    {
         return actor->GetActorRuntimeData().race;
     }
-
-    static RE::TESRace* GetRace_ActorBase(RE::TESNPC* actor)
-    {
-        if(!actor)
-            return nullptr;
-        auto* RM = MPL::Managers::RaceManager::GetSingleton();
-        if(RM->IsSupportedLord(actor->race)) {
-            return RM->GetVampireRace(actor->race);
-        }
-        return actor->race;
-    }
-    static RE::TESRace* GetRace_Actor(RE::Actor* actor)
-    {
-        if(!actor)
-            return nullptr;
-        auto* RM = MPL::Managers::RaceManager::GetSingleton();
-        if(RM->IsSupportedLord(actor->GetActorRuntimeData().race)) {
-            return RM->GetOriginalLord();
-        }
-        return actor->GetActorRuntimeData().race;
-    }
-    static void SetRace(RE::Actor* actor, RE::TESRace* race)
-    {
-        if(!actor || !race)
-            return;
-        auto* RM = MPL::Managers::RaceManager::GetSingleton();
-        if(RM->GetOriginalLord()->GetFormID() == race->GetFormID() && RM->IsSupportedRace(actor->GetActorRuntimeData().race)) {
-            actor->SwitchRace(RM->GetLordRace(actor->GetActorRuntimeData().race), actor->IsPlayerRef());
-            return;
-        }
-        actor->SwitchRace(race, actor->IsPlayerRef());
-    }
-
 #undef STATIC_ARGS
     inline bool Bind(RE::BSScript::IVirtualMachine* vm)
     {
@@ -90,9 +58,6 @@ namespace MPL::papyrus
         vm->RegisterFunction("OriginalVL", "VLRace", OriginalVL);
         vm->RegisterFunction("GetRealRace", "VLRace", GetRealRace);
         vm->RegisterFunction("Version", "VLRace", Version);
-        vm->RegisterFunction("GetRace", "ActorBase", GetRace_ActorBase);
-        vm->RegisterFunction("GetRace", "Actor", GetRace_Actor);
-        vm->RegisterFunction("SetRace", "Actor", SetRace);
         return true;
     }
 }  // namespace MPL::papyrus

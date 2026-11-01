@@ -1,5 +1,6 @@
 #pragma once
 #include <Externals/MMSF_API.h>
+
 namespace MPL::API::VLRProxy
 {
     //Service name "VLRP"
@@ -22,7 +23,8 @@ namespace MPL::API::VLRProxy
         virtual bool IsSupportedVL(RE::TESRace*) = 0;
         //Checks if the race is a supported vampire race, E.G. this race has a vampire lord form
         virtual bool IsSupportedVH(RE::TESRace*) = 0;
-        virtual void TransformNPC(RE::Actor*) = 0;
-        virtual void RevertNPC(RE::Actor*) = 0;
+        // WIP // Not wired
+        virtual void Transform(RE::Actor*) = 0;
+        virtual void Revert(RE::Actor*) = 0;
     };
 }  // namespace MPL::API

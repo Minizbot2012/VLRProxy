@@ -1,5 +1,6 @@
 #include "RaceManager.h"
 #include <ModAPI.h>
+
 namespace MPL::API::VLRProxy
 {
     void ModAPI::WaitForReadySignal() {
@@ -84,11 +85,11 @@ namespace MPL::API::VLRProxy
             return false;
         }
     }
-    void ModAPI::TransformNPC([[maybe_unused]] RE::Actor* actor)
+    void ModAPI::Transform([[maybe_unused]] RE::Actor* actor)
     {
         //TODO: Implementation
     }
-    void ModAPI::RevertNPC([[maybe_unused]] RE::Actor*  actor)
+    void ModAPI::Revert([[maybe_unused]] RE::Actor*  actor)
     {
         //TODO: Implemenation
     }

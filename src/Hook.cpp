@@ -1,11 +1,10 @@
 #include <Hook.h>
-#include <REL/Module.h>
 #include <RaceManager.h>
-#include <SKSE/Version.h>
 #include <cstdint>
+
 namespace MPL::Hooks
 {
-    const std::size_t kVampireLord = REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99) ? 0x15A: 0x154;
+    const std::size_t kVampireLord = REL::Module::IsAtLeast(SKSE::RUNTIME_SSE_1_7_99) ? 0x15A : 0x154;
     struct GetIsRace
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 22173, 0);
@@ -388,8 +387,7 @@ namespace MPL::Hooks
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
-    /*
-    struct Actor_SetRace
+    struct Papyrus_Actor_SetRace
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54758, 0);
         static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x23, 0x0);
@@ -406,29 +404,58 @@ namespace MPL::Hooks
     };
     struct Papyrus_ActorBase_GetRace
     {
-        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 55991, 0);
-        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0, 0x3A6, 0);
-        static RE::TESRace* thunk(int64_t a1, int64_t a2, RE::TESNPC* act)
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 56004, 0);
+        static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, RE::TESNPC* act)
         {
             auto sta = Managers::RaceManager::GetSingleton();
             if (act->IsPlayer() && sta->IsSupportedLord(act->race))
             {
                 return sta->GetVampireRace(act->race);
             }
-            return func(a1, a2, act);
+            if (func.get() != nullptr)
+            {
+                return func(vm, stackId, act);
+            }
+            else
+            {
+                return act->race;
+            }
         }
         static void post_hook()
         {
             logger::info("Installed Papyrus_ActorBase::GetRace hook");
+        }
+        static void install()
+        {
+//Calling convention: JumpThunk
+#pragma pack(push, 1)
+            struct Assembly
+            {
+                uint8_t opCode{ 0xFF };
+                uint8_t dism{ 0x25 };
+                uint32_t disp{ 0x0 };
+                uint64_t loc { 0x0 };
+                Assembly(void* thunk)
+                {
+                    loc = reinterpret_cast<uintptr_t>(thunk);
+                }
+            };
+#pragma pack(pop)
+            auto* assembly = reinterpret_cast<Assembly*>(relocation.address());
+            if (assembly->opCode == 0xFF && assembly->dism == 0x25)
+            {
+                logger::info("Found existing hook pointing to {:016X}", assembly->loc);
+                func = reinterpret_cast<uintptr_t>(assembly->loc);
+            }
+            REL::safe_write(relocation.address(), new Assembly((void*)&thunk), sizeof(Assembly));
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
     struct Papyrus_Actor_GetRace
     {
-        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
-        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x2245, 0x0);
-        static RE::TESRace* thunk([[maybe_unused]] int64_t a, [[maybe_unused]] int64_t b, RE::Actor* act)
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54930, 0);
+        static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, RE::Actor* act)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
             if (RM->IsSupportedLord(act->GetActorRuntimeData().race))
@@ -437,16 +464,46 @@ namespace MPL::Hooks
             }
             else
             {
-                return act->GetActorRuntimeData().race;
+                if (func.get() != nullptr)
+                {
+                    return func(vm, stackId, act);
+                }
+                else
+                {
+                    return act->GetActorRuntimeData().race;
+                }
             }
         }
         static void post_hook()
         {
             logger::info("Installed hook for Papyrus_Actor::GetRace");
         }
+        static void install()
+        {
+//Calling convention: JumpThunk
+#pragma pack(push, 1)
+            struct Assembly
+            {
+                uint8_t opCode{ 0xFF };
+                uint8_t dism{ 0x25 };
+                uint32_t disp{ 0x0 };
+                uint64_t loc { 0x0 };
+                Assembly(void* thunk)
+                {
+                    loc = reinterpret_cast<uintptr_t>(thunk);
+                }
+            };
+#pragma pack(pop)
+            auto* assembly = reinterpret_cast<Assembly*>(relocation.address());
+            if (assembly->opCode == 0xFF && assembly->dism == 0x25)
+            {
+                logger::info("Found existing hook pointing to {:016X}", assembly->loc);
+                func = reinterpret_cast<uintptr_t>(assembly->loc);
+            }
+            REL::safe_write(relocation.address(), new Assembly((void*)&thunk), sizeof(Assembly));
+        }
         static inline REL::Relocation<decltype(thunk)> func;
     };
-    */
 
     void Install()
     {
@@ -467,10 +524,8 @@ namespace MPL::Hooks
         stl::install_hook<Papyrus_Actor_EquipRobe>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
-        /*
-        stl::install_hook<Actor_SetRace>();
-        stl::install_hook<Papyrus_Actor_GetRace>();
+        stl::install_hook<Papyrus_Actor_SetRace>();
         stl::install_hook<Papyrus_ActorBase_GetRace>();
-        */
+        stl::install_hook<Papyrus_Actor_GetRace>();
     }
 }  // namespace MPL::Hooks

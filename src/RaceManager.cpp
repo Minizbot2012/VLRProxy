@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+
 namespace MPL::Managers
 {
     const std::string WHITESPACE = " \n\r\t\f\v";
@@ -142,7 +143,7 @@ namespace MPL::Managers
                 return;
             }
         }
-
+        auto* dataHandler = RE::TESDataHandler::GetSingleton();
         this->race_pairs.clear();
         if (!this->VampireLordKeyword)
         {
@@ -152,10 +153,9 @@ namespace MPL::Managers
                 logger::info("FAILED TO ALLOCATE VAMPIRE LORD KEYWORD");
             };
         }
-        auto TDH = RE::TESDataHandler::GetSingleton();
-        auto races = TDH->GetFormArray<RE::TESRace>();
-        this->OriginalVL = TDH->LookupForm<RE::TESRace>(0x283A, "Dawnguard.esm");
-        if (!this->OriginalVL->HasKeyword(this->VampireLordKeyword)) this->OriginalVL->AddKeyword(this->VampireLordKeyword);
+        this->OriginalVL = dataHandler->LookupForm<RE::TESRace>(0x283A, "Dawnguard.esm");
+        auto races = dataHandler->GetFormArray<RE::TESRace>();
+        if (!this->OriginalVL->HasKeyword(VampireLordKeyword)) this->OriginalVL->AddKeyword(VampireLordKeyword);
         for (auto* race : races)
         {
             if (race->keywords != nullptr && race->HasKeywordString("Vampire") && !race->HasKeywordString("VampireLord") && !race->HasKeywordString("HVL_Ignore") && race != this->OriginalVL)
@@ -181,7 +181,7 @@ namespace MPL::Managers
                             form->AddKeyword(*keyword);
                         }
                     }
-                    form->AddKeyword(this->VampireLordKeyword);
+                    form->AddKeyword(VampireLordKeyword);
                     form->dismemberBlood = race->dismemberBlood;
                     form->validEquipTypes = race->validEquipTypes;
                     form->armorParentRace = race->armorParentRace ? race->armorParentRace : humanRace;
@@ -274,7 +274,7 @@ namespace MPL::Managers
                 }
             }
         }
-        for (auto file : TDH->files)
+        for (auto file : dataHandler->files)
         {
             PatchRMInis(SLIDER_DIR / file->GetFilename());
         }
@@ -288,7 +288,7 @@ namespace MPL::Managers
         this->race_pairs.push_back(rd);
         return 0;
     }
-    auto RaceManager::GetLordRace(RE::TESRace* rc) -> RE::TESRace*
+    RE::TESRace* RaceManager::GetLordRace(RE::TESRace* rc)
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
             [&](auto rd) { return rd.vampireRace == rc || rd.humanRace == rc; });
@@ -302,7 +302,7 @@ namespace MPL::Managers
         }
     }
 
-    auto RaceManager::GetVampireRace(RE::TESRace* rc) -> RE::TESRace*
+    RE::TESRace* RaceManager::GetVampireRace(RE::TESRace* rc)
     {
         auto it = std::find_if(this->race_pairs.begin(), this->race_pairs.end(),
             [&](auto rd) { return rd.vlRace == rc || rd.humanRace == rc; });
@@ -317,7 +317,7 @@ namespace MPL::Managers
         }
     }
 
-    auto RaceManager::GetOriginalLord() -> RE::TESRace*
+    RE::TESRace* RaceManager::GetOriginalLord()
     {
         return this->OriginalVL;
     }
@@ -343,53 +343,10 @@ namespace MPL::Managers
                    [&](auto rd) { return race == rd.vlRace; }) !=
                this->race_pairs.end();
     }
-
-    //You found it! Secret WIPs, but how does it work? (Look for something about "Harkon") This is definitely WIP ;)
-    void RaceManager::AttachWings(RE::Actor* actor)
-    {
-        if (!actor) return;
-        if (!this->transforms.contains(actor->GetDisplayFullName())) return;
-        auto& transform = this->transforms[actor->GetDisplayFullName()];
-        if (!transform.artObject)
-        {
-            auto file = actor->GetFile(0);
-            auto artObject = alloc->AllocateForm(std::format("{}_{:06X}_Wings", file ? file->GetFilename() : "FF", actor->GetLocalFormID()), RE::FormType::ArtObject);
-            if (!artObject) return;
-            auto effect = artObject->As<RE::BGSArtObject>();
-            if (!effect) return;
-            effect->data.artType.set(RE::BGSArtObject::ArtType::kMagicCastingArt);
-            effect->SetModel(transform.wingPath.c_str());
-            transform.artObject = effect;
-        }
-        if (!transform.artObject) return;
-        transform.artObject->model = transform.wingPath;
-        RE::ProcessLists::GetSingleton()->ForEachModelEffect([&](RE::ModelReferenceEffect* mrf) {
-            if (mrf->artObject == transform.artObject && mrf->target.get().get() == actor)
-            {
-                mrf->DetachImpl();
-                mrf->finished = true;
-                logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
-            }
-            return RE::BSContainer::ForEachResult::kContinue;
-        });
-        actor->ApplyArtObject(transform.artObject);
-        logger::info("Attached wings to actor {}", actor->GetDisplayFullName());
+    void RaceManager::AttachWings([[maybe_unused]] RE::Actor* actor) {
     };
 
-    void RaceManager::DetachWings(RE::Actor* actor)
+    void RaceManager::DetachWings([[maybe_unused]] RE::Actor* actor)
     {
-        if (!actor) return;
-        if (!this->transforms.contains(actor->GetDisplayFullName())) return;
-        auto& transform = this->transforms[actor->GetDisplayFullName()];
-        if (!transform.artObject) return;
-        RE::ProcessLists::GetSingleton()->ForEachModelEffect([&](RE::ModelReferenceEffect* mrf) {
-            if (mrf->artObject == transform.artObject && mrf->target.get().get() == actor)
-            {
-                mrf->DetachImpl();
-                mrf->finished = true;
-                logger::info("Detached wings from actor {}", actor->GetDisplayFullName());
-            }
-            return RE::BSContainer::ForEachResult::kContinue;
-        });
     }
 }  // namespace MPL::Managers

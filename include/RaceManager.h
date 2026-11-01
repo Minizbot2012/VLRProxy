@@ -1,8 +1,7 @@
 #pragma once
 #include <Externals/MMSF_API.h>
-#include <RE/T/TESQuest.h>
-#include <unordered_map>
 #include <vector>
+
 namespace MPL::Managers
 {
     static const std::filesystem::path SLIDER_DIR("Meshes/actors/character/FaceGenMorphs");
@@ -13,10 +12,10 @@ namespace MPL::Managers
         RE::TESRace* humanRace;
     };
 
-    struct ActorTransforms
+    struct TransformStatus
     {
-        std::string wingPath;
-        RE::BGSArtObject* artObject;
+        RE::Actor* actor;
+        RE::TESRace* race;
     };
 
     class RaceManager
@@ -25,16 +24,12 @@ namespace MPL::Managers
         RaceManager();
         ~RaceManager();
         std::vector<RaceData> race_pairs;
+        std::vector<TransformStatus> transform_data;
         MPL::API::MMSF::Interface* MMSF;
         MPL::API::MMSF::IFormAllocator* alloc;
-        RE::TESRace* OriginalVL;
         std::atomic<bool> Ready{ false };
-        RE::BGSKeyword* VampireLordKeyword;
-        //This whole thing is still WIP and might change, but this is included in 0.8.6 for concepting :)
-        std::unordered_map<std::string, ActorTransforms> transforms = {
-            { "Vrel", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Bloody Red Dragon Wings.nif", .artObject = nullptr} },
-            { "Lord Harkon", ActorTransforms{ .wingPath = "[Anton] mods\\Animated Dragon Wings\\Evil Blue Dragon Wings.nif", .artObject = nullptr } }
-        };
+        static inline RE::BGSKeyword* VampireLordKeyword;
+        RE::TESRace* OriginalVL;
 
     public:
         inline static RaceManager* GetSingleton()
@@ -47,9 +42,9 @@ namespace MPL::Managers
         void WaitForReadySignal();
         void PatchRMInis(std::filesystem::path);
         int PushRaceData(RaceData&);
-        auto GetLordRace(RE::TESRace*) -> RE::TESRace*;
-        auto GetVampireRace(RE::TESRace*) -> RE::TESRace*;
-        auto GetOriginalLord() -> RE::TESRace*;
+        RE::TESRace* GetLordRace(RE::TESRace*);
+        RE::TESRace* GetVampireRace(RE::TESRace*);
+        RE::TESRace* GetOriginalLord();
         bool IsVampireLord(RE::TESRace*);
         bool IsSupportedRace(RE::TESRace*);
         bool IsSupportedLord(RE::TESRace*);
