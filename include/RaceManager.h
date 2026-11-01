@@ -1,5 +1,6 @@
 #pragma once
 #include <Externals/MMSF_API.h>
+#include <RE/T/TESQuest.h>
 #include <unordered_map>
 #include <vector>
 namespace MPL::Managers
