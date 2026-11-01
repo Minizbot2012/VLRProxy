@@ -6,6 +6,7 @@
 #include <RaceManager.h>
 #include <VLRProxy_API.h>
 
+inline bool hooks_installed = false;
 void MsgHandler(SKSE::MessagingInterface::Message* msg)
 {
     auto sta = MPL::Managers::RaceManager::GetSingleton();
@@ -16,6 +17,12 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
         break;
     case MPL::API::MMSF::MMSFMessage::kMessage_MMSFServicesReady:
         sta->InitLords();
+        break;
+    case SKSE::MessagingInterface::kDataLoaded:
+        if(!hooks_installed) {
+            MPL::Hooks::Install();
+            hooks_installed = true;
+        }
         break;
     default:
         break;
@@ -40,6 +47,5 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
     SKSE::GetMessagingInterface()->RegisterListener("MMSF", MsgHandler);
     SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
-    MPL::Hooks::Install();
     return true;
 }

@@ -271,24 +271,15 @@ namespace MPL::Managers
                         .humanRace = humanRace
                     };
                     this->PushRaceData(rd);
-                    this->AddOverride(humanRace, "racemenubase", "OnMenuInitialized", humanRace);
-                    this->AddOverride(humanRace, "racemenubase", "OnMenuReinitialized", humanRace);
-                    this->AddOverride(humanRace, "racemenubase", "OnReloadSettings", humanRace);
-                    this->AddOverride(humanRace, "racemenubase", "On3DLoaded", humanRace);
                     this->AddOverride(humanRace, "DLC1VampireTransformVisual", "OnEffectStart", humanRace);
                     this->AddOverride(humanRace, "DLC1VampireTransformVisual", "TransformIfNecessary", humanRace);
                     this->AddOverride(humanRace, "DLC1PlayerVampireScript", "OnRaceSwitchComplete", humanRace);
-                    this->AddOverride(race, "racemenubase", "OnMenuInitialized", race);
-                    this->AddOverride(race, "racemenubase", "OnMenuReinitialized", race);
-                    this->AddOverride(race, "racemenubase", "OnReloadSettings", race);
-                    this->AddOverride(race, "racemenubase", "On3DLoaded", race);
                     this->AddOverride(race, "DLC1VampireTransformVisual", "OnEffectStart", race);
                     this->AddOverride(race, "DLC1VampireTransformVisual", "TransformIfNecessary", race);
                     this->AddOverride(race, "DLC1PlayerVampireScript", "OnRaceSwitchComplete", race);
                     this->AddOverride(form, "racemenubase", "OnMenuInitialized", race);
                     this->AddOverride(form, "racemenubase", "OnMenuReinitialized", race);
                     this->AddOverride(form, "racemenubase", "OnReloadSettings", race);
-                    this->AddOverride(form, "racemenubase", "On3DLoaded", race);
                     this->AddOverride(form, "DLC1VampireTransformVisual", "OnEffectStart", this->OriginalVL);
                     this->AddOverride(form, "DLC1VampireTransformVisual", "TransformIfNecessary", this->OriginalVL);
                     this->AddOverride(form, "DLC1PlayerVampireScript", "OnRaceSwitchComplete", this->OriginalVL);

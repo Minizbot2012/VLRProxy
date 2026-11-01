@@ -1,5 +1,6 @@
 #include <Hook.h>
 #include <RaceManager.h>
+#include <bit>
 #include <cstdint>
 
 namespace MPL::Hooks
@@ -435,20 +436,17 @@ namespace MPL::Hooks
                 uint8_t opCode{ 0xFF };
                 uint8_t dism{ 0x25 };
                 uint32_t disp{ 0x0 };
-                uint64_t loc{ 0x0 };
-                Assembly(void* thunk)
-                {
-                    loc = reinterpret_cast<uintptr_t>(thunk);
-                }
+                uint64_t loc;
             };
 #pragma pack(pop)
-            auto* assembly = reinterpret_cast<Assembly*>(relocation.address());
+            auto assembly = reinterpret_cast<Assembly*>(relocation.address());
             if (assembly->opCode == 0xFF && assembly->dism == 0x25)
             {
                 logger::info("Found existing hook pointing to {:016X}", assembly->loc);
                 func = reinterpret_cast<uintptr_t>(assembly->loc);
             }
-            REL::safe_write(relocation.address(), new Assembly((void*)&thunk), sizeof(Assembly));
+            auto overwrite_assembly = Assembly {.loc = reinterpret_cast<uintptr_t>(&thunk) };
+            REL::safe_write(relocation.address(), &overwrite_assembly, sizeof(Assembly));
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
@@ -486,20 +484,17 @@ namespace MPL::Hooks
                 uint8_t opCode{ 0xFF };
                 uint8_t dism{ 0x25 };
                 uint32_t disp{ 0x0 };
-                uint64_t loc{ 0x0 };
-                Assembly(void* thunk)
-                {
-                    loc = reinterpret_cast<uintptr_t>(thunk);
-                }
+                uint64_t loc;
             };
 #pragma pack(pop)
-            auto* assembly = reinterpret_cast<Assembly*>(relocation.address());
+            auto assembly = reinterpret_cast<Assembly*>(relocation.address());
             if (assembly->opCode == 0xFF && assembly->dism == 0x25)
             {
                 logger::info("Found existing hook pointing to {:016X}", assembly->loc);
                 func = reinterpret_cast<uintptr_t>(assembly->loc);
             }
-            REL::safe_write(relocation.address(), new Assembly((void*)&thunk), sizeof(Assembly));
+            auto overwrite_assembly = Assembly {.loc = reinterpret_cast<uintptr_t>(&thunk) };
+            REL::safe_write(relocation.address(), &overwrite_assembly, sizeof(Assembly));
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
