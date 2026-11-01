@@ -408,11 +408,12 @@ namespace MPL::Hooks
         static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, RE::TESNPC* act)
         {
             auto sta = Managers::RaceManager::GetSingleton();
-            if (act->IsPlayer() && sta->IsSupportedLord(act->race))
+            auto filtered = sta->Filter(vm, stackId, act->race);
+            if (filtered != nullptr)
             {
-                return sta->GetVampireRace(act->race);
+                return filtered;
             }
-            if (func.get() != nullptr)
+            else if (func.get() != nullptr)
             {
                 return func(vm, stackId, act);
             }
@@ -434,7 +435,7 @@ namespace MPL::Hooks
                 uint8_t opCode{ 0xFF };
                 uint8_t dism{ 0x25 };
                 uint32_t disp{ 0x0 };
-                uint64_t loc { 0x0 };
+                uint64_t loc{ 0x0 };
                 Assembly(void* thunk)
                 {
                     loc = reinterpret_cast<uintptr_t>(thunk);
@@ -457,21 +458,19 @@ namespace MPL::Hooks
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54930, 0);
         static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, RE::Actor* act)
         {
-            auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->IsSupportedLord(act->GetActorRuntimeData().race))
+            auto* sta = MPL::Managers::RaceManager::GetSingleton();
+            auto filtered = sta->Filter(vm, stackId, act->race);
+            if (filtered != nullptr)
             {
-                return RM->GetOriginalLord();
+                return filtered;
+            }
+            else if (func.get() != nullptr)
+            {
+                return func(vm, stackId, act);
             }
             else
             {
-                if (func.get() != nullptr)
-                {
-                    return func(vm, stackId, act);
-                }
-                else
-                {
-                    return act->GetActorRuntimeData().race;
-                }
+                return act->GetActorRuntimeData().race;
             }
         }
         static void post_hook()
@@ -487,7 +486,7 @@ namespace MPL::Hooks
                 uint8_t opCode{ 0xFF };
                 uint8_t dism{ 0x25 };
                 uint32_t disp{ 0x0 };
-                uint64_t loc { 0x0 };
+                uint64_t loc{ 0x0 };
                 Assembly(void* thunk)
                 {
                     loc = reinterpret_cast<uintptr_t>(thunk);
