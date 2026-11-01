@@ -9,6 +9,7 @@
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace MPL::Managers
@@ -291,41 +292,38 @@ namespace MPL::Managers
             PatchRMInis(SLIDER_DIR / file->GetFilename());
         }
     }
-    RE::TESRace* RaceManager::Filter(RE::BSScript::ObjectTypeInfo* obj, RE::BSScript::IFunction* func, RE::TESRace* originalRace)
-    {
-        if (!obj || !func || !originalRace) return nullptr;
-        auto override = OverrideEntry{ originalRace, obj->GetName(), func->GetName() };
-        if (this->override_table.contains(override))
-        {
-            return this->override_table[override];
-        }
-        else if (obj->GetParent() != nullptr)
-        {
-            return this->Filter(obj->GetParent(), func, originalRace);
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
     RE::TESRace* RaceManager::Filter(RE::BSScript::Internal::VirtualMachine* a_vm, RE::VMStackID stackId, RE::TESRace* originalRace)
     {
-        RE::BSScript::Stack* stack;
-        if (!a_vm->GetStackByID(stackId, &stack) || !stack) return nullptr;
-        if (stack->top && stack->top->previousFrame)
+        RE::BSScript::Stack* stack{};
+        if (a_vm->GetStackByID(stackId, &stack) && stack)
         {
-            auto frame = stack->top->previousFrame;
-            //while (frame != nullptr)
-            //{
-            if (auto itm = Filter(frame->owningObjectType.get(), frame->owningFunction.get(), originalRace)) return itm;
-            //frame = frame->previousFrame;
-            //}
+            if (stack->top && stack->top->previousFrame)
+            {
+                const auto* frame = stack->top->previousFrame;
+                auto pair = std::make_pair(originalRace, frame->owningFunction.get());
+                if(frame && this->override_table.contains(pair)) {
+                    return this->override_table[pair];
+                }
+            }
         }
         return nullptr;
     }
     void RaceManager::AddOverride(RE::TESRace* source_race, std::string_view owningType, std::string_view functionName, RE::TESRace* overrideRace)
     {
-        this->override_table[OverrideEntry{ source_race, owningType, functionName }] = overrideRace;
+        auto fn = std::format("{}::{}", owningType, functionName);
+        if(!this->overrides.contains(fn)) {
+            auto a_vm = RE::BSScript::Internal::VirtualMachine::GetSingleton();
+            RE::BSTSmartPointer<RE::BSScript::ObjectTypeInfo> typeInfo;
+            a_vm->GetScriptObjectType(owningType, typeInfo);
+            for(uint32_t i = 0; i<typeInfo->GetNumMemberFuncs(); ++i) {
+                auto func = typeInfo->GetMemberFuncIter()[i].func;
+                if(func->GetName() == functionName) {
+                    this->overrides[fn] = func.get();
+                }
+            }
+        }
+        auto override = std::make_pair(source_race, this->overrides[fn]);
+        this->override_table[override] = overrideRace;
     }
     int RaceManager::PushRaceData(RaceData& rd)
     {

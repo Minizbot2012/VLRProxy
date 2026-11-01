@@ -1,6 +1,5 @@
 #include <Hook.h>
 #include <RaceManager.h>
-#include <bit>
 #include <cstdint>
 
 namespace MPL::Hooks
@@ -406,9 +405,10 @@ namespace MPL::Hooks
     struct Papyrus_ActorBase_GetRace
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 56004, 0);
-        static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, RE::TESNPC* act)
+        static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, const RE::TESNPC* act)
         {
             auto sta = Managers::RaceManager::GetSingleton();
+            if(!act) return nullptr;
             auto filtered = sta->Filter(vm, stackId, act->race);
             if (filtered != nullptr)
             {
@@ -454,9 +454,10 @@ namespace MPL::Hooks
     struct Papyrus_Actor_GetRace
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54930, 0);
-        static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, RE::Actor* act)
+        static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, const RE::Actor* act)
         {
             auto* sta = MPL::Managers::RaceManager::GetSingleton();
+            if(!act) return nullptr;
             auto filtered = sta->Filter(vm, stackId, act->race);
             if (filtered != nullptr)
             {

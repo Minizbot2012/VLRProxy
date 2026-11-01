@@ -1,8 +1,8 @@
 #pragma once
 #include <Externals/MMSF_API.h>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
-#include <Overrides.h>
 
 namespace MPL::Managers
 {
@@ -31,7 +31,8 @@ namespace MPL::Managers
         std::atomic<bool> Ready{ false };
         static inline RE::BGSKeyword* VampireLordKeyword;
         RE::TESRace* OriginalVL;
-        std::unordered_map<OverrideEntry, RE::TESRace*> override_table;
+        std::unordered_map<std::pair<RE::TESRace*, RE::BSScript::IFunction*>, RE::TESRace*> override_table;
+        std::unordered_map<std::string_view, RE::BSScript::IFunction*> overrides;
 
     public:
         inline static RaceManager* GetSingleton()
@@ -42,7 +43,6 @@ namespace MPL::Managers
         void InitMMSF();
         void InitLords();
         void AddOverride(RE::TESRace*, std::string_view, std::string_view, RE::TESRace*);
-        RE::TESRace* Filter(RE::BSScript::ObjectTypeInfo*, RE::BSScript::IFunction*, RE::TESRace*);
         RE::TESRace* Filter(RE::BSScript::Internal::VirtualMachine*, RE::VMStackID, RE::TESRace*);
         void WaitForReadySignal();
         void PatchRMInis(std::filesystem::path);

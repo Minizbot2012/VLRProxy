@@ -19,7 +19,7 @@ inline void hash_combine(std::size_t& seed, std::size_t value) {
 }
 namespace std {
     template<typename... Ts>
-    struct hash<std::tuple<Ts...>> {
+    struct hash<std::pair<Ts...>> {
         std::size_t operator()(const std::tuple<Ts...>& t) const noexcept {
             std::size_t seed = 0;
             std::apply([&seed](const auto&... elem) {
