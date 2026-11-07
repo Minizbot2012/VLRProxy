@@ -352,11 +352,12 @@ namespace MPL::Hooks
             RelJump* originalJmp = reinterpret_cast<RelJump*>(jmp);
             auto& tramp = SKSE::GetTrampoline();
             auto* originalTramp = tramp.allocate(14);
-            Assembly OrignalAssembly{ .loc = (jmp + 5) - originalJmp->relLoc };
+            Assembly OrignalAssembly{ .loc = (jmp + 5) + originalJmp->relLoc };
             Assembly ThunkAssembly{ .loc = reinterpret_cast<uintptr_t>(&thunk) };
+            REL::safe_fill(base, 0x90, 0xF);
             REL::safe_write(reinterpret_cast<uintptr_t>(originalTramp), &OrignalAssembly, sizeof(Assembly));
             func = reinterpret_cast<uintptr_t>(originalTramp);
-            REL::safe_write(jmp, &ThunkAssembly, sizeof(Assembly));
+            REL::safe_write(base, &ThunkAssembly, sizeof(Assembly));
         }
         static inline REL::Relocation<void(RE::ActorEquipManager*, RE::Actor*)> func;
     };
