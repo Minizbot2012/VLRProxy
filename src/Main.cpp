@@ -20,7 +20,7 @@ void MsgHandler(SKSE::MessagingInterface::Message* msg)
         break;
     case SKSE::MessagingInterface::kDataLoaded:
         if(!hooks_installed) {
-            MPL::Hooks::Install();
+            MPL::Hooks::Install_late();
             hooks_installed = true;
         }
         break;
@@ -47,5 +47,6 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     SKSE::GetMessagingInterface()->RegisterListener(MsgHandler);
     SKSE::GetMessagingInterface()->RegisterListener("MMSF", MsgHandler);
     SKSE::GetPapyrusInterface()->Register(MPL::papyrus::Bind);
+    MPL::Hooks::Install();
     return true;
 }

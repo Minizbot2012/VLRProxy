@@ -1,5 +1,4 @@
 #pragma once
-#include <REX/W32/KERNEL32.h>
 #include <RaceManager.h>
 #include <cstdint>
 #include <string_view>
@@ -45,19 +44,19 @@ namespace MPL::papyrus
         return actor->GetActorRuntimeData().race;
     }
 #undef STATIC_ARGS
-    inline bool Bind(RE::BSScript::IVirtualMachine* vm)
+    inline bool Bind(RE::BSScript::IVirtualMachine* a_vm)
     {
-        vm->RegisterFunction("GetVLRace", "VLRace", LordRace);
-        vm->RegisterFunction("GetVampireRace", "VLRace", VampireRace);
-        vm->RegisterFunction("IsVL", "VLRace", IsVL);
-        vm->RegisterFunction("IsSupportedVampireRace", "VLRace",
+        a_vm->RegisterFunction("GetVLRace", "VLRace", LordRace);
+        a_vm->RegisterFunction("GetVampireRace", "VLRace", VampireRace);
+        a_vm->RegisterFunction("IsVL", "VLRace", IsVL);
+        a_vm->RegisterFunction("IsSupportedVampireRace", "VLRace",
             IsSupportedVampireRace);
-        vm->RegisterFunction("IsSupportedVampireLord", "VLRace",
+        a_vm->RegisterFunction("IsSupportedVampireLord", "VLRace",
             IsSupportedVampireLord);
         // New in 0.7.0+
-        vm->RegisterFunction("OriginalVL", "VLRace", OriginalVL);
-        vm->RegisterFunction("GetRealRace", "VLRace", GetRealRace);
-        vm->RegisterFunction("Version", "VLRace", Version);
+        a_vm->RegisterFunction("OriginalVL", "VLRace", OriginalVL);
+        a_vm->RegisterFunction("GetRealRace", "VLRace", GetRealRace);
+        a_vm->RegisterFunction("Version", "VLRace", Version);
         return true;
     }
 }  // namespace MPL::papyrus

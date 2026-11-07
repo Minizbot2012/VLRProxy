@@ -1,5 +1,11 @@
 #include <Hook.h>
+#include <RE/A/ActorEquipManager.h>
+#include <RE/B/BSCoreTypes.h>
+#include <RE/V/VirtualMachine.h>
+#include <REL/Offset.h>
+#include <REL/Relocation.h>
 #include <RaceManager.h>
+#include <SKSE/Trampoline.h>
 #include <cstdint>
 
 namespace MPL::Hooks
@@ -299,14 +305,17 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
-    struct Papyrus_Actor_EquipRobe
+    struct Papyrus_Actor_EquipItem
     {
         static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
         static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0xeb3, 0x0);
-        static void thunk(int64_t a1, uint32_t a2, RE::Actor* act, RE::TESForm* frm, float flt, uint8_t a5, char a6)
+        static void thunk(RE::BSScript::Internal::VirtualMachine* a_vm, RE::VMStackID stack, RE::Actor* act, RE::TESForm* frm, float flt, uint8_t a5, char a6)
         {
-            if (frm != nullptr && (frm == RE::TESForm::LookupByEditorID("DLC1ClothesVampireRoyalArmor") || frm == RE::TESForm::LookupByEditorID("DLC1ClothesVampireLordArmor"))) return;
-            func(a1, a2, act, frm, flt, a5, a6);
+            if (frm != nullptr && (frm == RE::TESForm::LookupByEditorID("DLC1ClothesVampireRoyalArmor") || frm == RE::TESForm::LookupByEditorID("DLC1ClothesVampireLordArmor")))
+            {
+                return;
+            }
+            func(a_vm, stack, act, frm, flt, a5, a6);
         }
         static void post_hook()
         {
@@ -317,25 +326,39 @@ namespace MPL::Hooks
 
     struct Papyrus_Actor_UnequipAll
     {
-        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54784, 0);
-        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0x0, 0x50a9, 0x0);
-        static void thunk(int64_t a, int64_t b, RE::Actor* act)
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 54773, 0);
+        static inline constexpr REL::VariantOffset offset = REL::VariantOffset(0, 0xa, 0);
+        static void thunk([[maybe_unused]] RE::BSScript::Internal::VirtualMachine* vm, [[maybe_unused]] RE::VMStackID sid, RE::Actor* act)
         {
             auto* RM = MPL::Managers::RaceManager::GetSingleton();
-            if (RM->IsSupportedLord(act->GetActorRuntimeData().race))
+            if (RM->IsSupportedLord(act->GetRace()))
             {
                 return;
             }
             else
             {
-                return func(a, b, act);
+                auto aem = RE::ActorEquipManager::GetSingleton();
+                return func(aem, act);
             }
         }
         static void post_hook()
         {
             logger::info("Installed hook for Papyrus_Actor::UnequipAll");
         }
-        static inline REL::Relocation<decltype(thunk)> func;
+        static void install()
+        {
+            auto base = relocation.address();
+            auto jmp = base + offset.offset();
+            RelJump* originalJmp = reinterpret_cast<RelJump*>(jmp);
+            auto& tramp = SKSE::GetTrampoline();
+            auto* originalTramp = tramp.allocate(14);
+            Assembly OrignalAssembly{ .loc = (jmp + 5) - originalJmp->relLoc };
+            Assembly ThunkAssembly{ .loc = reinterpret_cast<uintptr_t>(&thunk) };
+            REL::safe_write(reinterpret_cast<uintptr_t>(originalTramp), &OrignalAssembly, sizeof(Assembly));
+            func = reinterpret_cast<uintptr_t>(originalTramp);
+            REL::safe_write(jmp, &ThunkAssembly, sizeof(Assembly));
+        }
+        static inline REL::Relocation<void(RE::ActorEquipManager*, RE::Actor*)> func;
     };
 
     struct PlayerCharacter_Load3D
@@ -400,7 +423,7 @@ namespace MPL::Hooks
             }
             return func(a_this, a_race, a_player);
         }
-        static inline REL::Relocation<decltype(thunk)> func{ REL::ID(37925) };
+        static inline REL::Relocation<decltype(thunk)> func;
     };
     struct Papyrus_ActorBase_GetRace
     {
@@ -408,7 +431,7 @@ namespace MPL::Hooks
         static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, const RE::TESNPC* act)
         {
             auto sta = Managers::RaceManager::GetSingleton();
-            if(!act) return nullptr;
+            if (!act) return nullptr;
             auto filtered = sta->Filter(vm, stackId, act->race);
             if (filtered != nullptr)
             {
@@ -429,23 +452,13 @@ namespace MPL::Hooks
         }
         static void install()
         {
-//Calling convention: JumpThunk
-#pragma pack(push, 1)
-            struct Assembly
-            {
-                uint8_t opCode{ 0xFF };
-                uint8_t dism{ 0x25 };
-                uint32_t disp{ 0x0 };
-                uint64_t loc;
-            };
-#pragma pack(pop)
             auto assembly = reinterpret_cast<Assembly*>(relocation.address());
             if (assembly->opCode == 0xFF && assembly->dism == 0x25)
             {
                 logger::info("Found existing hook pointing to {:016X}", assembly->loc);
                 func = reinterpret_cast<uintptr_t>(assembly->loc);
             }
-            auto overwrite_assembly = Assembly {.loc = reinterpret_cast<uintptr_t>(&thunk) };
+            auto overwrite_assembly = Assembly{ .loc = reinterpret_cast<uintptr_t>(&thunk) };
             REL::safe_write(relocation.address(), &overwrite_assembly, sizeof(Assembly));
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -457,7 +470,7 @@ namespace MPL::Hooks
         static RE::TESRace* thunk(RE::BSScript::Internal::VirtualMachine* vm, RE::VMStackID stackId, const RE::Actor* act)
         {
             auto* sta = MPL::Managers::RaceManager::GetSingleton();
-            if(!act) return nullptr;
+            if (!act) return nullptr;
             auto filtered = sta->Filter(vm, stackId, act->race);
             if (filtered != nullptr)
             {
@@ -478,6 +491,47 @@ namespace MPL::Hooks
         }
         static void install()
         {
+            auto assembly = reinterpret_cast<Assembly*>(relocation.address());
+            if (assembly->opCode == 0xFF && assembly->dism == 0x25)
+            {
+                logger::info("Found existing hook pointing to {:016X}", assembly->loc);
+                func = reinterpret_cast<uintptr_t>(assembly->loc);
+            }
+            auto overwrite_assembly = Assembly{ .loc = reinterpret_cast<uintptr_t>(&thunk) };
+            REL::safe_write(relocation.address(), &overwrite_assembly, sizeof(Assembly));
+        }
+        static inline REL::Relocation<decltype(thunk)> func;
+    };
+
+    struct TESObjectARMA_IsValidRace
+    {
+        static inline constexpr REL::VariantID relocation = REL::VariantID(0, 17757, 0);
+        static bool thunk(const RE::TESObjectARMA* armor_addon, const RE::TESRace* race)
+        {
+            auto* sta = MPL::Managers::RaceManager::GetSingleton();
+            RE::TESRace* checkRace;
+            if (sta->IsSupportedLord(const_cast<RE::TESRace*>(race)))
+            {
+                checkRace = sta->GetVampireRace(const_cast<RE::TESRace*>(race));
+            }
+            else
+            {
+                checkRace = const_cast<RE::TESRace*>(race);
+            }
+            auto result = armor_addon->IsValidRace(checkRace);
+
+            if (!result && func.address() != 0x0)
+            {
+                return func(armor_addon, checkRace);
+            }
+            return result;
+        }
+        static void post_hook()
+        {
+            logger::info("Installed hook for TESObjectARMA::IsValidRace");
+        }
+        static void install()
+        {
 //Calling convention: JumpThunk
 #pragma pack(push, 1)
             struct Assembly
@@ -494,7 +548,7 @@ namespace MPL::Hooks
                 logger::info("Found existing hook pointing to {:016X}", assembly->loc);
                 func = reinterpret_cast<uintptr_t>(assembly->loc);
             }
-            auto overwrite_assembly = Assembly {.loc = reinterpret_cast<uintptr_t>(&thunk) };
+            auto overwrite_assembly = Assembly{ .loc = reinterpret_cast<uintptr_t>(&thunk) };
             REL::safe_write(relocation.address(), &overwrite_assembly, sizeof(Assembly));
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -515,10 +569,15 @@ namespace MPL::Hooks
         stl::install_hook<OpenMenuHandler_ProcessButton_IsVampireLord>();
         stl::install_hook<FavoritesMenuHandler_ProcessButton_IsVampireLord>();
         stl::install_hook<IMenu_GetFromDOM>();
-        stl::install_hook<Papyrus_Actor_UnequipAll>();
-        stl::install_hook<Papyrus_Actor_EquipRobe>();
+        stl::install_hook<Papyrus_Actor_EquipItem>();
         stl::install_hook<Actor_Load3D>();
         stl::install_hook<PlayerCharacter_Load3D>();
+        stl::install_hook<TESObjectARMA_IsValidRace>();
+    }
+
+    void Install_late()
+    {
+        stl::install_hook<Papyrus_Actor_UnequipAll>();
         stl::install_hook<Papyrus_Actor_SetRace>();
         stl::install_hook<Papyrus_ActorBase_GetRace>();
         stl::install_hook<Papyrus_Actor_GetRace>();

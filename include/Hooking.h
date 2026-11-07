@@ -262,7 +262,7 @@ namespace stl
     void install_hook()
     {
         using ThunkType = decltype(Hook::thunk);
-        if constexpr (chain_hook<Hook>)
+        if constexpr (chain_hook<Hook> && !custom_install<Hook>)
         {
             using FuncType = decltype(Hook::func);
             static_assert(
